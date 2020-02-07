@@ -1,3 +1,18 @@
 <h1 class="mt-4">Dashboard</h1>
 <p class="lead mb-3">Welcome <%= user.name %></p>
 <a href="/users/logout" class="btn btn-secondary">Logout</a>
+<div>
+  <hr />
+  <% if(files){ %> <% files.forEach(function(file) { %>
+  <div class="card card-body mb-3">
+    <% if(file.isImage) { %>
+    <img src="image/<%= file.filename %>" alt="" />
+    <% } else { %> <%= file.filename %> <% } %>
+    <form method="POST" action="/files/<%= file._id %>?_method=DELETE">
+      <button class="btn btn-danger btn-block mt-4">Delete</button>
+    </form>
+  </div>
+  <% }) %> <% } else { %>
+  <p>No files to show</p>
+  <% } %>
+</div>

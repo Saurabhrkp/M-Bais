@@ -127,6 +127,30 @@ app.get('/admin', (req, res) => {
   });
 });
 
+const { ensureAuthenticated } = require('./config/auth');
+
+// Dashboard
+app.get('/dashboard', ensureAuthenticated, (req, res) => {
+  gfs.files.find().toArray((err, files) => {
+    // Check if files
+    if (!files || files.length === 0) {
+      res.render('dashboard', { files: false });
+    } else {
+      files.map(file => {
+        if (
+          file.contentType === 'image/jpeg' ||
+          file.contentType === 'image/png'
+        ) {
+          file.isImage = true;
+        } else {
+          file.isImage = false;
+        }
+      });
+      res.render('dashboard', { files: files, user: req.user });
+    }
+  });
+});
+
 // @route POST /upload
 // @desc  Uploads file to DB
 app.post('/upload', upload.single('file'), (req, res) => {
@@ -201,4 +225,4 @@ app.delete('/files/:id', (req, res) => {
   });
 });
 
-module.exports = app;
+module.exports = { app, gfs };
