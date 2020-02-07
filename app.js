@@ -131,24 +131,7 @@ const { ensureAuthenticated } = require('./config/auth');
 
 // Dashboard
 app.get('/dashboard', ensureAuthenticated, (req, res) => {
-  gfs.files.find().toArray((err, files) => {
-    // Check if files
-    if (!files || files.length === 0) {
-      res.render('dashboard', { files: false });
-    } else {
-      files.map(file => {
-        if (
-          file.contentType === 'image/jpeg' ||
-          file.contentType === 'image/png'
-        ) {
-          file.isImage = true;
-        } else {
-          file.isImage = false;
-        }
-      });
-      res.render('dashboard', { files: files, user: req.user });
-    }
-  });
+  res.render('dashboard', { user: req.user });
 });
 
 // @route POST /upload
@@ -184,8 +167,57 @@ app.get('/files/:filename', (req, res) => {
         err: 'No file exists'
       });
     }
-    // File exists
-    return res.json(file);
+    // Check if image
+    if (file.contentType === 'video/mp4' || file.contentType === 'video/mov') {
+      // Read output to browser
+      const readstream = gfs.createReadStream(file.filename);
+      readstream.pipe(res);
+    } else {
+      res.status(404).json({
+        err: 'Not an Video'
+      });
+    }
+  });
+});
+
+app.post('/passcode', (req, res) => {
+  const { name } = req.body;
+  let errors = [];
+  serialID = 'MPT1';
+  if (!name) {
+    errors.push({ msg: 'Please enter all fields or wrong passcode.' });
+  }
+  if (errors.length > 0) {
+    res.render('dashboard', {
+      errors,
+      name,
+      user: req.user
+    });
+  }
+  console.log(errors);
+  if (name == serialID) {
+    res.redirect('/video');
+  }
+});
+
+app.get('/video', (req, res) => {
+  gfs.files.find().toArray((err, files) => {
+    // Check if files
+    if (!files || files.length === 0) {
+      res.render('video', { files: false });
+    } else {
+      files.map(file => {
+        if (
+          file.contentType === 'image/jpeg' ||
+          file.contentType === 'image/png'
+        ) {
+          file.isImage = true;
+        } else {
+          file.isImage = false;
+        }
+      });
+      res.render('video', { files: files, user: req.user });
+    }
   });
 });
 
@@ -225,4 +257,4 @@ app.delete('/files/:id', (req, res) => {
   });
 });
 
-module.exports = { app, gfs };
+module.exports = app;
