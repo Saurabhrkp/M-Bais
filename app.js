@@ -14,10 +14,16 @@ require('./config/passport')(passport);
 const db = require('./config/keys').mongoURI;
 
 // Connect to MongoDB
-mongoose
-  .connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
+mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.Promise = global.Promise;
+var mconnection = mongoose.connection;
+mconnection.on('connected', () => {
+  console.log('MongoDB is Connected');
+});
+mconnection.on(
+  'error',
+  console.error.bind(console, 'MongoDB connection error:')
+);
 
 // EJS
 app.use(expressLayouts);
