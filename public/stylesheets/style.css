@@ -1,8 +1,25 @@
 body {
-  padding: 50px;
-  font: 14px 'Lucida Grande', Helvetica, Arial, sans-serif;
+  background-color: rgb(228, 228, 228);
+  color: rgb(0, 0, 0);
+}
+
+.nav-link {
+  font: 18px 'Lucida Grande', Helvetica, Arial, sans-serif;
+  font-weight: bold;
+}
+
+#logo-mbais {
+  margin: 0;
+  padding: 0;
+  height: 45px;
+  width: 135px;
 }
 
 a {
   color: #00b7ff;
+}
+
+.navbar-brand {
+  margin: 0px;
+  padding: 0px;
 }

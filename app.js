@@ -72,6 +72,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
