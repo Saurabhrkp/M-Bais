@@ -23,3 +23,8 @@ a {
   margin: 0px;
   padding: 0px;
 }
+
+.jumbotron {
+  background-image: url('/images/study.jpeg');
+  background-size: cover;
+}
