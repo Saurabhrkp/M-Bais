@@ -1,5 +1,6 @@
 // Load User model
 const User = require('../models/User');
+const passport = require('passport');
 const bcrypt = require('bcryptjs');
 
 exports.loginGet = function(req, res, next) {
@@ -75,7 +76,7 @@ exports.registerPost = function(req, res, next) {
 
 exports.loginPost = function(req, res, next) {
   passport.authenticate('local', {
-    successRedirect: '/dashboard',
+    successRedirect: '/api',
     failureRedirect: '/users/login',
     failureFlash: true
   })(req, res, next);
