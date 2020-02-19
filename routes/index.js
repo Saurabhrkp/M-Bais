@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { ensureAuthenticated } = require('../config/auth');
+const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
 const index = require('../controllers/indexController');
 
 // Welcome Page
-router.get('/', index.welcome);
+router.get('/', forwardAuthenticated, index.welcome);
 
 // Welcome Page
-router.get('/', ensureAuthenticated, index.hello);
+router.get('/hello', ensureAuthenticated, index.hello);
 
 module.exports = router;

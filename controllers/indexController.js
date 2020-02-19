@@ -1,6 +1,6 @@
 exports.welcome = function(req, res, next) {
-  res.render('welcome', { title: 'Welcome User' });
+  res.render('welcome');
 };
 exports.hello = function(req, res, next) {
-  res.render('welcome', { title: 'Hello User' });
+  res.render('welcome');
 };
