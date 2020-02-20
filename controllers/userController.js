@@ -13,6 +13,7 @@ exports.registerGet = function(req, res, next) {
 
 exports.registerPost = function(req, res, next) {
   const { name, email, password, password2 } = req.body;
+  const role = 'Student';
   let errors = [];
 
   if (!name || !email || !password || !password2) {
@@ -50,7 +51,8 @@ exports.registerPost = function(req, res, next) {
         const newUser = new User({
           name,
           email,
-          password
+          password,
+          role
         });
 
         bcrypt.genSalt(10, (err, salt) => {
@@ -76,7 +78,7 @@ exports.registerPost = function(req, res, next) {
 
 exports.loginPost = function(req, res, next) {
   passport.authenticate('local', {
-    successRedirect: '/',
+    successRedirect: '/dashboard',
     failureRedirect: '/users/login',
     failureFlash: true
   })(req, res, next);
