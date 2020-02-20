@@ -24,7 +24,12 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 
 // File upload middleware
-app.use(fileupload());
+app.use(
+  fileupload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
+  })
+);
 
 // Body parser for Forms
 app.use(bodyParser.json());

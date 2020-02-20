@@ -2,6 +2,25 @@
 const Admin = require('../models/Admin');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
+const fs = require('fs');
+
+// DB Config
+const connection = require('../database').connection;
+
+// Grid fs
+const Grid = require('gridfs-stream');
+
+// Connect GridFS and Mongo
+Grid.mongo = mongoose.mongo;
+
+// Init gfs
+var gfs;
+
+connection.on('open', () => {
+  // Init stream
+  gfs = Grid(connection.db);
+});
 
 exports.loginGet = function(req, res, next) {
   res.render('login');
@@ -93,3 +112,27 @@ exports.logout = function(req, res, next) {
 exports.panel = function(req, res, next) {
   res.render('upload', { user: req.user });
 };
+
+exports.upload = function(req, res, next) {
+  var writestream = gfs.createWriteStream({
+    filename: req.body.subject,
+    mode: 'w',
+    content_type: req.files.file.mimetype,
+    metadata: req.body.message
+  });
+  fs.createReadStream(req.files.file.tempFilePath).pipe(writestream);
+  writestream.on('close', function(file) {
+    fs.unlink(req.files.file.tempFilePath, function(err) {
+      // handle error
+      console.log('success!');
+      res.status(200).json(file);
+    });
+  });
+};
+
+// router.get('/download/:id', function(req, res) {
+//     var readstream = gfs.createReadStream({
+//        _id: req.params.id
+//     });
+//     readstream.pipe(res);
+//  });

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Grid = require('gridfs-stream');
 
 // DB Config
 const db = require('./config/keys').mongoURI;
@@ -22,13 +21,14 @@ conn.on('connected', () => {
 conn.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Connect GridFS and Mongo
-Grid.mongo = mongoose.mongo;
+// Grid.mongo = mongoose.mongo;
 
 // Init gfs
-let gfs;
+// var gfs;
 
-conn.once('open', () => {
-  // Init stream
-  gfs = Grid(conn.db);
-  gfs.collection('uploads');
-});
+// conn.on('open', () => {
+// Init stream
+//   gfs = Grid(conn.db);
+//   module.exports = gfs;
+// });
+module.exports = { connection: conn };

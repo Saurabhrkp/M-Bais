@@ -3,11 +3,11 @@ const router = express.Router();
 const { ensureAdmin, forwardAdmin } = require('../config/auth');
 const admin = require('../controllers/adminController');
 
-// Load User model
-const User = require('../models/User');
-
 // Admin planel
 router.get('/', ensureAdmin, admin.panel);
+
+// Admin planel
+router.post('/upload', ensureAdmin, admin.upload);
 
 // Login Page
 router.get('/login', forwardAdmin, admin.loginGet);
