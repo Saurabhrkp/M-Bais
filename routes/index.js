@@ -7,6 +7,6 @@ const index = require('../controllers/indexController');
 router.get('/', forwardAuthenticated, index.welcome);
 
 // Welcome Page
-router.get('/hello', ensureAuthenticated, index.hello);
+router.get('/dashboard', ensureAuthenticated, index.dashboard);
 
 module.exports = router;

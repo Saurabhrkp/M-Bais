@@ -1,23 +1,36 @@
-<h1 class="mt-4">Dashboard</h1>
-<p class="lead mb-3">Welcome <%= user.name %></p>
-<a href="/users/logout" class="btn btn-secondary">Logout</a>
+<%- include('./partials/navbar') %>
 
-<div>
-  <% include ./partials/messages %>
-  <hr />
-  <form action="/passcode" method="POST">
-    <div class="text mb-3">
-      <label for="name">Name</label>
-      <input
-        type="name"
-        id="name"
-        name="name"
-        class="form-control"
-        placeholder="Enter passcode"
-        value="<%= typeof name != 'undefined' ? name : '' %>"
-      />
-      <!-- <input type="text" name="text" id="text" class="custom-text-label" /> -->
-      <input type="submit" value="Submit" class="btn btn-primary " />
+<!-- slider_area_start -->
+<div class="slider_area ">
+  <div
+    class="single_slider d-flex align-items-center justify-content-center slider_bg_1"
+  >
+    <div class="container">
+      <div class="row align-items-center justify-content-center">
+        <div class="col-xl-6 col-md-6">
+          <div class="illastrator_png">
+            <img src="/img/banner/edu_ilastration.png" alt="" />
+          </div>
+        </div>
+        
+          <div class="search_from col-xl-6  col-md-6 col-lg-6">
+            <div class="search_box">
+              <h1>Search Panel</h1>
+              <form action="#" class="search_box">
+                <input type="text" placeholder="Enter your mail" />
+                <button type="submit">Search</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </form>
+  </div>
+</div>
+<!-- slider_area_end -->
+
+<div class="container-fluid">
+  <h1 class="mt-4">Dashboard</h1>
+  <p class="lead mb-3">Welcome <%= user.name %></p>
+  <a href="/users/logout" class="btn btn-secondary">Logout</a>
 </div>
