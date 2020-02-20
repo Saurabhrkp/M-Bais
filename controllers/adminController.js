@@ -1,14 +1,14 @@
-// Load User model
-const User = require('../models/User');
+// Load Admin model
+const Admin = require('../models/Admin');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 
 exports.loginGet = function(req, res, next) {
-  res.render('adminlogin');
+  res.render('login');
 };
 
 exports.registerGet = function(req, res, next) {
-  res.render('adminregister');
+  res.render('register');
 };
 
 exports.registerPost = function(req, res, next) {
@@ -37,7 +37,7 @@ exports.registerPost = function(req, res, next) {
       password2
     });
   } else {
-    User.findOne({ email: email }).then(user => {
+    Admin.findOne({ email: email }).then(user => {
       if (user) {
         errors.push({ msg: 'Email already exists' });
         res.render('register', {
@@ -48,7 +48,7 @@ exports.registerPost = function(req, res, next) {
           password2
         });
       } else {
-        const newUser = new User({
+        const newUser = new Admin({
           name,
           email,
           password,
@@ -77,8 +77,7 @@ exports.registerPost = function(req, res, next) {
 };
 
 exports.loginPost = function(req, res, next) {
-  requireAdmin();
-  passport.authenticate('local', {
+  passport.authenticate('Admin', {
     successRedirect: '/admin',
     failureRedirect: '/admin/login',
     failureFlash: true
@@ -94,26 +93,3 @@ exports.logout = function(req, res, next) {
 exports.panel = function(req, res, next) {
   res.render('upload', { user: req.user });
 };
-
-function requireAdmin() {
-  return function(req, res, next) {
-    const { email } = req.body;
-    User.findOne({ email }, function(err, user) {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        // Do something - the user does not exist
-        req.flash('error_msg', 'That email is not registered');
-        console.log('User dont exists');
-      }
-      if (user.role !== 'Admin') {
-        // Do something - the user exists but is no admin user
-        req.flash('error_msg', 'You are not Admin');
-        res.redirect('/admin/login');
-      }
-      // Hand over control to passport
-      next();
-    });
-  };
-}

@@ -16,11 +16,15 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Program on nodemon",
+            "runtimeExecutable": "nodemon",
+            "program": "${workspaceFolder}\\bin\\www",
+            "restart": true,
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
             "skipFiles": [
                 "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}\\bin\\www"
+            ]
         }
     ]
 }

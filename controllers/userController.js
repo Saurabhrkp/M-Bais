@@ -77,7 +77,7 @@ exports.registerPost = function(req, res, next) {
 };
 
 exports.loginPost = function(req, res, next) {
-  passport.authenticate('local', {
+  passport.authenticate('Student', {
     successRedirect: '/dashboard',
     failureRedirect: '/users/login',
     failureFlash: true
