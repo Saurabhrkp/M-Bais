@@ -76,7 +76,7 @@ exports.registerPost = function(req, res, next) {
 
 exports.loginPost = function(req, res, next) {
   passport.authenticate('local', {
-    successRedirect: '/api',
+    successRedirect: '/',
     failureRedirect: '/users/login',
     failureFlash: true
   })(req, res, next);
@@ -85,5 +85,5 @@ exports.loginPost = function(req, res, next) {
 exports.logout = function(req, res, next) {
   req.logout();
   req.flash('success_msg', 'You are logged out');
-  res.redirect('/api');
+  res.redirect('/');
 };

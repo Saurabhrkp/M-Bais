@@ -10,7 +10,10 @@ mongoose.connect(db, {
   useUnifiedTopology: true
 });
 
+// Promise of mongoose
 mongoose.Promise = global.Promise;
+
+// MongoDB Connection
 var conn = mongoose.connection;
 
 conn.on('connected', () => {

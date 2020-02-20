@@ -7,6 +7,7 @@ const path = require('path');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
+const fileupload = require('express-fileupload');
 const app = express();
 
 // Passport Config
@@ -17,14 +18,25 @@ require('./database');
 
 // EJS
 app.use(expressLayouts);
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Logging
+app.use(logger('dev'));
+
+// File upload middleware
+app.use(fileupload());
+
+// Body parser for Forms
+app.use(bodyParser.json());
 
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
+
+// Method overrider
+app.use(methodOverride('_method'));
+
+// Servering static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Express session
 app.use(
@@ -51,7 +63,7 @@ app.use(function(req, res, next) {
 });
 
 // Routes
-app.use('/api', require('./routes/index.js'));
+app.use('/', require('./routes/index.js'));
 app.use('/users', require('./routes/users.js'));
 
 module.exports = app;
