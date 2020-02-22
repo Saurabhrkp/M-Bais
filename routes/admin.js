@@ -3,11 +3,17 @@ const router = express.Router();
 const { ensureAdmin, forwardAdmin } = require('../config/auth');
 const admin = require('../controllers/adminController');
 
-// Admin planel
+// Admin panel
 router.get('/', ensureAdmin, admin.panel);
 
-// Admin planel
+// Admin panel post
 router.post('/upload', ensureAdmin, admin.upload);
+
+//
+router.get('/viewAll', ensureAdmin, admin.viewAll);
+
+//
+router.get('/files/:filename', ensureAdmin, admin.getOne);
 
 // Login Page
 router.get('/login', forwardAdmin, admin.loginGet);

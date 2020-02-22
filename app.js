@@ -23,11 +23,13 @@ app.set('view engine', 'ejs');
 // Logging
 app.use(logger('dev'));
 
-// File upload middleware
+// File upload middleware with options
 app.use(
   fileupload({
     useTempFiles: true,
-    tempFileDir: '/tmp/'
+    tempFileDir: '/tmp/',
+    safeFileNames: true,
+    preserveExtension: true
   })
 );
 

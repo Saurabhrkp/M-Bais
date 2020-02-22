@@ -20,15 +20,4 @@ conn.on('connected', () => {
 });
 conn.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-// Connect GridFS and Mongo
-// Grid.mongo = mongoose.mongo;
-
-// Init gfs
-// var gfs;
-
-// conn.on('open', () => {
-// Init stream
-//   gfs = Grid(conn.db);
-//   module.exports = gfs;
-// });
 module.exports = { connection: conn };

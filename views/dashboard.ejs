@@ -12,15 +12,18 @@
             <img src="/img/banner/edu_ilastration.png" alt="" />
           </div>
         </div>
-        
-          <div class="search_from col-xl-6  col-md-6 col-lg-6">
-            <div class="search_box">
-              <h1>Search Panel</h1>
-              <form action="#" class="search_box">
-                <input type="text" placeholder="Enter your mail" />
-                <button type="submit">Search</button>
-              </form>
-            </div>
+        <div class="search_from col-xl-6  col-md-6 col-lg-6">
+          <div class="search_box">
+            <h1>Search Panel</h1>
+            <h2>Hi <%= user.name %></h2>
+            <form action="./search" method="GET" class="search_box">
+              <input
+                type="text"
+                name="search"
+                placeholder="Enter your keywords"
+              />
+              <button type="submit">Search</button>
+            </form>
           </div>
         </div>
       </div>
@@ -29,8 +32,4 @@
 </div>
 <!-- slider_area_end -->
 
-<div class="container-fluid">
-  <h1 class="mt-4">Dashboard</h1>
-  <p class="lead mb-3">Welcome <%= user.name %></p>
-  <a href="/users/logout" class="btn btn-secondary">Logout</a>
-</div>
+<%- include('./partials/footer') %>

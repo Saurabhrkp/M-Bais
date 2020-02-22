@@ -4,6 +4,8 @@ const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
 
 // DB Config
 const connection = require('../database').connection;
@@ -17,7 +19,7 @@ Grid.mongo = mongoose.mongo;
 // Init gfs
 var gfs;
 
-connection.on('open', () => {
+connection.once('open', () => {
   // Init stream
   gfs = Grid(connection.db);
 });
@@ -114,19 +116,65 @@ exports.panel = function(req, res, next) {
 };
 
 exports.upload = function(req, res, next) {
+  const buf = crypto.randomBytes(8);
+  const filename = buf.toString('hex') + path.extname(req.files.file.name);
   var writestream = gfs.createWriteStream({
-    filename: req.body.subject,
+    filename: filename,
     mode: 'w',
     content_type: req.files.file.mimetype,
-    metadata: req.body.message
+    metadata: req.body,
+    aliases: req.body.aliases
   });
   fs.createReadStream(req.files.file.tempFilePath).pipe(writestream);
   writestream.on('close', function(file) {
     fs.unlink(req.files.file.tempFilePath, function(err) {
       // handle error
       console.log('success!');
-      res.status(200).json(file);
+      res.redirect('./viewAll');
     });
+  });
+};
+
+exports.viewAll = function(req, res, next) {
+  gfs.files.find().toArray((err, files) => {
+    // Check if files
+    if (!files || files.length === 0) {
+      res.render('view', { files: false, user: req.user });
+    } else {
+      files.map(file => {
+        if (
+          file.contentType === 'image/jpeg' ||
+          file.contentType === 'image/png'
+        ) {
+          file.isImage = true;
+        } else {
+          file.isImage = false;
+        }
+      });
+      res.render('view', { files: files, user: req.user });
+    }
+  });
+};
+
+exports.getOne = function(req, res, next) {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    // Check if the input is a valid image or not
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+
+    // If the file exists then check whether it is an image
+    if (file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
+      // Read output to browser
+      const readstream = gfs.createReadStream(file);
+      readstream.pipe(res);
+    } else {
+      res.status(404).json({
+        err: 'Not an image'
+      });
+    }
   });
 };
 
