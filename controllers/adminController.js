@@ -25,11 +25,11 @@ connection.once('open', () => {
 });
 
 exports.loginGet = function(req, res, next) {
-  res.render('login');
+  res.render('login', { page: { title: 'Login to M-Bias' } });
 };
 
 exports.registerGet = function(req, res, next) {
-  res.render('register');
+  res.render('register', { page: { title: 'Register new User to M-Bias' } });
 };
 
 exports.registerPost = function(req, res, next) {
@@ -112,7 +112,7 @@ exports.logout = function(req, res, next) {
 };
 
 exports.panel = function(req, res, next) {
-  res.render('upload', { user: req.user });
+  res.render('upload', { page: { title: 'Login to M-Bias' }, user: req.user });
 };
 
 exports.upload = function(req, res, next) {
@@ -130,7 +130,12 @@ exports.upload = function(req, res, next) {
     fs.unlink(req.files.file.tempFilePath, function(err) {
       // handle error
       console.log('success!');
-      res.redirect('./viewAll');
+      req.flash('success_msg', 'File Succesfully Uploaded');
+      res.render('viewOne', {
+        page: { title: 'Successfully Uploaded ||M-Bias' },
+        files: file,
+        user: req.user
+      });
     });
   });
 };
@@ -151,7 +156,11 @@ exports.viewAll = function(req, res, next) {
           file.isImage = false;
         }
       });
-      res.render('view', { files: files, user: req.user });
+      res.render('view', {
+        page: { title: 'All Post and Videos ||M-Bias' },
+        files: files,
+        user: req.user
+      });
     }
   });
 };

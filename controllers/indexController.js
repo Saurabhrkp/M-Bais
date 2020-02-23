@@ -20,15 +20,18 @@ connection.on('open', () => {
 });
 
 exports.welcome = function(req, res, next) {
-  res.render('welcome', { user: false });
+  res.render('welcome', { page: { title: 'Welcome to M-Bias' }, user: false });
 };
 
 exports.dashboard = function(req, res, next) {
-  res.render('dashboard', { user: req.user });
+  res.render('dashboard', {
+    page: { title: 'Login to M-Bias' },
+    user: req.user
+  });
 };
 
 exports.contact = function(req, res, next) {
-  res.render('contact', { user: false });
+  res.render('contact', { page: { title: 'Login to M-Bias' }, user: false });
 };
 
 exports.search = function(req, res, next) {
@@ -41,7 +44,11 @@ exports.search = function(req, res, next) {
       });
     }
 
-    res.render('viewOne', { files: file, user: req.user });
+    res.render('viewOne', {
+      page: { title: 'Login to M-Bias' },
+      files: file,
+      user: req.user
+    });
     // Read output to browser
     // const readstream = gfs.createReadStream(file);
     // readstream.pipe(res);

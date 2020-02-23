@@ -15,9 +15,8 @@ mongoose.Promise = global.Promise;
 // MongoDB Connection
 var conn = mongoose.connection;
 
-conn.on('connected', () => {
-  console.log(`MongoDB is Connected on ${db}`);
-});
+// Console logs for connection and error
+conn.on('connected', () => console.log(`MongoDB is Connected on ${db}`));
 conn.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 module.exports = { connection: conn };

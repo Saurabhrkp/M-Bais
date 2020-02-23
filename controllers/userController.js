@@ -4,11 +4,11 @@ const passport = require('passport');
 const bcrypt = require('bcryptjs');
 
 exports.loginGet = function(req, res, next) {
-  res.render('login');
+  res.render('login', { page: { title: 'Login to M-Bias' } });
 };
 
 exports.registerGet = function(req, res, next) {
-  res.render('register');
+  res.render('register', { page: { title: 'Register to M-Bias' } });
 };
 
 exports.registerPost = function(req, res, next) {
