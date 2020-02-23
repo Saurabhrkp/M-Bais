@@ -15,6 +15,12 @@ router.get('/viewAll', ensureAdmin, admin.viewAll);
 //
 router.get('/files/:filename', ensureAdmin, admin.getOne);
 
+//
+router.get('/view/:id', ensureAdmin, admin.viewOne);
+
+//
+router.delete('/delete/:id', ensureAdmin, admin.delete);
+
 // Login Page
 router.get('/login', forwardAdmin, admin.loginGet);
 

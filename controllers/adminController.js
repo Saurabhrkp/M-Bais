@@ -51,6 +51,7 @@ exports.registerPost = function(req, res, next) {
 
   if (errors.length > 0) {
     res.render('register', {
+      page: { title: 'Register new User to M-Bias' },
       errors,
       name,
       email,
@@ -165,6 +166,22 @@ exports.viewAll = function(req, res, next) {
   });
 };
 
+exports.viewOne = function(req, res, next) {
+  gfs.files.findOne(new mongoose.Types.ObjectId(req.params.id), (err, file) => {
+    // Check if the input is a valid image or not
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+    res.render('adminview', {
+      page: { title: file.metadata.subject },
+      files: file,
+      user: req.user
+    });
+  });
+};
+
 exports.getOne = function(req, res, next) {
   gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
     // Check if the input is a valid image or not
@@ -184,6 +201,14 @@ exports.getOne = function(req, res, next) {
         err: 'Not an image'
       });
     }
+  });
+};
+
+exports.delete = function(req, res, next) {
+  gfs.remove(new mongoose.Types.ObjectId(req.params.id), (err, data) => {
+    if (err) return res.status(404).json({ err: err.message });
+    req.flash('success_msg', 'Deleted Successfully');
+    res.redirect('/admin');
   });
 };
 

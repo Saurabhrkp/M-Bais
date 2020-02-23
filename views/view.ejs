@@ -34,8 +34,8 @@
               </a>
             </div>
             <div class="blog_details">
-              <a class="d-inline-block" href="">
-                <h2><%= file.filename %></h2>
+              <a class="d-inline-block" href="./view/<%= file._id %>">
+                <h2><%= file.metadata.subject %></h2>
               </a>
               <p>
                 <%= file.metadata.message %>

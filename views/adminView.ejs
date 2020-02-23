@@ -1,4 +1,4 @@
-<%- include('./partials/navbar') %>
+<%- include('./partials/adminnavbar') %>
 
 <!-- bradcam_area_start -->
 <div class="courses_details_banner">
@@ -16,6 +16,7 @@
       <div class="col-xl-12 col-lg-12">
         <div class="courses_sidebar">
           <div class="col-xl-12 col-lg-12">
+            <% if(files.contentType === 'video/mp4') {%>
             <video
               id="my-video"
               class="video-js vjs-fluid video_thumb"
@@ -35,6 +36,13 @@
                 >
               </p>
             </video>
+            <% } else { %>
+            <img
+              class="card-img rounded-0"
+              src="/admin/files/<%= files.filename %>"
+              alt="<%= files.filename %>"
+            />
+            <% } %>
             <br />
             <br />
           </div>
@@ -42,7 +50,12 @@
           <p>
             <%= files.metadata.message %>
           </p>
-          <h3 class="second_title">Course Outline</h3>
+          <form
+            method="POST"
+            action="../delete/<%= files._id %>?_method=DELETE"
+          >
+            <button class="btn btn-danger btn-block mt-4">Delete</button>
+          </form>
         </div>
       </div>
     </div>
