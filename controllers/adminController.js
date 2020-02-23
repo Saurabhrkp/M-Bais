@@ -113,7 +113,7 @@ exports.logout = function(req, res, next) {
 };
 
 exports.panel = function(req, res, next) {
-  res.render('upload', { page: { title: 'Login to M-Bias' }, user: req.user });
+  res.render('upload', { page: { title: 'M-Bias' }, user: req.user });
 };
 
 exports.upload = function(req, res, next) {
@@ -145,7 +145,11 @@ exports.viewAll = function(req, res, next) {
   gfs.files.find().toArray((err, files) => {
     // Check if files
     if (!files || files.length === 0) {
-      res.render('view', { files: false, user: req.user });
+      res.render('viewadmin', {
+        page: { title: 'All Post and Videos ||M-Bias' },
+        files: false,
+        user: req.user
+      });
     } else {
       files.map(file => {
         if (
@@ -157,7 +161,7 @@ exports.viewAll = function(req, res, next) {
           file.isImage = false;
         }
       });
-      res.render('view', {
+      res.render('viewadmin', {
         page: { title: 'All Post and Videos ||M-Bias' },
         files: files,
         user: req.user
