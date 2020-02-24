@@ -20,6 +20,9 @@ router.get('/files/:filename', ensureAdmin, admin.getOne);
 router.get('/view/:id', ensureAdmin, admin.viewOne);
 
 //
+router.get('/play/:filename', ensureAdmin, admin.play);
+
+//
 router.delete('/delete/:id', ensureAdmin, admin.delete);
 
 // Login Page

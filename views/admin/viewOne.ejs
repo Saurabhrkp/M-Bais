@@ -1,4 +1,4 @@
-<%- include('./partials/adminnavbar') %>
+<%- include('./adminnavbar.ejs') %>
 
 <!-- bradcam_area_start -->
 <div class="courses_details_banner">
@@ -15,17 +15,24 @@
     <div class="row">
       <div class="col-xl-12 col-lg-12">
         <div class="courses_sidebar">
+          <% include ../partials/messages %>
           <div class="col-xl-12 col-lg-12">
             <% if(files.contentType === 'video/mp4') {%>
             <video
               id="my-video"
-              class="video-js vjs-fluid video_thumb"
+              class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered video_thumb"
               controls
               preload="auto"
               data-setup="{}"
             >
-              <source src="/play/<%= files.filename %>" type="video/mp4" />
-              <source src="/play/<%= files.filename %>" type="video/mov" />
+              <source
+                src="/admin/play/<%= files.filename %>"
+                type="video/mp4"
+              />
+              <source
+                src="/admin/play/<%= files.filename %>"
+                type="video/mov"
+              />
               <p class="vjs-no-js">
                 To view this video please enable JavaScript, and consider
                 upgrading to a web browser that
@@ -46,13 +53,16 @@
             <br />
             <br />
           </div>
-          <h1><%= files.metadata.aliases %></h1>
+          <a href="#" class="blog_item_date">
+            <h3><%= files.uploadDate.toDateString() %></h3>
+          </a>
+          <h1><%= files.metadata[0] %></h1>
           <p>
-            <%= files.metadata.message %>
+            <%= files.metadata[1] %>
           </p>
           <form
             method="POST"
-            action="../delete/<%= files._id %>?_method=DELETE"
+            action="/admin/delete/<%= files._id %>?_method=DELETE"
           >
             <button class="btn btn-danger btn-block mt-4">Delete</button>
           </form>
@@ -61,4 +71,4 @@
     </div>
   </div>
 </div>
-<%- include('./partials/footer') %>
+<%- include('../partials/footer.ejs') %>

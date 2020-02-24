@@ -20,11 +20,11 @@ connection.once('open', () => {
 });
 
 exports.loginGet = function(req, res, next) {
-  res.render('login', { page: { title: 'Login to M-Bias' } });
+  res.render('login', { page: { title: 'Admin Login to M-Bias' } });
 };
 
 exports.registerGet = function(req, res, next) {
-  res.render('register', { page: { title: 'Register new User to M-Bias' } });
+  res.render('register', { page: { title: 'Register new Admin to M-Bias' } });
 };
 
 exports.registerPost = function(req, res, next) {
@@ -104,16 +104,16 @@ exports.loginPost = function(req, res, next) {
 exports.logout = function(req, res, next) {
   req.logout();
   req.flash('success_msg', 'You are logged out');
-  res.redirect('/admin');
+  res.redirect('/');
 };
 
 exports.panel = function(req, res, next) {
-  res.render('upload', { page: { title: 'M-Bias' }, user: req.user });
+  res.render('./admin/upload', { page: { title: 'M-Bias' }, user: req.user });
 };
 
 exports.upload = function(req, res, next) {
   req.flash('success_msg', 'File Succesfully Uploaded');
-  res.render('viewOne', {
+  res.render('./admin/viewOne', {
     page: { title: 'Successfully Uploaded ||M-Bias' },
     files: req.file,
     user: req.user
@@ -124,7 +124,7 @@ exports.viewAll = function(req, res, next) {
   gfs.files.find().toArray((err, files) => {
     // Check if files
     if (!files || files.length === 0) {
-      res.render('viewadmin', {
+      res.render('./admin/viewAll', {
         page: { title: 'All Post and Videos ||M-Bias' },
         files: false,
         user: req.user
@@ -140,7 +140,7 @@ exports.viewAll = function(req, res, next) {
           file.isImage = false;
         }
       });
-      res.render('viewadmin', {
+      res.render('./admin/viewAll', {
         page: { title: 'All Post and Videos ||M-Bias' },
         files: files,
         user: req.user
@@ -154,7 +154,7 @@ exports.viewOne = function(req, res, next) {
     // Check if the input is a valid image or not
     if (!file || file.length === 0) {
       return res
-        .render('adminview', {
+        .render('./admin/viewOne', {
           page: { title: 'No file exists' },
           files: false,
           user: req.user
@@ -164,11 +164,36 @@ exports.viewOne = function(req, res, next) {
           err: 'No file exists'
         });
     }
-    res.render('adminview', {
-      page: { title: file.metadata.subject },
+    res.render('./admin/viewOne', {
+      page: { title: file.metadata[0] },
       files: file,
       user: req.user
     });
+  });
+};
+
+exports.play = function(req, res, next) {
+  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
+    // Check if the input is a valid image or not
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+
+    // If the file exists then check whether it is an image
+    if (
+      file.contentType === 'image/jpeg' ||
+      file.contentType === 'image/png' ||
+      file.contentType === 'video/mp4'
+    ) {
+      // Read output to browser
+      StreamGridFile(req, res, file);
+    } else {
+      res.status(404).json({
+        err: 'Not available'
+      });
+    }
   });
 };
 
@@ -195,12 +220,71 @@ exports.getOne = function(req, res, next) {
 };
 
 exports.delete = function(req, res, next) {
-  gfs.remove(new mongoose.Types.ObjectId(req.params.id), (err, data) => {
-    if (err) return res.status(404).json({ err: err.message });
+  gfs.findOne({ _id: req.params.id }, (err, file) => {
+    gfs.deleteOne({ _id: file._id }, (err, data) => {
+      if (err) return res.status(404).json({ err: err.message });
+    });
     req.flash('success_msg', 'Deleted Successfully');
     res.redirect('/admin');
   });
 };
+
+function StreamGridFile(req, res, files) {
+  var file = files.filename;
+  gfs.findOne(
+    {
+      filename: file
+    },
+    function(err, file) {
+      if (err) {
+        return res.status(400).send({
+          err: errorHandler.getErrorMessage(err)
+        });
+      }
+      if (!file) {
+        return res.status(404).send({
+          err: 'No se encontró el registro especificado.'
+        });
+      }
+
+      if (req.headers['range']) {
+        var parts = req.headers['range'].replace(/bytes=/, '').split('-');
+        var partialstart = parts[0];
+        var partialend = parts[1];
+
+        var start = parseInt(partialstart, 10);
+        var end = partialend ? parseInt(partialend, 10) : file.length - 1;
+        var chunksize = end - start + 1;
+
+        res.writeHead(206, {
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunksize,
+          'Content-Range': 'bytes ' + start + '-' + end + '/' + file.length,
+          'Content-Type': file.contentType
+        });
+
+        gfs
+          .createReadStream({
+            _id: file._id,
+            range: {
+              startPos: start,
+              endPos: end
+            }
+          })
+          .pipe(res);
+      } else {
+        res.header('Content-Length', file.length);
+        res.header('Content-Type', file.contentType);
+
+        gfs
+          .createReadStream({
+            _id: file._id
+          })
+          .pipe(res);
+      }
+    }
+  );
+}
 
 // router.get('/download/:id', function(req, res) {
 //     var readstream = gfs.createReadStream({

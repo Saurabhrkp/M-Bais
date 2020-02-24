@@ -1297,12 +1297,19 @@ h3 {
 /* line 33, C:/Users/SPN Graphics/Desktop/CL September/Edu mark/207 Education/HTML/scss/_slider.scss */
 .slider_area .single_slider .slider_info h3 {
   color: #ffffff;
-  font-size: 45px;
+  font-size: 35px;
   text-transform: capitalize;
   font-weight: 400;
-  line-height: 70px;
-  margin-bottom: 50px;
-  margin-top: 10px;
+  line-height: 50px;
+}
+
+/* line 33, C:/Users/SPN Graphics/Desktop/CL September/Edu mark/207 Education/HTML/scss/_slider.scss */
+.slider_area .single_slider .slider_info h1 {
+  color: #ffffff;
+  font-size: 35px;
+  text-transform: capitalize;
+  font-weight: 400;
+  line-height: 50px;
 }
 
 @media (max-width: 767px) {

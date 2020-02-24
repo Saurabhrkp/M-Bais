@@ -63,4 +63,17 @@ app.use('/', require('./routes/index.js'));
 app.use('/users', require('./routes/users.js'));
 app.use('/admin', require('./routes/admin'));
 
+// Error Handler Route
+// app.use((req, res, next) => {
+//   const err = new Error('404 - Not Found');
+//   err.status = 404;
+//   next(err);
+// });
+
+// // Error Handler
+// app.use((err, req, res, next) => {
+//   res.status(err.status || 500);
+//   res.render('404', { page: { title: err.message } });
+// });
+
 module.exports = app;

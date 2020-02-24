@@ -42,7 +42,7 @@ exports.search = function(req, res, next) {
   gfs.files.findOne({ aliases: regex }, (err, file) => {
     // Check if the input is a valid image or not
     if (!file || file.length === 0) {
-      return res.render('viewOne', {
+      return res.render('result', {
         page: {
           title: 'Search results not found|| M-Bias',
           search: req.query.search
@@ -51,15 +51,11 @@ exports.search = function(req, res, next) {
         user: req.user
       });
     }
-
-    res.render('viewOne', {
+    res.render('result', {
       page: { title: 'Search results || M-Bias', search: req.query.search },
       files: file,
       user: req.user
     });
-    // Read output to browser
-    // const readstream = gfs.createReadStream(file);
-    // readstream.pipe(res);
   });
 };
 
@@ -104,7 +100,7 @@ exports.show = function(req, res, next) {
       const readstream = gfs.createReadStream(file);
       readstream.pipe(res);
       res.render('video', {
-        page: { title: file.metadata.subject },
+        page: { title: file.metadata[0] },
         files: file,
         user: req.user
       });

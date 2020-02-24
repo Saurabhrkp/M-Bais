@@ -18,7 +18,7 @@
           <div class="col-xl-12 col-lg-12">
             <video
               id="my-video"
-              class="video-js vjs-fluid video_thumb"
+              class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered video_thumb"
               controls
               preload="auto"
               data-setup="{}"
@@ -38,9 +38,9 @@
             <br />
             <br />
           </div>
-          <h1><%= files.metadata.aliases %></h1>
+          <h1><%= files.metadata[0] %></h1>
           <p>
-            <%= files.metadata.message %>
+            <%= files.metadata[1] %>
           </p>
           <h3 class="second_title">Course Outline</h3>
         </div>

@@ -1,8 +1,8 @@
-<%- include('./partials/adminnavbar') %>
+<%- include('./adminnavbar.ejs') %>
 
 <!-- bradcam_area_start -->
 <div class="bradcam_area breadcam_bg overlay2">
-  <h3>blog</h3>
+  <h3>All Post</h3>
 </div>
 <!-- bradcam_area_end -->
 
@@ -29,25 +29,16 @@
               />
               <% } %>
               <a href="#" class="blog_item_date">
-                <h3>15</h3>
-                <p>Jan</p>
+                <h3><%= file.uploadDate.toDateString() %></h3>
               </a>
             </div>
             <div class="blog_details">
               <a class="d-inline-block" href="./view/<%= file._id %>">
-                <h2><%= file.metadata.subject %></h2>
+                <h2><%= file.metadata[0] %></h2>
               </a>
               <p>
-                <%= file.metadata.message %>
+                <%= file.metadata[1] %>
               </p>
-              <ul class="blog-info-link">
-                <li>
-                  <a href="#"><i class="fa fa-user"></i> Travel, Lifestyle</a>
-                </li>
-                <li>
-                  <a href="#"><i class="fa fa-comments"></i> 03 Comments</a>
-                </li>
-              </ul>
             </div>
           </article>
           <%}) %> <% } else { %>
@@ -267,4 +258,4 @@
 </section>
 <!--================Blog Area =================-->
 
-<%- include('./partials/footer') %>
+<%- include('../partials/footer') %>
