@@ -1,10 +1,11 @@
 <%- include('./partials/navbar') %>
 
+<!-- This page is not in use -->
+
 <!-- bradcam_area_start -->
 <div class="bradcam_area breadcam_bg overlay2">
   <h3>
-    Showing search results for: <br />
-    <%= page.search %>
+    <%= post.subject %>
   </h3>
 </div>
 <!-- bradcam_area_end -->
@@ -13,44 +14,40 @@
 <section class="blog_area section-padding">
   <div class="container">
     <div class="row">
-      <div class="col-lg-8 mb-5 mb-lg-0">
+      <div class="col-lg-12 mb-5 mb-lg-0">
         <div class="blog_left_sidebar">
-          <% if(files) { %>
+          <% if(post) { %>
           <article class="blog_item">
             <% include ./partials/messages %>
             <div class="blog_item_img">
-              <% if (files.contentType==="image/jpeg") { %>
-              <img
-                class="card-img rounded-0"
-                src="./files/<%= files.filename %>"
-                alt="<%= files.filename %>"
-              />
-              <%} else { %>
-              <img
-                class="card-img rounded-0"
-                src="/img/blog/gif-for-video.gif"
-                alt="<%= files.filename %>"
-              />
-              <% } %>
+              <img class="card-img rounded-0" src="/img/blog/itsPost.gif" />
               <a href="#" class="blog_item_date">
-                <h3><%= files.uploadDate.toDateString() %></h3>
+                <h3><%= post.date.toDateString() %></h3>
               </a>
             </div>
             <div class="blog_details">
-              <a class="d-inline-block" href="./show/<%= files.filename %>">
-                <h2><%= files.metadata.subject %></h2>
+              <a class="d-inline-block" href="">
+                <h2><%= post.subject %></h2>
               </a>
               <p>
-                <%= files.metadata.message %>
+                <%= post.message %>
               </p>
               <ul class="blog-info-link">
                 <li>
-                  <a href="#"><i class="fa fa-user"></i> Travel, Lifestyle</a>
+                  <a href="#"
+                    ><i class="fa fa-user"></i><%= post._user.name %></a
+                  >
                 </li>
                 <li>
                   <a href="#"><i class="fa fa-comments"></i> 03 Comments</a>
                 </li>
               </ul>
+              <form
+                method="POST"
+                action="/delete/<%= post._id %>?_method=DELETE"
+              >
+                <button class="btn btn-danger btn-block mt-4">Delete</button>
+              </form>
             </div>
           </article>
           <% } else { %>
@@ -68,98 +65,6 @@
             </div>
           </article>
           <% } %>
-
-          <nav class="blog-pagination justify-content-center d-flex">
-            <ul class="pagination">
-              <li class="page-item">
-                <a href="#" class="page-link" aria-label="Previous">
-                  <i class="ti-angle-left"></i>
-                </a>
-              </li>
-              <li class="page-item">
-                <a href="#" class="page-link">1</a>
-              </li>
-              <li class="page-item active">
-                <a href="#" class="page-link">2</a>
-              </li>
-              <li class="page-item">
-                <a href="#" class="page-link" aria-label="Next">
-                  <i class="ti-angle-right"></i>
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-      <div class="col-lg-4">
-        <div class="blog_right_sidebar">
-          <aside class="single_sidebar_widget search_widget">
-            <form action="./search" method="GET" class="search_box">
-              <div class="form-group">
-                <div class="input-group mb-3">
-                  <input
-                    type="text"
-                    name="search"
-                    class="form-control"
-                    placeholder="Enter your keywords"
-                    onfocus="this.placeholder = ''"
-                    onblur="this.placeholder = 'Enter your keywords'"
-                  />
-                  <div class="input-group-append">
-                    <button class="btn" type="button">
-                      <i class="ti-search"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <button
-                class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn"
-                type="submit"
-              >
-                Search
-              </button>
-            </form>
-          </aside>
-
-          <aside class="single_sidebar_widget popular_post_widget">
-            <h3 class="widget_title">Recent Post</h3>
-            <div class="media post_item">
-              <img src="/img/post/post_1.png" alt="post" />
-              <div class="media-body">
-                <a href="single-blog.html">
-                  <h3>From life was you fish...</h3>
-                </a>
-                <p>January 12, 2019</p>
-              </div>
-            </div>
-            <div class="media post_item">
-              <img src="/img/post/post_2.png" alt="post" />
-              <div class="media-body">
-                <a href="single-blog.html">
-                  <h3>The Amazing Hubble</h3>
-                </a>
-                <p>02 Hours ago</p>
-              </div>
-            </div>
-            <div class="media post_item">
-              <img src="/img/post/post_3.png" alt="post" />
-              <div class="media-body">
-                <a href="single-blog.html">
-                  <h3>Astronomy Or Astrology</h3>
-                </a>
-                <p>03 Hours ago</p>
-              </div>
-            </div>
-            <div class="media post_item">
-              <img src="/img/post/post_4.png" alt="post" />
-              <div class="media-body">
-                <a href="single-blog.html">
-                  <h3>Asteroids telescope</h3>
-                </a>
-                <p>01 Hours ago</p>
-              </div>
-            </div>
-          </aside>
         </div>
       </div>
     </div>

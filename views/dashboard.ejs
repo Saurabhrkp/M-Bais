@@ -14,8 +14,9 @@
         </div>
         <div class="search_from col-xl-6  col-md-6 col-lg-6">
           <div class="search_box">
-            <h1>Search Panel</h1>
-            <h2>Hi <%= user.name %></h2>
+            <% include ./partials/messages %>
+            <h1>Hi <%= user.name %></h1>
+            <h2>Search Panel</h2>
             <form action="./search" method="GET" class="search_box">
               <input
                 type="text"

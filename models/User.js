@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+let Schema = mongoose.Schema;
+
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -20,7 +22,13 @@ const UserSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true
-  }
+  },
+  posts: [
+    {
+      type: Schema.ObjectId,
+      ref: 'Post'
+    }
+  ]
 });
 
 const User = mongoose.model('User', UserSchema);

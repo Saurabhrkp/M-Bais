@@ -13,6 +13,21 @@ router.get('/dashboard', ensureAuthenticated, index.dashboard);
 router.get('/search', ensureAuthenticated, index.search);
 
 //
+router.get('/makepost', ensureAuthenticated, index.post_get);
+
+//
+router.post('/makepost', ensureAuthenticated, index.post_post);
+
+//
+router.get('/postOne/:id', ensureAuthenticated, index.onepost);
+
+//
+router.get('/postAll', ensureAuthenticated, index.allpost);
+
+//
+router.delete('/delete/:id', ensureAuthenticated, index.delete);
+
+//
 router.get('/files/:filename', ensureAuthenticated, index.getOne);
 
 //

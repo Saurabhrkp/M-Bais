@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const User = require('../models/User');
+const Post = require('../models/Post');
+var async = require('async');
 
 // DB Config
 const connection = require('../database').connection;
@@ -135,6 +138,132 @@ exports.play = function(req, res, next) {
       });
     }
   });
+};
+
+// Display detail page for a specific Pdf.
+exports.onepost = function(req, res, next) {
+  async.parallel(
+    {
+      post: function(callback) {
+        Post.findById(req.params.id)
+          .populate('_user')
+          .exec(callback);
+      }
+    },
+    function(err, results) {
+      if (err) {
+        return next(err);
+      }
+      if (results.post == null) {
+        // No results.
+        var err = new Error('Post not found');
+        err.status = 404;
+        return next(err);
+      }
+      // Successful, so render.
+      res.render('viewOne', {
+        page: { title: results.post.subject },
+        post: results.post,
+        user: req.user
+      });
+    }
+  );
+};
+
+exports.delete = function(req, res, next) {
+  const ID = req.params.id;
+  const UserID = req.user.id;
+  async.parallel({}, function(err, results) {
+    if (err) {
+      return next(err);
+    } else {
+      User.findOneAndUpdate(UserID, { $pull: { posts: ID } }, function(err) {
+        if (err) {
+          return res.status(500).json({ error: 'error in deleting address' });
+        }
+      });
+      Post.findOneAndDelete(
+        req.params.id,
+        function deletephoto(err) {
+          if (err) {
+            return next(err);
+          }
+          req.flash('success_msg', 'Succesfully deleted');
+          res.redirect('/dashboard');
+        },
+        console.log(`Deleted from photos`)
+      );
+    }
+  });
+};
+
+exports.allpost = function(req, res) {
+  const userID = req.user._id;
+  async.parallel(
+    {
+      posts: function(callback) {
+        User.findById(userID, 'posts')
+          .populate('posts')
+          .exec(callback);
+      }
+    },
+    function(err, results) {
+      if (err) {
+        return next(err);
+      }
+      if (results.posts == null) {
+        // No results.
+        res.redirect('dashboard');
+      }
+      // Successful, so render.
+      res.render('viewpost', {
+        page: { title: 'All Post by you' },
+        user: req.user,
+        posts: results.posts
+      });
+    }
+  );
+};
+
+exports.post_get = function(req, res) {
+  res.render('makepost', {
+    page: { title: 'Make a new Post' },
+    user: req.user
+  });
+};
+
+exports.post_post = function(req, res) {
+  const { subject, message, aliases } = req.body;
+  const errors = [];
+  if (!subject || !message) {
+    errors.push({ msg: 'Please enter Subject & Content' });
+  }
+  if (errors.length > 0) {
+    res.render('makepost', {
+      errors,
+      subject,
+      message,
+      aliases,
+      page: { title: 'Make a new Post' }
+    });
+  } else {
+    const post = new Post({
+      subject,
+      message,
+      aliases,
+      _user: req.user._id
+    });
+    post.save(function(err, post) {
+      if (err) return res.send(err);
+      User.findById(req.user._id, function(err, user) {
+        if (err) return res.send(err);
+        user.posts.push(post._id);
+        user.save();
+      });
+      req.flash('success_msg', 'You are have Uploaded');
+      res.redirect('/postAll');
+    });
+  }
 };
 
 function StreamGridFile(req, res, files) {

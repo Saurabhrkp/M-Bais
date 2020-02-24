@@ -1,0 +1,78 @@
+<%- include('./partials/navbar.ejs') %>
+
+<!-- bradcam_area_start -->
+<div class="bradcam_area breadcam_bg overlay2">
+  <h3>Upload new Post or Video</h3>
+</div>
+<!-- bradcam_area_end -->
+
+<!-- ================ contact section start ================= -->
+<section class="contact-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h2 class="contact-title">Make a Post</h2>
+      </div>
+      <div class="col-lg-8">
+        <form
+          class="form-contact contact_form"
+          action=""
+          method="post"
+          id="contactForm"
+          novalidate="novalidate"
+        >
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <input
+                  class="form-control"
+                  name="subject"
+                  id="subject"
+                  type="text"
+                  onfocus="this.placeholder = ''"
+                  onblur="this.placeholder = 'Enter Subject'"
+                  placeholder="Enter Subject"
+                />
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <input
+                  class="form-control"
+                  name="aliases"
+                  id="aliases"
+                  type="text"
+                  onfocus="this.placeholder = ''"
+                  onblur="this.placeholder = 'Enter aliases'"
+                  placeholder="Enter aliases"
+                />
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <textarea
+                  class="form-control w-100"
+                  name="message"
+                  id="message"
+                  cols="30"
+                  rows="9"
+                  onfocus="this.placeholder = ''"
+                  onblur="this.placeholder = 'Enter Message'"
+                  placeholder=" Content"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mt-3">
+            <button type="submit" class="button button-contactForm boxed-btn">
+              Upload
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ================ contact section end ================= -->
+
+<%- include('./partials/footer.ejs') %>
