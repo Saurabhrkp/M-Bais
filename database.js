@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const multer = require('multer');
+const GridFsStorage = require('multer-gridfs-storage');
+const crypto = require('crypto');
 
 // DB Config
 const db = require('./config/keys').mongoURI;
@@ -13,10 +16,40 @@ mongoose.connect(db, {
 mongoose.Promise = global.Promise;
 
 // MongoDB Connection
-var conn = mongoose.connection;
+var connectionURI = mongoose.connection;
 
 // Console logs for connection and error
-conn.on('connected', () => console.log(`MongoDB is Connected on ${db}`));
-conn.on('error', console.error.bind(console, 'MongoDB connection error:'));
+connectionURI.on('connected', () =>
+  console.log(`MongoDB is Connected on ${db}`)
+);
+connectionURI.on(
+  'error',
+  console.error.bind(console, 'MongoDB connection error:')
+);
 
-module.exports = { connection: conn };
+// Storage
+const storage = new GridFsStorage({
+  db: connectionURI,
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(8, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = buf.toString('hex');
+        const fileInfo = {
+          filename: filename,
+          metadata: [req.body.subject, req.body.message],
+          aliases: req.body.aliases
+        };
+        resolve(fileInfo);
+      });
+    });
+  }
+});
+
+const upload = multer({
+  storage
+});
+
+module.exports = { connection: connectionURI, uploadFile: upload };

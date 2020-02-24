@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router();
 const { ensureAdmin, forwardAdmin } = require('../config/auth');
 const admin = require('../controllers/adminController');
+const upload = require('../database').uploadFile;
 
 // Admin panel
 router.get('/', ensureAdmin, admin.panel);
 
 // Admin panel post
-router.post('/upload', ensureAdmin, admin.upload);
+router.post('/upload', upload.single('file'), ensureAdmin, admin.upload);
 
 //
 router.get('/viewAll', ensureAdmin, admin.viewAll);

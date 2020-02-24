@@ -3,11 +3,6 @@ const Admin = require('../models/Admin');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-
-// DB Config
 const connection = require('../database').connection;
 
 // Grid fs
@@ -117,27 +112,11 @@ exports.panel = function(req, res, next) {
 };
 
 exports.upload = function(req, res, next) {
-  const buf = crypto.randomBytes(8);
-  const filename = buf.toString('hex') + path.extname(req.files.file.name);
-  var writestream = gfs.createWriteStream({
-    filename: filename,
-    mode: 'w',
-    content_type: req.files.file.mimetype,
-    metadata: req.body,
-    aliases: req.body.aliases
-  });
-  fs.createReadStream(req.files.file.tempFilePath).pipe(writestream);
-  writestream.on('close', function(file) {
-    fs.unlink(req.files.file.tempFilePath, function(err) {
-      // handle error
-      console.log('success!');
-      req.flash('success_msg', 'File Succesfully Uploaded');
-      res.render('viewOne', {
-        page: { title: 'Successfully Uploaded ||M-Bias' },
-        files: file,
-        user: req.user
-      });
-    });
+  req.flash('success_msg', 'File Succesfully Uploaded');
+  res.render('viewOne', {
+    page: { title: 'Successfully Uploaded ||M-Bias' },
+    files: req.file,
+    user: req.user
   });
 };
 
@@ -174,9 +153,16 @@ exports.viewOne = function(req, res, next) {
   gfs.files.findOne(new mongoose.Types.ObjectId(req.params.id), (err, file) => {
     // Check if the input is a valid image or not
     if (!file || file.length === 0) {
-      return res.status(404).json({
-        err: 'No file exists'
-      });
+      return res
+        .render('adminview', {
+          page: { title: 'No file exists' },
+          files: false,
+          user: req.user
+        })
+        .status(404)
+        .json({
+          err: 'No file exists'
+        });
     }
     res.render('adminview', {
       page: { title: file.metadata.subject },

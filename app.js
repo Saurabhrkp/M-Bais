@@ -7,7 +7,6 @@ const path = require('path');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
-const fileupload = require('express-fileupload');
 const app = express();
 
 // Passport Config
@@ -22,16 +21,6 @@ app.set('view engine', 'ejs');
 
 // Logging
 app.use(logger('dev'));
-
-// File upload middleware with options
-app.use(
-  fileupload({
-    useTempFiles: true,
-    tempFileDir: '/tmp/',
-    safeFileNames: true,
-    preserveExtension: true
-  })
-);
 
 // Body parser for Forms
 app.use(bodyParser.json());
