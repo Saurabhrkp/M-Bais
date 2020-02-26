@@ -221,7 +221,7 @@ exports.getOne = function(req, res, next) {
 
 exports.delete = function(req, res, next) {
   gfs.findOne({ _id: req.params.id }, (err, file) => {
-    gfs.deleteOne({ _id: file._id }, (err, data) => {
+    gfs.remove({ _id: file._id }, (err, data) => {
       if (err) return res.status(404).json({ err: err.message });
     });
     req.flash('success_msg', 'Deleted Successfully');
