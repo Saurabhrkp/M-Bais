@@ -42,12 +42,14 @@
                   <a href="#"><i class="fa fa-comments"></i> 03 Comments</a>
                 </li>
               </ul>
+              <% if(isPost) { %>
               <form
                 method="POST"
                 action="/delete/<%= post._id %>?_method=DELETE"
               >
                 <button class="btn btn-danger btn-block mt-4">Delete</button>
               </form>
+              <% } %>
             </div>
           </article>
           <% } else { %>

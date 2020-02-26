@@ -62,6 +62,40 @@ exports.search = function(req, res, next) {
   });
 };
 
+exports.searchPost = function(req, res, next) {
+  const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+  async.parallel(
+    {
+      post: function(callback) {
+        Post.find({ aliases: regex })
+          .populate('_user')
+          .exec(callback);
+      }
+    },
+    function(err, results) {
+      if (err) {
+        return next(err);
+      }
+      if (!results.post || results.post.length === 0) {
+        return res.render('viewpost', {
+          page: {
+            title: 'Search results not found|| M-Bias',
+            search: req.query.search
+          },
+          posts: false,
+          user: req.user
+        });
+      }
+      // Successful, so render.
+      res.render('viewpost', {
+        page: { title: 'Search results || M-Bias', search: req.query.search },
+        posts: results.post,
+        user: req.user
+      });
+    }
+  );
+};
+
 exports.getOne = function(req, res, next) {
   gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
     // Check if the input is a valid image or not
@@ -160,11 +194,13 @@ exports.onepost = function(req, res, next) {
         err.status = 404;
         return next(err);
       }
+      const isPost = results.post._user.id === req.user.id ? true : false;
       // Successful, so render.
       res.render('viewOne', {
         page: { title: results.post.subject },
         post: results.post,
-        user: req.user
+        user: req.user,
+        isPost: isPost
       });
     }
   );
@@ -198,12 +234,11 @@ exports.delete = function(req, res, next) {
 };
 
 exports.allpost = function(req, res) {
-  const userID = req.user._id;
   async.parallel(
     {
       posts: function(callback) {
-        User.findById(userID, 'posts')
-          .populate('posts')
+        Post.find()
+          .populate('_user')
           .exec(callback);
       }
     },

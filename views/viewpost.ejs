@@ -12,7 +12,7 @@
     <div class="row">
       <div class="col-lg-8 mb-5 mb-lg-0">
         <div class="blog_left_sidebar">
-          <% if(posts) { %> <% posts.posts.forEach(function(post) {%>
+          <% if(posts) { %> <% posts.forEach(function(post) {%>
           <article class="blog_item">
             <div class="blog_item_img">
               <img
@@ -82,15 +82,16 @@
       <div class="col-lg-4">
         <div class="blog_right_sidebar">
           <aside class="single_sidebar_widget search_widget">
-            <form action="#">
+            <form action="./search-post" method="GET" class="search_box">
               <div class="form-group">
                 <div class="input-group mb-3">
                   <input
                     type="text"
+                    name="search"
                     class="form-control"
-                    placeholder="Search Keyword"
+                    placeholder="Enter your keywords"
                     onfocus="this.placeholder = ''"
-                    onblur="this.placeholder = 'Search Keyword'"
+                    onblur="this.placeholder = 'Enter your keywords'"
                   />
                   <div class="input-group-append">
                     <button class="btn" type="button">

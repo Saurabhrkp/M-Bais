@@ -13,6 +13,9 @@ router.get('/dashboard', ensureAuthenticated, index.dashboard);
 router.get('/search', ensureAuthenticated, index.search);
 
 //
+router.get('/search-post', ensureAuthenticated, index.searchPost);
+
+//
 router.get('/makepost', ensureAuthenticated, index.post_get);
 
 //
