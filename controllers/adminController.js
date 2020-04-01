@@ -112,12 +112,20 @@ exports.panel = function(req, res, next) {
 };
 
 exports.upload = function(req, res, next) {
-  req.flash('success_msg', 'File Succesfully Uploaded');
-  res.render('./admin/viewOne', {
-    page: { title: 'Successfully Uploaded ||M-Bias' },
-    files: req.file,
-    user: req.user
-  });
+  if (req.file && req.file.gcsUrl) {
+    req.flash('success_msg', 'File Succesfully Uploaded');
+    res.render('./admin/upload', {
+      page: { title: 'Successfully Uploaded ||M-Bias' },
+      files: req.file,
+      user: req.user
+    });
+  } else {
+    req.flash('error_msg', 'File Upload Failed');
+    res.render('./admin/upload', {
+      page: { title: 'Failed to Upload ||M-Bias' },
+      user: req.user
+    });
+  }
 };
 
 exports.viewAll = function(req, res, next) {

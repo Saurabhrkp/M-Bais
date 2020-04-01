@@ -8,7 +8,13 @@ const upload = require('../database').uploadFile;
 router.get('/', ensureAdmin, admin.panel);
 
 // Admin panel post
-router.post('/upload', upload.single('file'), ensureAdmin, admin.upload);
+router.post(
+  '/upload',
+  upload.single('file'),
+  sendUploadToGCS,
+  ensureAdmin,
+  admin.upload
+);
 
 //
 router.get('/viewAll', ensureAdmin, admin.viewAll);
