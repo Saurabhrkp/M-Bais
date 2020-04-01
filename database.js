@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const multer = require('multer');
-const GridFsStorage = require('multer-gridfs-storage');
-const crypto = require('crypto');
+const Multer = require('multer');
+const { Storage } = require('@google-cloud/storage');
+const path = require('path');
 
 // DB Config
 const db = require('./config/keys').mongoURI;
