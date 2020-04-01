@@ -117,10 +117,13 @@ exports.upload = function(req, res, next) {
 };
 
 exports.viewAll = function(req, res, next) {
-  gfs.files.find().toArray((err, files) => {
-    // Check if files
-    if (!files || files.length === 0) {
-      res.render('./admin/viewAll', {
+  bucket
+    .getFiles()
+    .then(data => {
+      const files = data[0];
+      // Check if files
+      if (!files || files.length === 0) {
+        res.render('./admin/viewAll', {
         page: { title: 'All Post and Videos ||M-Bias' },
         files: false,
         user: req.user
@@ -128,21 +131,29 @@ exports.viewAll = function(req, res, next) {
     } else {
       files.map(file => {
         if (
-          file.contentType === 'image/jpeg' ||
-          file.contentType === 'image/png'
-        ) {
-          file.isImage = true;
-        } else {
-          file.isImage = false;
-        }
-      });
+            file.metadata.metadata.contentType === 'image/jpeg' ||
+            file.metadata.contentType === 'image/png'
+          ) {
+            file.isImage = true;
+          } else {
+            file.isImage = false;
+          }
+        });
+        res.render('./admin/viewAll', {
+          page: { title: 'All Post and Videos ||M-Bias' },
+          files: files,
+          user: req.user
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error.msg);
       res.render('./admin/viewAll', {
-        page: { title: 'All Post and Videos ||M-Bias' },
-        files: files,
+        page: { title: 'Error in Loading ||M-Bias' },
+        files: null,
         user: req.user
       });
-    }
-  });
+    });
 };
 
 exports.viewOne = function(req, res, next) {
