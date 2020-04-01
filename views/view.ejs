@@ -36,11 +36,11 @@
               </a>
             </div>
             <div class="blog_details">
-              <a class="d-inline-block" href="./view/<%= file._id %>">
-                <h2><%= file.metadata.subject %></h2>
+              <a class="d-inline-block" href="./view/<%= file.name %>">
+                <h2><%= file.metadata.metadata.subject %></h2>
               </a>
               <p>
-                <%= file.metadata.message %>
+                <%= file.metadata.metadata.message %>
               </p>
               <ul class="blog-info-link">
                 <li>

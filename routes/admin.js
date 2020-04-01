@@ -30,7 +30,7 @@ router.get('/view/:id', ensureAdmin, admin.viewOne);
 router.get('/play/:filename', ensureAdmin, admin.play);
 
 //
-router.delete('/delete/:id', ensureAdmin, admin.delete);
+router.delete('/delete/:filename', ensureAdmin, admin.delete);
 
 // Login Page
 router.get('/login', forwardAdmin, admin.loginGet);

@@ -33,7 +33,10 @@
               />
               <% } %>
               <a href="#" class="blog_item_date">
-                <h3><%= files.metadata.timeCreated.toDateString() %></h3>
+                <h3>
+                  <% let date=new Date(files.metadata.timeCreated); %> <%=
+                  date.toDateString() %>
+                </h3>
               </a>
             </div>
             <div class="blog_details">

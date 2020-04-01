@@ -48,7 +48,10 @@
             <br />
           </div>
           <a href="#" class="blog_item_date">
-            <h3><%= files.metadata.timeCreated.toDateString() %></h3>
+            <h3>
+              <% let date=new Date(files.metadata.timeCreated); %> <%=
+              date.toDateString() %>
+            </h3>
           </a>
           <h1><%= files.metadata.metadata.subject %></h1>
           <p>
@@ -56,7 +59,7 @@
           </p>
           <form
             method="POST"
-            action="/admin/delete/<%= files._id %>?_method=DELETE"
+            action="/admin/delete/<%= files.name %>?_method=DELETE"
           >
             <button class="btn btn-danger btn-block mt-4">Delete</button>
           </form>
