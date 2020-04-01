@@ -4,10 +4,10 @@ const { Storage } = require('@google-cloud/storage');
 const path = require('path');
 
 // DB Config
-const db = require('./config/keys').mongoURI;
+const { mongoURI, bucketURI } = require('./config/keys');
 
 // Connect to MongoDB
-mongoose.connect(db, {
+mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -20,36 +20,29 @@ var connectionURI = mongoose.connection;
 
 // Console logs for connection and error
 connectionURI.on('connected', () =>
-  console.log(`MongoDB is Connected on ${db}`)
+  console.log(`MongoDB is Connected on ${mongoURI}`)
 );
 connectionURI.on(
   'error',
   console.error.bind(console, 'MongoDB connection error:')
 );
 
-// Storage
-const storage = new GridFsStorage({
-  db: connectionURI,
-  file: (req, file) => {
-    return new Promise((resolve, reject) => {
-      crypto.randomBytes(8, (err, buf) => {
-        if (err) {
-          return reject(err);
-        }
-        const filename = buf.toString('hex');
-        const fileInfo = {
-          filename: filename,
-          metadata: [req.body.subject, req.body.message],
-          aliases: req.body.aliases
-        };
-        resolve(fileInfo);
-      });
-    });
+// Instantiate a storage client
+const storage = new Storage({
+  keyFilename: path.join(__dirname, './config/mech-bais-5b0dc5e1fe76.json'),
+  projectId: 'mech-bais'
+});
+
+// Multer is required to process file uploads and make them available via
+// req.files.
+const upload = Multer({
+  storage: Multer.memoryStorage(),
+  limits: {
+    fileSize: 50 * 1024 * 1024 // no larger than 20mb, you can change as needed.
   }
 });
 
-const upload = multer({
-  storage
-});
+// A bucket is a container for objects (files).
+const bucket = storage.bucket(bucketURI);
 
-module.exports = { connection: connectionURI, uploadFile: upload };
+module.exports = { bucket: bucket, uploadFile: upload };
