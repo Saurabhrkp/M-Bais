@@ -23,8 +23,8 @@
               preload="auto"
               data-setup="{}"
             >
-              <source src="/play/<%= files.filename %>" type="video/mp4" />
-              <source src="/play/<%= files.filename %>" type="video/mov" />
+              <source src="/play/<%= files.name %>" type="video/mp4" />
+              <source src="/play/<%= files.name %>" type="video/mov" />
               <p class="vjs-no-js">
                 To view this video please enable JavaScript, and consider
                 upgrading to a web browser that
@@ -38,9 +38,9 @@
             <br />
             <br />
           </div>
-          <h1><%= files.metadata[0] %></h1>
+          <h1><%= files.metadata.metadata.subject %></h1>
           <p>
-            <%= files.metadata[1] %>
+            <%= files.metadata.metadata.message %>
           </p>
           <h3 class="second_title">Course Outline</h3>
         </div>

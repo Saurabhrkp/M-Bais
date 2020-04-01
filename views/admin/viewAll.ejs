@@ -18,29 +18,32 @@
               <% if (file.isImage) { %>
               <img
                 class="card-img rounded-0"
-                src="./files/<%= file.filename %>"
-                alt="<%= file.filename %>"
+                src="./files/<%= file.name %>"
+                alt="<%= file.name %>"
               />
               <%} else { %>
               <img
                 class="card-img rounded-0"
                 src="/img/blog/gif-for-video.gif"
-                alt="<%= file.filename %>"
+                alt="<%= file.name %>"
               />
               <% } %>
               <a href="#" class="blog_item_date">
-                <h3><%= file.uploadDate.toDateString() %></h3>
+                <h3>
+                  <% let date=new Date(file.metadata.timeCreated); %> <%=
+                  date.toDateString() %>
+                </h3>
               </a>
             </div>
             <div class="blog_details">
               <a class="d-inline-block" href="./view/<%= file._id %>">
-                <h2><%= file.metadata[0] %></h2>
+                <h2><%= file.metadata.metadata.subject %></h2>
               </a>
               <p>
-                <%= file.metadata[1] %>
+                <%= file.metadata.metadata.message %>
               </p>
               <p>
-                <%= file.aliases %>
+                <%= file.metadata.metadata.aliases %>
               </p>
             </div>
           </article>

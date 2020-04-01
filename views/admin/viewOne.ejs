@@ -17,7 +17,7 @@
         <div class="courses_sidebar">
           <% include ../partials/messages %>
           <div class="col-xl-12 col-lg-12">
-            <% if(files.contentType === 'video/mp4') {%>
+            <% if(files.metadata.contentType === 'video/mp4') {%>
             <video
               id="my-video"
               class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered video_thumb"
@@ -25,14 +25,8 @@
               preload="auto"
               data-setup="{}"
             >
-              <source
-                src="/admin/play/<%= files.filename %>"
-                type="video/mp4"
-              />
-              <source
-                src="/admin/play/<%= files.filename %>"
-                type="video/mov"
-              />
+              <source src="/admin/play/<%= files.name %>" type="video/mp4" />
+              <source src="/admin/play/<%= files.name %>" type="video/mov" />
               <p class="vjs-no-js">
                 To view this video please enable JavaScript, and consider
                 upgrading to a web browser that
@@ -46,19 +40,19 @@
             <% } else { %>
             <img
               class="card-img rounded-0"
-              src="/admin/files/<%= files.filename %>"
-              alt="<%= files.filename %>"
+              src="/admin/files/<%= files.name %>"
+              alt="<%= files.name %>"
             />
             <% } %>
             <br />
             <br />
           </div>
           <a href="#" class="blog_item_date">
-            <h3><%= files.uploadDate.toDateString() %></h3>
+            <h3><%= files.metadata.timeCreated.toDateString() %></h3>
           </a>
-          <h1><%= files.metadata[0] %></h1>
+          <h1><%= files.metadata.metadata.subject %></h1>
           <p>
-            <%= files.metadata[1] %>
+            <%= files.metadata.metadata.message %>
           </p>
           <form
             method="POST"

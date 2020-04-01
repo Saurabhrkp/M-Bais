@@ -20,14 +20,14 @@
               <% if (file.isImage) { %>
               <img
                 class="card-img rounded-0"
-                src="./files/<%= file.filename %>"
-                alt="<%= file.filename %>"
+                src="./files/<%= file.name %>"
+                alt="<%= file.name %>"
               />
               <%} else { %>
               <img
                 class="card-img rounded-0"
                 src="/img/blog/gif-for-video.gif"
-                alt="<%= file.filename %>"
+                alt="<%= file.name %>"
               />
               <% } %>
               <a href="#" class="blog_item_date">
