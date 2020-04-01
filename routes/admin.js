@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { ensureAdmin, forwardAdmin } = require('../config/auth');
 const admin = require('../controllers/adminController');
+const { sendUploadToGCS } = require('../controllers/gcsHelper');
 const upload = require('../database').uploadFile;
 
 // Admin panel

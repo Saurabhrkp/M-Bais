@@ -3,21 +3,9 @@ const Admin = require('../models/Admin');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
-const connection = require('../database').connection;
 
-// Grid fs
-const Grid = require('gridfs-stream');
-
-// Connect GridFS and Mongo
-Grid.mongo = mongoose.mongo;
-
-// Init gfs
-var gfs;
-
-connection.once('open', () => {
-  // Init stream
-  gfs = Grid(connection.db);
-});
+// DB Config
+const { bucket } = require('../database');
 
 exports.loginGet = function(req, res, next) {
   res.render('login', { page: { title: 'Admin Login to M-Bias' } });
@@ -206,25 +194,37 @@ exports.play = function(req, res, next) {
 };
 
 exports.getOne = function(req, res, next) {
-  gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
-    // Check if the input is a valid image or not
-    if (!file || file.length === 0) {
-      return res.status(404).json({
-        err: 'No file exists'
-      });
-    }
-
-    // If the file exists then check whether it is an image
-    if (file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
-      // Read output to browser
-      const readstream = gfs.createReadStream(file);
-      readstream.pipe(res);
-    } else {
+  const files = bucket.file(req.params.filename);
+  files
+    .get()
+    .then(data => {
+      const file = data[0];
+      // Check if the input is a valid image or not
+      if (!file || file.length === 0) {
+        return res.status(404).json({
+          err: 'No file exists'
+        });
+      }
+      // If the file exists then check whether it is an image
+      if (
+        file.metadata.contentType === 'image/jpeg' ||
+        file.metadata.contentType === 'image/png'
+      ) {
+        // Read output to browser
+        const readstream = file.createReadStream();
+        readstream.pipe(res);
+      } else {
+        res.status(404).json({
+          err: 'Not an image'
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
       res.status(404).json({
         err: 'Not an image'
       });
-    }
-  });
+    });
 };
 
 exports.delete = function(req, res, next) {
