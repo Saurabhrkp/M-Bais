@@ -45,6 +45,7 @@ exports.search = (req, res, next) => {
       res.render('result', {
         page: { title: 'Search results || M-Bias', search: req.query.search },
         files: file,
+        video: video,
         user: req.user
       });
     });
@@ -138,6 +139,7 @@ exports.show = (req, res, next) => {
         res.render('video', {
           page: { title: file.metadata.metadata.subject },
           files: file,
+          video: video,
           user: req.user
         });
       } else {
