@@ -1,7 +1,10 @@
 // Load Admin model
 const Admin = require('../models/Admin');
+// Load Video model
+const Video = require('../models/Video');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
+const { StreamCloudFile, escapeRegex } = require('./gcsHelper');
 
 // DB Config
 const { bucket } = require('../database');
@@ -130,7 +133,7 @@ exports.viewAll = (req, res, next) => {
       } else {
         files.map(file => {
           if (
-            file.metadata.metadata.contentType === 'image/jpeg' ||
+            file.metadata.contentType === 'image/jpeg' ||
             file.metadata.contentType === 'image/png'
           ) {
             file.isImage = true;
@@ -156,23 +159,30 @@ exports.viewAll = (req, res, next) => {
 };
 
 exports.viewOne = (req, res, next) => {
-  const files = bucket.file(req.params.id);
-  files.get().then(data => {
-    const file = data[0];
-    // Check if the input is a valid image or not
-    if (!file || file.metadata.size === 0) {
-      return res
-        .render('./admin/viewOne', {
-          page: { title: 'No file exists' },
-          files: false,
-          user: req.user
-        })
-        .status(404);
-    }
-    res.render('./admin/viewOne', {
-      page: { title: file.metadata.metadata.subject },
-      files: file,
-      user: req.user
+  Video.findOne({ filename: req.params.id }).then(video => {
+    const files = bucket.file(video.filename);
+    files.get().then(data => {
+      const file = data[0];
+      // Check if the input is a valid image or not
+      if (!file || file.metadata.size === 0) {
+        return res
+          .render('./admin/viewOne', {
+            page: {
+              title: 'No file exists'
+            },
+            files: false,
+            user: req.user
+          })
+          .status(404);
+      }
+      res.render('./admin/viewOne', {
+        page: {
+          title: file.metadata.subject
+        },
+        files: file,
+        video: video,
+        user: req.user
+      });
     });
   });
 };
@@ -205,104 +215,51 @@ exports.play = (req, res, next) => {
 };
 
 exports.getOne = (req, res, next) => {
-  const files = bucket.file(req.params.filename);
-  files
-    .get()
-    .then(data => {
-      const file = data[0];
-      // Check if the input is a valid image or not
-      if (!file || file.metadata.size === 0) {
-        return res.status(404).json({
-          err: 'No file exists'
-        });
-      }
-      // If the file exists then check whether it is an image
-      if (
-        file.metadata.contentType === 'image/jpeg' ||
-        file.metadata.contentType === 'image/png'
-      ) {
-        // Read output to browser
-        const readstream = file.createReadStream();
-        readstream.pipe(res);
-      } else {
+  const regex = new RegExp(escapeRegex(req.params.filename), 'gi');
+  Video.findOne({ filename: regex }).then(video => {
+    const files = bucket.file(video.filename);
+    files
+      .get()
+      .then(data => {
+        const file = data[0];
+        // Check if the input is a valid image or not
+        if (!file || file.metadata.size === 0) {
+          return res.status(404).json({
+            err: 'No file exists'
+          });
+        }
+        // If the file exists then check whether it is an image
+        if (
+          file.metadata.contentType === 'image/jpeg' ||
+          file.metadata.contentType === 'image/png'
+        ) {
+          // Read output to browser
+          const readstream = file.createReadStream();
+          readstream.pipe(res);
+        } else {
+          res.status(404).json({
+            err: 'Not an image'
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
         res.status(404).json({
           err: 'Not an image'
         });
-      }
-    })
-    .catch(error => {
-      console.log(error);
-      res.status(404).json({
-        err: 'Not an image'
       });
-    });
+  });
 };
 
 exports.delete = (req, res, next) => {
-  const file = bucket.file(req.params.filename);
-  file
-    .delete()
-    .then(() => {
-      req.flash('success_msg', 'Deleted Successfully');
-      res.redirect('/admin');
-    })
-    .catch(err => res.status(404).json({ err: err.message }));
+  Video.findOneAndDelete({ filename: req.params.filename }).then(() => {
+    const file = bucket.file(req.params.filename);
+    file
+      .delete()
+      .then(() => {
+        req.flash('success_msg', 'Deleted Successfully');
+        res.redirect('/admin');
+      })
+      .catch(err => res.status(404).json({ err: err.message }));
+  });
 };
-
-const StreamCloudFile = (req, res, files) => {
-  const video = bucket.file(files.name);
-  video
-    .get()
-    .then(data => {
-      const file = data[0];
-      if (req.headers['range']) {
-        var parts = req.headers['range'].replace(/bytes=/, '').split('-');
-        var partialstart = parts[0];
-        var partialend = parts[1];
-
-        var start = parseInt(partialstart, 10);
-        var end = partialend
-          ? parseInt(partialend, 10)
-          : file.metadata.size - 1;
-        var chunksize = end - start + 1;
-
-        res.writeHead(206, {
-          'Accept-Ranges': 'bytes',
-          'Content-Length': chunksize,
-          'Content-Range':
-            'bytes ' + start + '-' + end + '/' + file.metadata.size,
-          'Content-Type': file.metadata.contentType
-        });
-        file
-          .createReadStream({
-            name: file.name,
-            range: {
-              startPos: start,
-              endPos: end
-            }
-          })
-          .pipe(res);
-      } else {
-        res.header('Content-Length', file.metadata.size);
-        res.header('Content-Type', file.metadata.contentType);
-
-        file
-          .createReadStream({
-            name: file.name
-          })
-          .pipe(res);
-      }
-    })
-    .catch(err => {
-      res.status(400).send({
-        err: errorHandler.getErrorMessage(err)
-      });
-    });
-};
-
-// router.get('/download/:id', function(req, res) {
-//     var readstream = gfs.createReadStream({
-//        name: req.params.id
-//     });
-//     readstream.pipe(res);
-//  });
