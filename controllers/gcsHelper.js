@@ -1,5 +1,7 @@
-const { bucket } = require('../database');
+// Load Admin model
+const Video = require('../models/Video');
 const path = require('path');
+const { bucket } = require('../database');
 
 const getPublicUrl = (bucketName, fileName) =>
   `https://storage.googleapis.com/${bucketName}/${fileName}`;
@@ -18,6 +20,7 @@ const copyFileToGCS = (localFilePath, options) => {
 };
 
 const sendUploadToGCS = (req, res, next) => {
+  const { subject, message, aliases } = req.body;
   if (!req.file) {
     return next();
   }
@@ -28,9 +31,9 @@ const sendUploadToGCS = (req, res, next) => {
     metadata: {
       contentType: req.file.mimetype,
       metadata: {
-        subject: req.body.subject,
-        message: req.body.message,
-        aliases: req.body.aliases
+        subject: subject,
+        message: message,
+        aliases: aliases
       }
     }
   });
@@ -42,14 +45,80 @@ const sendUploadToGCS = (req, res, next) => {
     req.file.cloudStorageObject = gcsFileName;
     file.makePublic();
     req.file.gcsUrl = getPublicUrl(bucket.name, gcsFileName);
-    console.log(req.file.gcsUrl);
+    const video = new Video({
+      subject,
+      message,
+      aliases,
+      videoURL: req.file.gcsUrl,
+      filename: gcsFileName
+    });
+    video.save((err, video) => {
+      if (err) return res.send(err);
+    });
     next();
   });
   stream.end(req.file.buffer);
 };
 
+const StreamCloudFile = (req, res, files) => {
+  const video = bucket.file(files.name);
+  video
+    .get()
+    .then(data => {
+      const file = data[0];
+      if (req.headers['range']) {
+        var parts = req.headers['range'].replace(/bytes=/, '').split('-');
+        var partialstart = parts[0];
+        var partialend = parts[1];
+
+        var start = parseInt(partialstart, 10);
+        var end = partialend
+          ? parseInt(partialend, 10)
+          : file.metadata.size - 1;
+        var chunksize = end - start + 1;
+
+        res.writeHead(206, {
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunksize,
+          'Content-Range':
+            'bytes ' + start + '-' + end + '/' + file.metadata.size,
+          'Content-Type': file.metadata.contentType
+        });
+        file
+          .createReadStream({
+            name: file.name,
+            range: {
+              startPos: start,
+              endPos: end
+            }
+          })
+          .pipe(res);
+      } else {
+        res.header('Content-Length', file.metadata.size);
+        res.header('Content-Type', file.metadata.contentType);
+
+        file
+          .createReadStream({
+            name: file.name
+          })
+          .pipe(res);
+      }
+    })
+    .catch(err => {
+      res.status(400).send({
+        err: errorHandler.getErrorMessage(err)
+      });
+    });
+};
+
+const escapeRegex = text => {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+};
+
 module.exports = {
   sendUploadToGCS: sendUploadToGCS,
   getPublicUrl: getPublicUrl,
-  copyFileToGCS: copyFileToGCS
+  copyFileToGCS: copyFileToGCS,
+  StreamCloudFile: StreamCloudFile,
+  escapeRegex: escapeRegex
 };
