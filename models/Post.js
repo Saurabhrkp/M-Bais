@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-let Schema = mongoose.Schema;
-
 const PostSchema = new mongoose.Schema({
   subject: {
     type: String,
@@ -20,7 +18,7 @@ const PostSchema = new mongoose.Schema({
     default: Date.now
   },
   _user: {
-    type: Schema.ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref: 'User',
     required: true
   }

@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-let Schema = mongoose.Schema;
-
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -25,7 +23,7 @@ const UserSchema = new mongoose.Schema({
   },
   posts: [
     {
-      type: Schema.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: 'Post'
     }
   ]
