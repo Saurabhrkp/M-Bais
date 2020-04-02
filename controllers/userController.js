@@ -3,15 +3,15 @@ const User = require('../models/User');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 
-exports.loginGet = function(req, res, next) {
+exports.loginGet = (req, res, next) => {
   res.render('login', { page: { title: 'Login to M-Bias' } });
 };
 
-exports.registerGet = function(req, res, next) {
+exports.registerGet = (req, res, next) => {
   res.render('register', { page: { title: 'Register to M-Bias' } });
 };
 
-exports.registerPost = function(req, res, next) {
+exports.registerPost = (req, res, next) => {
   const { name, email, password, password2 } = req.body;
   const role = 'Student';
   let errors = [];
@@ -76,7 +76,7 @@ exports.registerPost = function(req, res, next) {
   }
 };
 
-exports.loginPost = function(req, res, next) {
+exports.loginPost = (req, res, next) => {
   passport.authenticate('Student', {
     successRedirect: '/dashboard',
     failureRedirect: '/users/login',
@@ -84,7 +84,7 @@ exports.loginPost = function(req, res, next) {
   })(req, res, next);
 };
 
-exports.logout = function(req, res, next) {
+exports.logout = (req, res, next) => {
   req.logout();
   req.flash('success_msg', 'You are logged out');
   res.redirect('/');
