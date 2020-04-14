@@ -1,21 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const user = require('../controllers/userController');
-const { forwardAuthenticated } = require('../config/auth');
+const userController = require('../controllers/userController');
+const { catchErrors } = require('../controllers/controlHelper');
 
-// Login Page
-router.get('/login', forwardAuthenticated, user.loginGet);
-
-// Register Page
-router.get('/register', forwardAuthenticated, user.registerGet);
+/**
+ * AUTH ROUTES: /api/auth
+ */
 
 // Register
-router.post('/register', user.registerPost);
+router.post(
+  '/signup',
+  userController.validateSignup,
+  catchErrors(userController.signup)
+);
 
 // Login
-router.post('/login', user.loginPost);
+router.post('/signin', userController.signin);
 
 // Logout
-router.get('/logout', user.logout);
+router.get('/signout', userController.signout);
 
 module.exports = router;
