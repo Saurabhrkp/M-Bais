@@ -172,6 +172,7 @@ exports.uploadAvatar = async (req, res, next) => {
   await uploadFile.single('avatar');
   const image = await jimp.read(req.file.buffer);
   req.file = await image.resize(250, jimp.AUTO);
+  // image.write(req.file);
 };
 
 exports.resizeAvatar = async (req, res, next) => {
@@ -194,9 +195,9 @@ exports.resizeAvatar = async (req, res, next) => {
   stream.on('finish', () => {
     req.file.cloudStorageObject = gcsFileName;
     file.makePublic();
-    req.file.gcsUrl = getPublicUrl(bucket.name, gcsFileName);
+    req.file.avatar = getPublicUrl(bucket.name, gcsFileName);
     const image = new Image({
-      imageURL: req.file.gcsUrl,
+      imageURL: req.file.avatar,
       filename: gcsFileName,
     });
     image.save((err, image) => {

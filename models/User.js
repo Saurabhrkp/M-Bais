@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 
 function URI() {
   var url = this.name;
-  return '/user/' + url.replace(/\s/g, '-');
+  return url.replace(/\s/g, '-');
 }
 
 var UserSchema = new Schema(

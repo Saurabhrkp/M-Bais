@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 async function URI() {
   var random = await shortId({ length: 6, type: 'distinguishable' });
   var url = this.title + ' ' + random;
-  return '/posts/' + url.replace(/\s/g, '-');
+  return url.replace(/\s/g, '-');
 }
 
 var PostSchema = new Schema(
