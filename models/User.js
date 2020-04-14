@@ -38,7 +38,12 @@ var UserSchema = new Schema(
     },
     github: { type: String, required: false },
     saved: { type: Array, required: false },
-    author: { type: Boolean, required: true, default: false },
+    author: {
+      type: Boolean,
+      required: true,
+      enum: [true, false],
+      default: false,
+    },
   } /* gives us "createdAt" and "updatedAt" fields automatically */,
   { timestamps: true }
 );
