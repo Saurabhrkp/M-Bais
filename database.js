@@ -9,7 +9,7 @@ const { mongoURI, bucketURI } = require('./config/keys');
 // Connect to MongoDB
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
 
 // Promise of mongoose
@@ -29,8 +29,8 @@ connectionURI.on(
 
 // Instantiate a storage client
 const storage = new Storage({
-  keyFilename: path.join(__dirname, './config/mech-bais-5b0dc5e1fe76.json'),
-  projectId: 'mech-bais'
+  keyFilename: path.join(__dirname, './config/mech-bais.json'),
+  projectId: 'mech-bais',
 });
 
 // Multer is required to process file uploads and make them available via
@@ -38,8 +38,8 @@ const storage = new Storage({
 const upload = Multer({
   storage: Multer.memoryStorage(),
   limits: {
-    fileSize: 50 * 1024 * 1024 // no larger than 20mb, you can change as needed.
-  }
+    fileSize: 50 * 1024 * 1024, // no larger than 20mb, you can change as needed.
+  },
 });
 
 // A bucket is a container for objects (files).
