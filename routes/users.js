@@ -9,15 +9,49 @@ const { catchErrors } = require('../controllers/controlHelper');
 
 // Register
 router.post(
-  '/signup',
+  '/auth/signup',
   userController.validateSignup,
   catchErrors(userController.signup)
 );
 
 // Login
-router.post('/signin', userController.signin);
+router.post('/auth/signin', userController.signin);
 
 // Logout
-router.get('/signout', userController.signout);
+router.get('/auth/signout', userController.signout);
+
+/**
+ * USER ROUTES: /api/users
+ */
+router.param('userId', userController.getUserById);
+
+router
+  .route('/users/:userId')
+  .get(userController.getAuthUser)
+  .put(
+    userController.checkAuth,
+    userController.uploadAvatar,
+    catchErrors(userController.resizeAvatar),
+    catchErrors(userController.updateUser)
+  )
+  .delete(userController.checkAuth, catchErrors(userController.deleteUser));
+
+/**
+ //FIXME:
+  router.get('/users', userController.getUsers);
+ */
+
+router.get('/users/profile/:userId', userController.getUserProfile);
+
+router.get(
+  '/users/feed/:userId',
+  userController.checkAuth,
+  catchErrors(userController.getUserFeed)
+);
 
 module.exports = router;
+
+/**
+ //FIXME:
+ * 'mongoose-paginate-v2'
+ */

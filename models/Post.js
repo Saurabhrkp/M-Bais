@@ -47,7 +47,7 @@ PostSchema.virtual('metaDescription').get(function () {
 /* Must be a function declaration (not an arrow function), because we want to use 'this' to reference our schema */
 const autoPopulatePostedBy = function (next) {
   this.populate('video', '_id preview videoURL');
-  this.populate('postedBy', '_id name avatar');
+  this.populate('author', '_id name avatar');
   this.populate('comments.postedBy', '_id name avatar');
   next();
 };
