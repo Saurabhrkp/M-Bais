@@ -3,6 +3,13 @@ const Video = require('../models/Video');
 const path = require('path');
 const { bucket } = require('../database');
 
+/* Error handler for async / await functions */
+const catchErrors = (fn) => {
+  return function (req, res, next) {
+    return fn(req, res, next).catch(next);
+  };
+};
+
 const getPublicUrl = (bucketName, fileName) =>
   `https://storage.googleapis.com/${bucketName}/${fileName}`;
 
@@ -20,7 +27,7 @@ const copyFileToGCS = (localFilePath, options) => {
 };
 
 const sendUploadToGCS = (req, res, next) => {
-  const { subject, message, aliases } = req.body;
+  //TODO: Handle Image Preview upload
   if (!req.file) {
     return next();
   }
@@ -30,14 +37,9 @@ const sendUploadToGCS = (req, res, next) => {
     gzip: true,
     metadata: {
       contentType: req.file.mimetype,
-      metadata: {
-        subject: subject,
-        message: message,
-        aliases: aliases
-      }
-    }
+    },
   });
-  stream.on('error', err => {
+  stream.on('error', (err) => {
     req.file.cloudStorageError = err;
     next(err);
   });
@@ -46,11 +48,9 @@ const sendUploadToGCS = (req, res, next) => {
     file.makePublic();
     req.file.gcsUrl = getPublicUrl(bucket.name, gcsFileName);
     const video = new Video({
-      subject,
-      message,
-      aliases,
       videoURL: req.file.gcsUrl,
-      filename: gcsFileName
+      preview,
+      filename: gcsFileName,
     });
     video.save((err, video) => {
       if (err) return res.send(err);
@@ -64,7 +64,7 @@ const StreamCloudFile = (req, res, files) => {
   const video = bucket.file(files.name);
   video
     .get()
-    .then(data => {
+    .then((data) => {
       const file = data[0];
       if (req.headers['range']) {
         var parts = req.headers['range'].replace(/bytes=/, '').split('-');
@@ -82,15 +82,15 @@ const StreamCloudFile = (req, res, files) => {
           'Content-Length': chunksize,
           'Content-Range':
             'bytes ' + start + '-' + end + '/' + file.metadata.size,
-          'Content-Type': file.metadata.contentType
+          'Content-Type': file.metadata.contentType,
         });
         file
           .createReadStream({
             name: file.name,
             range: {
               startPos: start,
-              endPos: end
-            }
+              endPos: end,
+            },
           })
           .pipe(res);
       } else {
@@ -99,19 +99,19 @@ const StreamCloudFile = (req, res, files) => {
 
         file
           .createReadStream({
-            name: file.name
+            name: file.name,
           })
           .pipe(res);
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(400).send({
-        err: errorHandler.getErrorMessage(err)
+        err: errorHandler.getErrorMessage(err),
       });
     });
 };
 
-const escapeRegex = text => {
+const escapeRegex = (text) => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 };
 
@@ -120,5 +120,6 @@ module.exports = {
   getPublicUrl: getPublicUrl,
   copyFileToGCS: copyFileToGCS,
   StreamCloudFile: StreamCloudFile,
-  escapeRegex: escapeRegex
+  escapeRegex: escapeRegex,
+  catchErrors: catchErrors,
 };
