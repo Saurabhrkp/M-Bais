@@ -4,7 +4,7 @@ const Post = require('../models/Post');
 const Image = require('../models/Image');
 const { sendUploadToGCS } = require('./controlHelper');
 // DB Config
-const { bucket, uploadFile: upload } = require('../database');
+const { bucket, uploadFile: upload } = require('../models/database');
 
 exports.uploadVideo = async (req, res, next) => {
   await upload.fields([

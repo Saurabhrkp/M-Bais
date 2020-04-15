@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jimp = require('jimp');
 const { body, validationResult } = require('express-validator');
-const { bucket, uploadFile } = require('../database');
+const { bucket, uploadFile } = require('../models/database');
 const { getPublicUrl } = require('./controlHelper');
 
 exports.validateSignup = (req, res, next) => {

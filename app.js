@@ -11,7 +11,7 @@ const app = express();
 require('./lib/passport')(passport);
 
 // Calling MongoDB
-require('./database');
+require('./models/database');
 
 // Calling routes
 const indexRouter = require('./routes/index');

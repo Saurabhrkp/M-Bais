@@ -2,7 +2,7 @@
 const Video = require('../models/Video');
 const Image = require('../models/Image');
 const path = require('path');
-const { bucket } = require('../database');
+const { bucket } = require('../models/database');
 const ffmpeg = require('ffmpeg-static');
 const genThumbnail = require('simple-thumbnail');
 
