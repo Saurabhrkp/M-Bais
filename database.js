@@ -4,7 +4,7 @@ const { Storage } = require('@google-cloud/storage');
 const path = require('path');
 
 // DB Config
-const { mongoURI, bucketURI } = require('./config/keys');
+const { mongoURI, bucketURI } = require('./bin/keys');
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, {
@@ -29,7 +29,7 @@ connectionURI.on(
 
 // Instantiate a storage client
 const storage = new Storage({
-  keyFilename: path.join(__dirname, './config/mech-bais.json'),
+  keyFilename: path.join(__dirname, './bin/mech-bais.json'),
   projectId: 'mech-bais',
 });
 

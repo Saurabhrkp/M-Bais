@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 // Passport Config
-require('./config/passport')(passport);
+require('./lib/passport')(passport);
 
 // Calling MongoDB
 require('./database');
@@ -49,6 +49,11 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Routes
+app.use('/posts', indexRouter);
+app.use('/api', userRouter);
+app.use('/admin', adminRouter);
+
 // Connect flash
 app.use(flash());
 
@@ -59,10 +64,5 @@ app.use((req, res, next) => {
   res.locals.error = req.flash('error');
   next();
 });
-
-// Routes
-app.use('/', indexRouter);
-app.use('/api', userRouter);
-app.use('/admin', adminRouter);
 
 module.exports = app;

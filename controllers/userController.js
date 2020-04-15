@@ -112,14 +112,6 @@ exports.checkAuth = (req, res, next) => {
   res.redirect('/signin');
 };
 
-/**
-FIXME:
-exports.getUsers = async (req, res) => {
-  const users = await User.find().select('_id name email createdAt updatedAt');
-  res.json(users);
-};
- */
-
 exports.getUserById = async (req, res, next, id) => {
   const user = await User.findOne({ _id: id });
   req.profile = user;
@@ -146,7 +138,6 @@ exports.getUserFeed = async (req, res) => {
   res.json(users);
 };
 
-//FIXME: 'upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])'
 exports.uploadAvatar = async (req, res, next) => {
   await uploadFile.single('avatar');
   const image = await jimp.read(req.file.buffer);
