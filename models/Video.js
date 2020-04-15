@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const mongodbErrorHandler = require('mongoose-mongodb-errors');
 
 const VideoSchema = new mongoose.Schema({
-  preview: { type: Schema.ObjectId, ref: 'Image', required: false },
+  preview: { data: Buffer, contentType: String },
   videoURL: { type: String, required: true },
   filename: { type: String, required: true },
 });
