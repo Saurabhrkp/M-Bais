@@ -1,50 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const { ensureAdmin, forwardAdmin } = require('../config/auth');
-const admin = require('../controllers/adminController');
-const { sendUploadToGCS } = require('../controllers/gcsHelper');
-const upload = require('../database').uploadFile;
+const adminController = require('../controllers/adminController');
+const indexController = require('../controllers/indexController');
+const userController = require('../controllers/userController');
+const { catchErrors } = require('../controllers/controlHelper');
 
-// Admin panel
-router.get('/', ensureAdmin, admin.panel);
-
-// Admin panel post
 router.post(
-  '/upload',
-  upload.single('file'),
-  sendUploadToGCS,
-  ensureAdmin,
-  admin.upload
+  '/posts/video/:userId',
+  userController.checkAuth,
+  adminController.uploadVideo,
+  catchErrors(adminController.uploadToGCS)
 );
 
-//
-router.get('/viewAll', ensureAdmin, admin.viewAll);
+router.get('/files/:filename', adminController.getOne);
 
-//
-router.get('/files/:filename', ensureAdmin, admin.getOne);
+router.get('/play/:filename', indexController.playVideo);
 
-//
-router.get('/view/:id', ensureAdmin, admin.viewOne);
-
-//
-router.get('/play/:filename', ensureAdmin, admin.play);
-
-//
-router.delete('/delete/:filename', ensureAdmin, admin.delete);
-
-// Login Page
-router.get('/login', forwardAdmin, admin.loginGet);
-
-// Register Page
-router.get('/register', forwardAdmin, admin.registerGet);
-
-// Register
-router.post('/register', admin.registerPost);
-
-// Login
-router.post('/login', admin.loginPost);
-
-// Logout
-router.get('/logout', admin.logout);
+router.delete('/delete/:filename', adminController.delete);
 
 module.exports = router;

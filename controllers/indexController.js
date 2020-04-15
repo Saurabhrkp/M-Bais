@@ -8,7 +8,7 @@ const { bucket, uploadFile } = require('../database');
 const { getPublicUrl, StreamCloudFile } = require('./controlHelper');
 
 exports.uploadImage = async (req, res, next) => {
-  uploadFile.single('image');
+  uploadFile.any('image');
   const image = await jimp.read(req.file.buffer);
   req.file = await image.resize(750, jimp.AUTO);
   // image.write(req.file);
@@ -19,7 +19,7 @@ exports.resizeImage = async (req, res, next) => {
     return next();
   }
   const extension = req.file.mimetype.split('/')[1];
-  const gcsFileName = `${req.file.originalname
+  const gcsFileName = `${req.file.filename
     .trim()
     .replace(/\s+/g, '-')}-${Date.now()}.${extension}`;
   const file = bucket.file(gcsFileName);

@@ -9,32 +9,6 @@ const { body, validationResult } = require('express-validator');
 const { bucket, uploadFile } = require('../database');
 const { getPublicUrl } = require('./controlHelper');
 
-/**
- * 
- const ffmpeg = require('ffmpeg-static');
- const genThumbnail = require('simple-thumbnail');
- 
-// promise
-genThumbnail('./surveyPaper.mp4', './surveyPaper.png', '80%', {
-  path: ffmpeg,
-  seek: '00:00:12.23'
-})
-  .then(() => console.log('done!'))
-  .catch((err) => console.error(err));
-
-// genThumbnail also supports piping to write streams, so you can do this with Express!
-app.get('/some/endpoint', (req, res) => {
-  genThumbnail('path/to/video.webm', res, '150x100')
-    .then(() => console.log('done!'))
-    .catch(err => console.error(err))
-})
-
-// duplex streams
-fs.createReadStream('path/to/image')
-  .pipe(genThumbnail(null, null, '250x?'))
-  .pipe(fs.createWriteStream('output/file/path.jpg'))
- */
-
 exports.validateSignup = (req, res, next) => {
   body('name')
     .isLength({ min: 5 })
