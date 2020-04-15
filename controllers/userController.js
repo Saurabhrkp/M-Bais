@@ -1,4 +1,4 @@
-// Load User model
+// Loading models
 const User = require('../models/User');
 const Image = require('../models/Image');
 const passport = require('passport');
@@ -28,6 +28,11 @@ app.get('/some/endpoint', (req, res) => {
     .then(() => console.log('done!'))
     .catch(err => console.error(err))
 })
+
+// duplex streams
+fs.createReadStream('path/to/image')
+  .pipe(genThumbnail(null, null, '250x?'))
+  .pipe(fs.createWriteStream('output/file/path.jpg'))
  */
 
 exports.validateSignup = (req, res, next) => {
@@ -134,7 +139,7 @@ exports.checkAuth = (req, res, next) => {
 };
 
 /**
- //FIXME:
+FIXME:
 exports.getUsers = async (req, res) => {
   const users = await User.find().select('_id name email createdAt updatedAt');
   res.json(users);
@@ -180,7 +185,9 @@ exports.resizeAvatar = async (req, res, next) => {
     return next();
   }
   const extension = req.file.mimetype.split('/')[1];
-  const gcsFileName = `${req.user.name}-${Date.now()}.${extension}`;
+  const gcsFileName = `${req.user.name
+    .trim()
+    .replace(/\s+/g, '-')}-${Date.now()}.${extension}`;
   const file = bucket.file(gcsFileName);
   const stream = file.createWriteStream({
     gzip: true,

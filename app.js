@@ -13,6 +13,11 @@ require('./config/passport')(passport);
 // Calling MongoDB
 require('./database');
 
+// Calling routes
+const indexRouter = require('./routes/index');
+const userRouter = require('./routes/users');
+const adminRouter = require('./routes/admin');
+
 // Logging
 app.use(logger('dev'));
 
@@ -56,8 +61,8 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/', require('./routes/index'));
-app.use('/api', require('./routes/users'));
-app.use('/admin', require('./routes/admin'));
+app.use('/', indexRouter);
+app.use('/api', userRouter);
+app.use('/admin', adminRouter);
 
 module.exports = app;

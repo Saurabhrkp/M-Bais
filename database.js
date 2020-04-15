@@ -40,6 +40,16 @@ const upload = Multer({
   limits: {
     fileSize: 50 * 1024 * 1024, // no larger than 20mb, you can change as needed.
   },
+  fileFilter: (req, file, next) => {
+    if (
+      file.mimetype.startsWith('image/') ||
+      file.mimetype.startsWith('video/')
+    ) {
+      next(null, true);
+    } else {
+      next(null, false);
+    }
+  },
 });
 
 // A bucket is a container for objects (files).

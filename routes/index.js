@@ -1,45 +1,54 @@
 const express = require('express');
 const router = express.Router();
-const { ensureAuthenticated } = require('../config/auth');
-const index = require('../controllers/indexController');
+const indexController = require('../controllers/indexController');
+const userController = require('../controllers/userController');
+const { catchErrors } = require('../controllers/controlHelper');
 
-// Welcome Page
-router.get('/', index.welcome);
+/**
+ * POST ROUTES: /api/posts
+ */
+router.param('postId', indexController.getPostById);
 
-// Dashboard Page
-router.get('/dashboard', ensureAuthenticated, index.dashboard);
+router.put(
+  '/posts/like',
+  userController.checkAuth,
+  catchErrors(indexController.toggleLike)
+);
+router.put(
+  '/posts/unlike',
+  userController.checkAuth,
+  catchErrors(indexController.toggleLike)
+);
 
-//
-router.get('/search', ensureAuthenticated, index.search);
+router.put(
+  '/posts/comment',
+  userController.checkAuth,
+  catchErrors(indexController.toggleComment)
+);
+router.put(
+  '/posts/uncomment',
+  userController.checkAuth,
+  catchErrors(indexController.toggleComment)
+);
 
-//
-router.get('/search-post', ensureAuthenticated, index.searchPost);
+router.delete(
+  '/posts/:postId',
+  userController.checkAuth,
+  catchErrors(indexController.deletePost)
+);
 
-//
-router.get('/makepost', ensureAuthenticated, index.post_get);
+router.post(
+  '/posts/new/:userId',
+  userController.checkAuth,
+  indexController.uploadImage,
+  catchErrors(indexController.resizeImage),
+  catchErrors(indexController.addPost)
+);
 
-//
-router.post('/makepost', ensureAuthenticated, index.post_post);
+router.get('/posts/by/:userId', catchErrors(indexController.getPostsByUser));
 
-//
-router.get('/postOne/:id', ensureAuthenticated, index.onepost);
+router.get('/posts/feed/:userId', catchErrors(indexController.getPostFeed));
 
-//
-router.get('/postAll', ensureAuthenticated, index.allpost);
-
-//
-router.delete('/delete/:id', ensureAuthenticated, index.delete);
-
-//
-router.get('/files/:filename', ensureAuthenticated, index.getOne);
-
-//
-router.get('/show/:filename', ensureAuthenticated, index.show);
-
-//
-router.get('/play/:filename', ensureAuthenticated, index.play);
-
-// Contact Page
-router.get('/contact', index.contact);
+router.get('/play/:filename', indexController.playVideo);
 
 module.exports = router;
