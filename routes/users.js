@@ -36,11 +36,6 @@ router
   )
   .delete(userController.checkAuth, catchErrors(userController.deleteUser));
 
-/**
- //FIXME:
-  router.get('/users', userController.getUsers);
- */
-
 router.get('/users/profile/:userId', userController.getUserProfile);
 
 router.get(
