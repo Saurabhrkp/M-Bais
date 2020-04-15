@@ -1,7 +1,10 @@
 // Load Admin model
 const Video = require('../models/Video');
+const Image = require('../models/Image');
 const path = require('path');
 const { bucket } = require('../database');
+const ffmpeg = require('ffmpeg-static');
+const genThumbnail = require('simple-thumbnail');
 
 /* Error handler for async / await functions */
 const catchErrors = (fn) => {
@@ -16,48 +19,70 @@ const getPublicUrl = (bucketName, fileName) =>
 // Example
 // https://storage.googleapis.com/mech-bais.appspot.com/1585823732902-hydrogen.mp4
 
-const copyFileToGCS = (localFilePath, options) => {
+const copyFileToGCS = async (localFilePath, options) => {
   options = options || {};
   const fileName = path.basename(localFilePath);
   const file = bucket.file(fileName);
-  return bucket
-    .upload(localFilePath, options)
-    .then(() => file.makePublic())
-    .then(() => getPublicUrl(bucket.name, gcsName));
+  await bucket.upload(localFilePath, options);
+  await file.makePublic();
+  return getPublicUrl(bucket.name, gcsName);
 };
 
 const sendUploadToGCS = (req, res, next) => {
-  //TODO: Handle Image Preview upload
-  if (!req.file) {
+  if (!req.files) {
     return next();
   }
-  const gcsFileName = `${Date.now()}-${req.file.originalname}`;
-  const file = bucket.file(gcsFileName);
-  const stream = file.createWriteStream({
-    gzip: true,
-    metadata: {
-      contentType: req.file.mimetype,
-    },
-  });
-  stream.on('error', (err) => {
-    req.file.cloudStorageError = err;
-    next(err);
-  });
-  stream.on('finish', () => {
-    req.file.cloudStorageObject = gcsFileName;
-    file.makePublic();
-    req.file.gcsUrl = getPublicUrl(bucket.name, gcsFileName);
-    const video = new Video({
-      videoURL: req.file.gcsUrl,
-      preview,
-      filename: gcsFileName,
+  req.files.forEach((file) => {
+    const type = file.mimetype.split('/')[0];
+    const extension = file.mimetype.split('/')[1];
+    const gcsFileName = `${file.filename
+      .trim()
+      .replace(/\s+/g, '-')}-${Date.now()}.${extension}`;
+    if (type !== 'image/') {
+      genThumbnail(file, file.preview, '80%', {
+        path: ffmpeg,
+        seek: '00:00:10.10',
+      });
+    }
+    const data = bucket.file(gcsFileName);
+    const stream = data.createWriteStream({
+      gzip: true,
+      metadata: {
+        contentType: file.mimetype,
+      },
     });
-    video.save((err, video) => {
-      if (err) return res.send(err);
+    stream.on('error', (err) => {
+      file.cloudStorageError = err;
+      next(err);
     });
-    next();
+    stream.on('finish', () => {
+      file.cloudStorageObject = gcsFileName;
+      data.makePublic();
+      file.gcsUrl = getPublicUrl(bucket.name, gcsFileName);
+      if (type !== 'image/') {
+        var video = new Video();
+        video.videoURL = file.gcsUrl;
+        video.preview.data = file.preview;
+        video.preview.contentType = 'image/jpg';
+        video.filename = gcsFileName;
+        video.save((err, video) => {
+          if (err) return res.send(err);
+          req.body.video = video._id;
+        });
+      } else {
+        const image = new Image({
+          imageURL: file.gcsUrl,
+          filename: gcsFileName,
+        });
+        image.save((err, image) => {
+          if (err) return res.send(err);
+          req.body.image = image._id;
+        });
+      }
+    });
+    stream.end(file.buffer);
   });
-  stream.end(req.file.buffer);
+  next();
 };
 
 const StreamCloudFile = (req, res, files) => {
