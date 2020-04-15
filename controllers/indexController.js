@@ -1,306 +1,140 @@
-// Load User model
-const User = require('../models/User');
-// Load Video model
-const Video = require('../models/Video');
 // Load Post model
 const Post = require('../models/Post');
-var async = require('async');
-const { StreamCloudFile, escapeRegex } = require('./gcsHelper');
+const jimp = require('jimp');
+const mongoose = require('mongoose');
 
 // DB Config
-const { bucket } = require('../database');
+const { bucket, uploadFile } = require('../database');
+const { getPublicUrl, StreamCloudFile } = require('./controlHelper');
 
-exports.welcome = (req, res, next) => {
-  res.render('welcome', { page: { title: 'Welcome to M-Bias' }, user: false });
+exports.uploadImage = async (req, res, next) => {
+  uploadFile.single('image');
+  const image = await jimp.read(req.file.buffer);
+  req.file = await image.resize(750, jimp.AUTO);
+  // image.write(req.file);
 };
 
-exports.dashboard = (req, res, next) => {
-  res.render('dashboard', {
-    page: { title: 'Your Dashboard || M-Bias' },
-    user: req.user
-  });
-};
-
-exports.contact = (req, res, next) => {
-  res.render('contact', { page: { title: 'Contact us' }, user: false });
-};
-
-exports.search = (req, res, next) => {
-  const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-  Video.findOne({ aliases: regex }).then(video => {
-    const files = bucket.file(video.filename);
-    files.get().then(data => {
-      const file = data[0];
-      // Check if the input is a valid image or not
-      if (!file || file.metadata.size === 0) {
-        return res.render('result', {
-          page: {
-            title: 'Search results not found|| M-Bias',
-            search: req.query.search
-          },
-          files: false,
-          user: req.user
-        });
-      }
-      res.render('result', {
-        page: { title: 'Search results || M-Bias', search: req.query.search },
-        files: file,
-        video: video,
-        user: req.user
-      });
-    });
-  });
-};
-
-exports.searchPost = (req, res, next) => {
-  const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-  async.parallel(
-    {
-      post: callback => {
-        Post.find({ aliases: regex })
-          .populate('_user')
-          .exec(callback);
-      }
-    },
-    (err, results) => {
-      if (err) {
-        return next(err);
-      }
-      if (!results.post || results.post.length === 0) {
-        return res.render('viewpost', {
-          page: {
-            title: 'Search results not found|| M-Bias',
-            search: req.query.search
-          },
-          posts: false,
-          user: req.user
-        });
-      }
-      // Successful, so render.
-      res.render('viewpost', {
-        page: { title: 'Search results || M-Bias', search: req.query.search },
-        posts: results.post,
-        user: req.user
-      });
-    }
-  );
-};
-
-exports.getOne = (req, res, next) => {
-  Video.findOne({ filename: req.params.filename }).then(video => {
-    const files = bucket.file(video.filename);
-    files.get().then(data => {
-      const file = data[0];
-      // Check if the input is a valid image or not
-      if (!file || file.metadata.size === 0) {
-        return res.status(404).json({
-          err: 'No file exists'
-        });
-      }
-
-      // If the file exists then check whether it is an image
-      if (
-        file.metadata.contentType === 'image/jpeg' ||
-        file.metadata.contentType === 'image/png'
-      ) {
-        // Read output to browser
-        const readstream = file.createReadStream();
-        readstream.pipe(res);
-      } else {
-        res.status(404).json({
-          err: 'Not an image'
-        });
-      }
-    });
-  });
-};
-
-exports.show = (req, res, next) => {
-  Video.findOne({ filename: req.params.filename }).then(video => {
-    const files = bucket.file(video.filename);
-    files.get().then(data => {
-      const file = data[0];
-      // Check if the input is a valid image or not
-      if (!file || file.metadata.size === 0) {
-        return res.status(404).json({
-          err: 'No file exists'
-        });
-      }
-
-      // If the file exists then check whether it is an image
-      if (
-        file.metadata.contentType === 'image/jpeg' ||
-        file.metadata.contentType === 'image/png' ||
-        file.metadata.contentType === 'video/mp4'
-      ) {
-        // Read output to browser
-        const readstream = file.createReadStream();
-        readstream.pipe(res);
-        res.render('video', {
-          page: { title: file.metadata.metadata.subject },
-          files: file,
-          video: video,
-          user: req.user
-        });
-      } else {
-        res.status(404).json({
-          err: 'Not available'
-        });
-      }
-    });
-  });
-};
-
-exports.play = (req, res, next) => {
-  const files = bucket.file(req.params.filename);
-  files.get().then(data => {
-    const file = data[0];
-    // Check if the input is a valid image or not
-    if (!file || file.metadata.size === 0) {
-      return res.status(404).json({
-        err: 'No file exists'
-      });
-    }
-
-    // If the file exists then check whether it is an image
-    if (
-      file.metadata.contentType === 'image/jpeg' ||
-      file.metadata.contentType === 'image/png' ||
-      file.metadata.contentType === 'video/mp4'
-    ) {
-      // Read output to browser
-      StreamCloudFile(req, res, file);
-    } else {
-      res.status(404).json({
-        err: 'Not available'
-      });
-    }
-  });
-};
-
-// Display detail page for a specific Pdf.
-exports.onepost = (req, res, next) => {
-  async.parallel(
-    {
-      post: callback => {
-        Post.findById(req.params.id)
-          .populate('_user')
-          .exec(callback);
-      }
-    },
-    (err, results) => {
-      if (err) {
-        return next(err);
-      }
-      if (results.post == null) {
-        // No results.
-        var err = new Error('Post not found');
-        err.status = 404;
-        return next(err);
-      }
-      const isPost = results.post._user.id === req.user.id ? true : false;
-      // Successful, so render.
-      res.render('viewOne', {
-        page: { title: results.post.subject },
-        post: results.post,
-        user: req.user,
-        isPost: isPost
-      });
-    }
-  );
-};
-
-exports.delete = (req, res, next) => {
-  const ID = req.params.id;
-  const UserID = req.user.id;
-  async.parallel({}, (err, results) => {
-    if (err) {
-      return next(err);
-    } else {
-      User.findOneAndUpdate(UserID, { $pull: { posts: ID } }, err => {
-        if (err) {
-          return res.status(500).json({ error: 'error in deleting address' });
-        }
-      });
-      Post.findOneAndDelete(
-        req.params.id,
-        (deletephoto = err => {
-          if (err) {
-            return next(err);
-          }
-          req.flash('success_msg', 'Succesfully deleted');
-          res.redirect('/dashboard');
-        }),
-        console.log(`Deleted from photos`)
-      );
-    }
-  });
-};
-
-exports.allpost = (req, res) => {
-  async.parallel(
-    {
-      posts: callback => {
-        Post.find()
-          .populate('_user')
-          .exec(callback);
-      }
-    },
-    (err, results) => {
-      if (err) {
-        return next(err);
-      }
-      if (results.posts == null) {
-        // No results.
-        res.redirect('dashboard');
-      }
-      // Successful, so render.
-      res.render('viewpost', {
-        page: { title: 'All Post by you' },
-        user: req.user,
-        posts: results.posts
-      });
-    }
-  );
-};
-
-exports.post_get = (req, res) => {
-  res.render('makepost', {
-    page: { title: 'Make a new Post' },
-    user: req.user
-  });
-};
-
-exports.post_post = (req, res) => {
-  const { subject, message, aliases } = req.body;
-  const errors = [];
-  if (!subject || !message) {
-    errors.push({ msg: 'Please enter Subject & Content' });
+exports.resizeImage = async (req, res, next) => {
+  if (!req.file) {
+    return next();
   }
-  if (errors.length > 0) {
-    res.render('makepost', {
-      errors,
-      subject,
-      message,
-      aliases,
-      page: { title: 'Make a new Post' }
+  const extension = req.file.mimetype.split('/')[1];
+  const gcsFileName = `${req.file.originalname
+    .trim()
+    .replace(/\s+/g, '-')}-${Date.now()}.${extension}`;
+  const file = bucket.file(gcsFileName);
+  const stream = file.createWriteStream({
+    gzip: true,
+    metadata: {
+      contentType: req.file.mimetype,
+    },
+  });
+  stream.on('error', (err) => {
+    req.file.cloudStorageError = err;
+    next(err);
+  });
+  stream.on('finish', () => {
+    req.file.cloudStorageObject = gcsFileName;
+    file.makePublic();
+    req.file.image = getPublicUrl(bucket.name, gcsFileName);
+    const image = new Image({
+      imageURL: req.file.image,
+      filename: gcsFileName,
     });
-  } else {
-    const post = new Post({
-      subject,
-      message,
-      aliases,
-      _user: req.user._id
-    });
-    post.save((err, post) => {
+    image.save((err, image) => {
       if (err) return res.send(err);
-      User.findById(req.user._id, (err, user) => {
-        if (err) return res.send(err);
-        user.posts.push(post._id);
-        user.save();
-      });
-      req.flash('success_msg', 'You are have Uploaded');
-      res.redirect('/postAll');
+    });
+    next();
+  });
+  stream.end(req.file.buffer);
+  next();
+};
+
+exports.addPost = async (req, res) => {
+  req.body.author = req.user.id;
+  const post = await new Post(req.body).save();
+  await Post.populate(post, {
+    path: 'author',
+    select: '_id name avatar',
+  });
+  res.json(post);
+};
+
+exports.getPostById = async (req, res, next, id) => {
+  const post = await Post.findOne({ _id: id });
+  req.post = post;
+
+  const posterId = mongoose.Types.ObjectId(req.post.author._id);
+  if (req.user && posterId.equals(req.user._id)) {
+    req.isPoster = true;
+    return next();
+  }
+  next();
+};
+
+exports.deletePost = async (req, res) => {
+  const { _id } = req.post;
+
+  if (!req.isPoster) {
+    return res.status(400).json({
+      message: 'You are not authorized to perform this action',
     });
   }
+  const deletedPost = await Post.findOneAndDelete({ _id });
+  res.json(deletedPost);
+};
+
+exports.getPostsByUser = async (req, res) => {
+  const posts = await Post.find({ author: req.profile._id }).sort({
+    createdAt: 'desc',
+  });
+  res.json(posts);
+};
+
+exports.getPostFeed = async (req, res) => {
+  const posts = await Post.find().sort({
+    createdAt: 'desc',
+  });
+  res.json(posts);
+};
+
+exports.toggleLike = async (req, res) => {
+  const { postId } = req.body;
+
+  const post = await Post.findOne({ _id: postId });
+  const likeIds = post.likes.map((id) => id.toString());
+  const authUserId = req.user._id.toString();
+  if (likeIds.includes(authUserId)) {
+    await post.likes.pull(authUserId);
+  } else {
+    await post.likes.push(authUserId);
+  }
+  await post.save();
+  res.json(post);
+};
+
+exports.toggleComment = async (req, res) => {
+  const { comment, postId } = req.body;
+  let operator;
+  let data;
+
+  if (req.url.includes('uncomment')) {
+    operator = '$pull';
+    data = { _id: comment._id };
+  } else {
+    operator = '$push';
+    data = { text: comment.text, postedBy: req.user._id };
+  }
+  const updatedPost = await Post.findOneAndUpdate(
+    { _id: postId },
+    { [operator]: { comments: data } },
+    { new: true }
+  )
+    .populate('author', '_id name avatar')
+    .populate('comments.postedBy', '_id name avatar');
+  res.json(updatedPost);
+};
+
+exports.playVideo = (req, res, next) => {
+  StreamCloudFile(req, res, req.params.filename);
 };

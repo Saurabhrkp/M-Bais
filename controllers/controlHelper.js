@@ -14,7 +14,7 @@ const getPublicUrl = (bucketName, fileName) =>
   `https://storage.googleapis.com/${bucketName}/${fileName}`;
 
 // Example
-// https://storage.googleapis.com/mech-bais.appspot.com/1585739267079-hydrogen.mp4
+// https://storage.googleapis.com/mech-bais.appspot.com/1585823732902-hydrogen.mp4
 
 const copyFileToGCS = (localFilePath, options) => {
   options = options || {};
@@ -105,9 +105,7 @@ const StreamCloudFile = (req, res, files) => {
       }
     })
     .catch((err) => {
-      res.status(400).send({
-        err: errorHandler.getErrorMessage(err),
-      });
+      res.status(400).send({ err });
     });
 };
 
