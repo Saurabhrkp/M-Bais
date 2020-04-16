@@ -50,9 +50,9 @@ Working on Project to show-case for business.
     - ### POST ✔
       - userController.validateSignup ✔
         - userController.signup ✔
-  - ## /signin
-    - ## POST
-      - userController.signin
+  - ## /signin ⚡
+    - ## POST ✔
+      - userController.signin ✔
   - ## PARAMS userId
     - userController.getUserById
   - ## /users/:userId
