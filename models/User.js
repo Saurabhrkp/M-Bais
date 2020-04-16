@@ -1,40 +1,24 @@
 const mongoose = require('mongoose');
 const mongodbErrorHandler = require('mongoose-mongodb-errors');
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-function URI() {
-  var url = this.name;
-  return url.replace(/\s+/g, '-');
-}
-
-var UserSchema = new Schema(
+const UserSchema = new Schema(
   {
     name: {
       type: String,
-      trim: true,
-      unique: true,
-      minlength: 4,
-      maxlength: 10,
-      required: 'Name is required',
     },
     avatar: {
       type: String,
-      required: 'Avatar image is required',
       default: '/public/images/profile-image.jpg',
     },
-    username: { type: String, required: true, max: 20, unique: true },
+    username: { type: String },
     phone: { type: Number, required: false },
     shortBio: { type: String, required: false, max: 50 },
     posts: [{ type: Schema.ObjectId, ref: 'Post', required: false }],
-    password: { type: String, required: true, min: 6 },
-    url: { type: String, required: true, default: URI },
-    title: { type: String, required: false },
+    password: { type: String },
     email: {
       type: String,
-      trim: true,
       lowercase: true,
-      unique: true,
-      required: 'Email is required',
     },
     github: { type: String, required: false },
     saved: { type: Array, required: false },
