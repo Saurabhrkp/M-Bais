@@ -46,10 +46,10 @@ Working on Project to show-case for business.
       - userController.checkAuth
         - indexController.toggleLike
 - # /api, user
-  - ## /signup
-    - ### POST
-      - userController.validateSignup
-        - userController.signup
+  - ## /signup ⚡
+    - ### POST ✔
+      - userController.validateSignup ✔
+        - userController.signup ✔
   - ## /signin
     - ## POST
       - userController.signin
