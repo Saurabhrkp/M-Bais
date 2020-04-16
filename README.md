@@ -53,26 +53,29 @@ Working on Project to show-case for business.
   - ## /signin ⚡
     - ## POST ✔
       - userController.signin ✔
+  - ## /signout ⚡
+    - ## GET ✔
+      - userController.signout ✔
   - ## PARAMS userId
     - userController.getUserById
-  - ## /users/:userId
-    - ### GET
-      - userController.getAuthUser
-    - ### PUT
-      - userController.checkAuth
-      - userController.uploadAvatar
-        - userController.resizeAvatar
-        - userController.updateUser
-    - ### DELETE
-      - userController.checkAuth
-        - userController.deleteUser
-  - ## /users/profile/:userId
-    - ### GET
-    - userController.getUserProfile
-  - ## /users/feed/:userId
-    - ### GET
-      - userController.checkAuth
-        - userController.getUserFeed
+  - ## /users/:userId ✖
+    - ### GET ✔
+      - userController.getAuthUser ✔
+    - ### PUT ✖
+      - userController.checkAuth ✔
+      - userController.uploadAvatar ✖
+        - userController.resizeAvatar ✖
+        - userController.updateUser ✖
+    - ### DELETE ✔
+      - userController.checkAuth ✔
+        - userController.deleteUser ✔
+  - ## /users/profile/:userId ⚡
+    - ### GET ✔
+    - userController.getUserProfile ✔
+  - ## /users/feed/:userId ❔
+    - ### GET ✔
+      - userController.checkAuth ✔
+        - userController.getUserFeed ❔
 - # /admin, admin
   - ## userId
     - userController.getUserById

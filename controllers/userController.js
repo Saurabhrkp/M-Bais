@@ -147,7 +147,7 @@ exports.getUserFeed = async (req, res) => {
 };
 
 exports.uploadAvatar = async (req, res, next) => {
-  await uploadFile.single('avatar');
+  uploadFile.single('avatar');
   const image = await jimp.read(req.file.buffer);
   req.file = await image.resize(250, jimp.AUTO);
   // image.write(req.file);
