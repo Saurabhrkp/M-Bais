@@ -2,3 +2,97 @@
 Dharvesh's Project
 
 Working on Project to show-case for business.
+
+<!-- ? # TODO: Check All Routes 
+
+- # /posts, index
+  - ## PARAMS postID
+    - indexController.getPostByIds
+  - ## /new
+    - ### POST
+      - userController.checkAuth
+      - indexController.uploadImage
+        - indexController.resizeImage
+        - indexController.addPost
+  - ## PARAMS username
+  - ## /by/:username
+    - ### GET
+        - indexController.getPostsByUser
+  - ## /feed
+    - ### GET
+      - indexController.getPostFeed
+  - ## PARAMS filename
+  - ## /play/:filename
+    - ### GET
+      - indexController.playVideo
+  - ## /delete
+    - ### DELETE
+      - userController.checkAuth
+        - indexController.deletePost
+  - ## /comment
+    - ### PUT
+      - userController.checkAuth
+        - indexController.toggleComment
+  - ## /uncomment
+    - ### PUT
+      - userController.checkAuth
+        - indexController.toggleComment
+  - ## /like
+    - ### PUT
+      - userController.checkAuth
+        - indexController.toggleLike
+  - ## /unlike
+    - ### PUT
+      - userController.checkAuth
+        - indexController.toggleLike
+- # /api, user
+  - ## PARAMS userId
+    - userController.getUserById
+  - ## /users/:userId
+    - ### GET
+      - userController.getAuthUser
+    - ### PUT
+      - userController.checkAuth
+      - userController.uploadAvatar
+        - userController.resizeAvatar
+        - userController.updateUser
+    - ### DELETE
+      - userController.checkAuth
+        - userController.deleteUser
+  - ## /users/profile/:userId
+    - ### GET
+    - userController.getUserProfile
+  - ## /users/feed/:userId
+    - ### GET
+      - userController.checkAuth
+        - userController.getUserFeed
+- # /admin, admin
+  - ## userId
+    - userController.getUserById
+  - ## ROUTE /article/:userId
+    - ### GET
+      - userController.getAuthUser
+        - adminController.getAdminFeed
+    - ### POST
+      - userController.checkAuth
+      - adminController.uploadVideo
+        - adminController.uploadToGCS
+    - ### PUT
+      - userController.checkAuth
+      - adminController.uploadVideo
+        - adminController.uploadToGCS
+    - ### DELETE
+      - userController.checkAuth
+      - userController.deleteUser
+  - ## /play/:filename
+    - ### GET
+      - indexController.playVideo
+  - ## /all/users
+    - ### GET
+      - adminController.getUsers
+  - ## /video/:filename
+    - ### DELETE
+      - adminController.deleteVideo
+  - ## /image/:filename
+    - ## DELETE
+      - adminController.deleteImage -->
