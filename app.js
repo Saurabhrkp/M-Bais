@@ -5,7 +5,13 @@ const session = require('express-session');
 const path = require('path');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const next = require('next');
+const dev = process.env.NODE_DEV !== 'production'; //true false
+
+nextApp.prepare();
 const app = express();
+const nextApp = next({ dev });
+const handle = nextApp.getRequestHandler(); //part of next config
 
 // Passport Config
 require('./lib/passport')(passport);
@@ -53,6 +59,11 @@ app.use(passport.session());
 app.use('/posts', indexRouter);
 app.use('/api', userRouter);
 app.use('/admin', adminRouter);
+
+// for all the react stuff
+app.get('*', (req, res) => {
+  return handle(req, res);
+});
 
 // Connect flash
 app.use(flash());

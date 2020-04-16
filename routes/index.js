@@ -9,6 +9,8 @@ const { catchErrors } = require('../controllers/controlHelper');
  */
 router.param('postId', indexController.getPostById);
 
+router.param('username', userController.getUserByUsername);
+
 router.put(
   '/like',
   userController.checkAuth,
@@ -34,13 +36,13 @@ router.put(
 );
 
 router.delete(
-  '/delete',
+  '/delete/:postId',
   userController.checkAuth,
   catchErrors(indexController.deletePost)
 );
 
 router.post(
-  '/new',
+  '/:username/new',
   userController.checkAuth,
   indexController.uploadImage,
   catchErrors(indexController.resizeImage),
@@ -49,7 +51,7 @@ router.post(
 
 router.get('/by/:username', catchErrors(indexController.getPostsByUser));
 
-router.get('/feed', catchErrors(indexController.getPostFeed));
+router.get('/:username/feed', catchErrors(indexController.getPostFeed));
 
 router.get('/play/:filename', indexController.playVideo);
 

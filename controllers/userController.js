@@ -131,6 +131,17 @@ exports.getUserById = async (req, res, next, id) => {
   next();
 };
 
+exports.getUserByUsername = async (req, res, next, username) => {
+  const user = await User.findOne({ username: username });
+  req.profile = user;
+  const profileId = mongoose.Types.ObjectId(req.profile._id);
+  if (req.user && profileId.equals(req.user._id)) {
+    req.isAuthUser = true;
+    return next();
+  }
+  next();
+};
+
 exports.getUserProfile = (req, res) => {
   if (!req.profile) {
     return res.status(404).json({
