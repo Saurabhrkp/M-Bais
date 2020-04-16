@@ -45,8 +45,3 @@ router.get(
 );
 
 module.exports = router;
-
-/**
- //FIXME:
- * 'mongoose-paginate-v2'
- */
