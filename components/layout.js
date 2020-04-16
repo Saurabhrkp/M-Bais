@@ -1,12 +1,11 @@
 import React from 'react';
 import { Footer } from './footer';
-import { Header } from './header';
+import Container from 'react-bootstrap/Container';
 
 export const Layout = (props) => {
   return (
     <>
-      <Header />
-      <main className='container mt-3'>{props.children}</main>
+      <Container fluid>{props.children}</Container>
       <Footer />
     </>
   );

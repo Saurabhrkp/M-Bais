@@ -8,10 +8,10 @@ const bodyParser = require('body-parser');
 const next = require('next');
 const dev = process.env.NODE_DEV !== 'production'; //true false
 
-nextApp.prepare();
 const app = express();
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler(); //part of next config
+nextApp.prepare();
 
 // Passport Config
 require('./lib/passport')(passport);
@@ -25,7 +25,11 @@ const userRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
 
 // Logging
-app.use(logger('dev'));
+app.use(
+  logger('dev', {
+    skip: (req) => req.url.includes('_next'),
+  })
+);
 
 // Body parser for Forms
 app.use(bodyParser.json());
@@ -55,25 +59,41 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use((req, res, next) => {
+  /* custom middleware to put our user data (from passport)
+   * on the req.user so we can access it as such anywhere
+   * in our app
+   */
+  res.locals.user = req.user || null;
+  next();
+});
+
+/* give all Next.js's requests to Next.js server */
+app.get('/_next/*', (req, res) => {
+  handle(req, res);
+});
+
 // Routes
 app.use('/posts', indexRouter);
 app.use('/api', userRouter);
 app.use('/admin', adminRouter);
 
-// for all the react stuff
+/* Error handling from async / await functions */
+app.use((err, req, res, next) => {
+  const { status = 500, message } = err;
+  res.status(status).json(message);
+});
+
+/* default route
+  - allows Next to handle all other routes
+  - includes the numerous `/_next/...` routes which must be exposed for the next app to work correctly
+  - includes 404'ing on unknown routes 
+*/
 app.get('*', (req, res) => {
   return handle(req, res);
 });
 
 // Connect flash
 app.use(flash());
-
-// Global variables
-app.use((req, res, next) => {
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error');
-  next();
-});
 
 module.exports = app;

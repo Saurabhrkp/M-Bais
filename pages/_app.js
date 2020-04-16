@@ -3,6 +3,8 @@ import Router from 'next/router';
 import NProgress from 'nprogress';
 import { DefaultSeo } from 'next-seo';
 
+import { Header } from '../components/header';
+
 const DEFAULT_SEO = {
   title: 'Blog Tutorial Web',
   description: 'Awesome blog tutorial website',
@@ -39,8 +41,9 @@ export default class CustomApp extends App {
 
     return (
       <>
+        <Header {...this.props} />
         <DefaultSeo {...DEFAULT_SEO} />
-        <Component {...pageProps} />;
+        <Component {...pageProps} />
       </>
     );
   }

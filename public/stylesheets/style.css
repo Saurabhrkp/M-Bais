@@ -4,6 +4,7 @@
 html {
   position: relative;
   min-height: 100%;
+  margin: 0;
 }
 
 body {
@@ -16,4 +17,5 @@ body {
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
   margin-bottom: 60px;
+  height: 100%;
 }
