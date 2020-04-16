@@ -47,7 +47,7 @@ exports.validateSignup = (req, res, next) => {
       throw new Error('Password confirmation does not match password');
     }
   });
-  const errors = validationResult(req);
+  const errors = validationResult(req).array();
   if (errors) {
     const firstError = errors.map((error) => error.msg)[0];
     return res.status(400).send(firstError);
