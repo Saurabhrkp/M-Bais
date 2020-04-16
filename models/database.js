@@ -4,7 +4,7 @@ const { Storage } = require('@google-cloud/storage');
 const path = require('path');
 
 // DB Config
-const { mongoURI, bucketURI } = require('./bin/keys');
+const { mongoURI, bucketURI } = require('../bin/keys');
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, {

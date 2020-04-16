@@ -15,7 +15,7 @@ const autoPopulatePostedBy = function (next) {
 };
 
 /* We're going to need to populate the 'postedBy' field virtually every time we do a findOne / find query, so we'll just do it as a pre hook here upon creating the schema */
-PostSchema.pre('findOne', autoPopulatePostedBy).pre(
+VideoSchema.pre('findOne', autoPopulatePostedBy).pre(
   'find',
   autoPopulatePostedBy
 );
