@@ -9,46 +9,56 @@ const { body, validationResult } = require('express-validator');
 const { bucket, uploadFile } = require('../models/database');
 const { getPublicUrl } = require('./controlHelper');
 
-exports.validateSignup = (req, res, next) => {
-  body('name')
-    .isLength({ min: 5 })
+exports.validateSignup = async (req, res, next) => {
+  await body('name')
     .trim()
-    .isAlphanumeric()
-    .withMessage('Name has non-alphanumeric characters.');
-  body('username')
-    .isLength({ min: 7 })
+    .isLength({ min: 1 })
+    .withMessage(`Name field can't be empty`)
+    .isAlpha()
+    .withMessage('Name has non-alpha characters.')
+    .run(req);
+  await body('username')
     .trim()
+    .isLength({ min: 6, max: 16 })
+    .withMessage('Username has to be longer than 6.')
     .isAlphanumeric()
     .withMessage('Username has non-alphanumeric characters.')
-    .custom((value) => {
-      return User.findOne({ username: value }).then((user) => {
-        if (user) {
-          return Promise.reject('Username already in use');
-        }
-      });
-    });
-  body('email')
+    .custom(async (value) => {
+      const user = await User.findOne({ username: value });
+      if (user) {
+        throw new Error('Username already in use');
+      }
+      return true;
+    })
+    .run(req);
+  await body('email')
+    .trim()
     .isEmail()
     .normalizeEmail()
-    .custom((value) => {
-      return User.findOne({ email: value }).then((user) => {
-        if (user) {
-          return Promise.reject('E-mail already in use');
-        }
-      });
-    });
-  body('password')
-    .isLength({ min: 5 })
-    .withMessage('must be at least 5 chars long')
+    .custom(async (value) => {
+      const user = await User.findOne({ email: value });
+      if (user) {
+        throw new Error('E-mail already in use');
+      }
+      return true;
+    })
+    .run(req);
+  await body('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 chars long')
     .matches(/\d/)
-    .withMessage('must contain a number');
-  body('passwordConfirmation').custom((value, { req }) => {
-    if (value !== req.body.password) {
-      throw new Error('Password confirmation does not match password');
-    }
-  });
+    .withMessage('Password must contain a number')
+    .run(req);
+  await body('passwordConfirmation')
+    .custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error('Password confirmation does not match password');
+      }
+      return true;
+    })
+    .run(req);
   const errors = validationResult(req).array();
-  if (errors) {
+  if (errors.length > 0) {
     const firstError = errors.map((error) => error.msg)[0];
     return res.status(400).send(firstError);
   }
@@ -58,7 +68,7 @@ exports.validateSignup = (req, res, next) => {
 exports.signup = async (req, res) => {
   const { name, email, password, username } = req.body;
   const user = await new User({ name, email, username, password });
-  await bcrypt.genSalt(10, (err, salt) => {
+  bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(user.password, salt, (err, hash) => {
       if (err) {
         return res.status(500).send(err.message);
