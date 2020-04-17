@@ -4,18 +4,18 @@ const Image = require('../models/Image');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const jimp = require('jimp');
 const { body, validationResult } = require('express-validator');
 const { bucket, uploadFile } = require('../models/database');
 const { getPublicUrl } = require('./controlHelper');
+
+// ! TODO: Resize Image before storing
+// const jimp = require('jimp');
 
 exports.validateSignup = async (req, res, next) => {
   await body('name')
     .trim()
     .isLength({ min: 1 })
     .withMessage(`Name field can't be empty`)
-    .isAlpha()
-    .withMessage('Name has non-alpha characters.')
     .run(req);
   await body('username')
     .trim()
@@ -157,12 +157,11 @@ exports.getUserFeed = async (req, res) => {
   res.json(users);
 };
 
-exports.uploadAvatar = async (req, res, next) => {
-  uploadFile.single('avatar');
-  const image = await jimp.read(req.file.buffer);
-  req.file = await image.resize(250, jimp.AUTO);
-  // image.write(req.file);
-};
+exports.uploadAvatar = uploadFile.single('avatar');
+// ? Resize Avatar Image
+// const image = await jimp.read(req.file.buffer);
+// req.file = await image.resize(250, jimp.AUTO);
+// image.write(req.file);
 
 exports.resizeAvatar = async (req, res, next) => {
   if (!req.file) {
@@ -194,10 +193,10 @@ exports.resizeAvatar = async (req, res, next) => {
     image.save((err, image) => {
       if (err) return res.send(err);
     });
+    req.body.avatar = image.imageURL;
     next();
   });
   stream.end(req.file.buffer);
-  next();
 };
 
 exports.updateUser = async (req, res) => {

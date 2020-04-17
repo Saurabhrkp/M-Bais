@@ -58,14 +58,14 @@ Working on Project to show-case for business.
       - userController.signout ✔
   - ## PARAMS userId
     - userController.getUserById
-  - ## /users/:userId ✖
+  - ## /users/:userId ⚡
     - ### GET ✔
       - userController.getAuthUser ✔
-    - ### PUT ✖
+    - ### PUT ✔
       - userController.checkAuth ✔
-      - userController.uploadAvatar ✖
-        - userController.resizeAvatar ✖
-        - userController.updateUser ✖
+      - userController.uploadAvatar ✔
+        - userController.resizeAvatar ✔
+        - userController.updateUser ✔
     - ### DELETE ✔
       - userController.checkAuth ✔
         - userController.deleteUser ✔

@@ -10,6 +10,8 @@ const { mongoURI, bucketURI } = require('../bin/keys');
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
 });
 
 // Promise of mongoose
@@ -29,7 +31,7 @@ connectionURI.on(
 
 // Instantiate a storage client
 const storage = new Storage({
-  keyFilename: path.join(__dirname, './bin/mech-bais.json'),
+  keyFilename: path.join(__dirname, '../bin/mech-bais.json'),
   projectId: 'mech-bais',
 });
 
