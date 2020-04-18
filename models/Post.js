@@ -3,8 +3,8 @@ const mongodbErrorHandler = require('mongoose-mongodb-errors');
 const shortId = require('crypto-random-string');
 var Schema = mongoose.Schema;
 
-async function URI() {
-  var random = await shortId({ length: 6, type: 'distinguishable' });
+function URI() {
+  var random = shortId({ length: 6, type: 'distinguishable' });
   var url = this.title + ' ' + random;
   return url.replace(/\s+/g, '-');
 }
@@ -17,7 +17,7 @@ var PostSchema = new Schema(
     body: { type: String, required: false },
     description: { type: String, required: false },
     publishedDate: { type: Date, default: Date.now },
-    image: [{ type: Schema.ObjectId, ref: 'Image', required: false }],
+    image: { type: Schema.ObjectId, ref: 'Image', required: false },
     tags: [{ type: String }],
     url: { type: String, required: false, default: URI },
     likes: [{ type: Schema.ObjectId, ref: 'User' }],
@@ -48,6 +48,7 @@ PostSchema.virtual('metaDescription').get(function () {
 const autoPopulatePostedBy = function (next) {
   this.populate('video', '_id preview videoURL');
   this.populate('author', '_id name avatar');
+  this.populate('image', '_id imageURL filename');
   this.populate('comments.postedBy', '_id name avatar');
   next();
 };

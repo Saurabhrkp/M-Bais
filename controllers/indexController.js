@@ -1,25 +1,26 @@
 // Load Post model
 const Post = require('../models/Post');
-const jimp = require('jimp');
+const Image = require('../models/Image');
 const mongoose = require('mongoose');
+
+// ? FIXME: Resizing
+// const jimp = require('jimp');
 
 // DB Config
 const { bucket, uploadFile } = require('../models/database');
 const { getPublicUrl, StreamCloudFile } = require('./controlHelper');
 
-exports.uploadImage = async (req, res, next) => {
-  uploadFile.any('image');
-  const image = await jimp.read(req.file.buffer);
-  req.file = await image.resize(750, jimp.AUTO);
-  // image.write(req.file);
-};
+exports.uploadImage = uploadFile.single('image');
+// const image = await jimp.read(req.file.buffer);
+// req.file = await image.resize(750, jimp.AUTO);
+// image.write(req.file);
 
 exports.resizeImage = async (req, res, next) => {
   if (!req.file) {
     return next();
   }
   const extension = req.file.mimetype.split('/')[1];
-  const gcsFileName = `${req.file.filename
+  const gcsFileName = `${req.file.originalname
     .trim()
     .replace(/\s+/g, '-')}-${Date.now()}.${extension}`;
   const file = bucket.file(gcsFileName);
@@ -44,10 +45,10 @@ exports.resizeImage = async (req, res, next) => {
     image.save((err, image) => {
       if (err) return res.send(err);
     });
+    req.body.image = image.id;
     next();
   });
   stream.end(req.file.buffer);
-  next();
 };
 
 exports.addPost = async (req, res) => {

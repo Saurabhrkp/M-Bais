@@ -5,46 +5,46 @@ Working on Project to show-case for business.
 
 <!-- ? # TODO: Check All Routes 
 
-- # /posts, index
-  - ## PARAMS postID
-    - indexController.getPostByIds
-  - ## /new
-    - ### POST
-      - userController.checkAuth
-      - indexController.uploadImage
-        - indexController.resizeImage
-        - indexController.addPost
+- # /posts, index ⚡
+  - ## PARAMS postID ✔
+    - indexController.getPostByIds ✔
+  - ## /new ❔
+    - ### POST ✔
+      - userController.checkAuth ✔
+      - indexController.uploadImage ✔
+        - indexController.resizeImage ❔
+        - indexController.addPost ✔
   - ## PARAMS username
-  - ## /by/:username
-    - ### GET
-        - indexController.getPostsByUser
-  - ## /feed
-    - ### GET
-      - indexController.getPostFeed
+  - ## /by/:username ⚡
+    - ### GET ✔
+        - indexController.getPostsByUser ✔
+  - ## /feed ⚡
+    - ### GET ✔
+      - indexController.getPostFeed ✔
   - ## PARAMS filename
   - ## /play/:filename
-    - ### GET
+    - ### GET 
       - indexController.playVideo
-  - ## /delete
-    - ### DELETE
-      - userController.checkAuth
-        - indexController.deletePost
-  - ## /comment
-    - ### PUT
-      - userController.checkAuth
-        - indexController.toggleComment
-  - ## /uncomment
-    - ### PUT
-      - userController.checkAuth
-        - indexController.toggleComment
-  - ## /like
-    - ### PUT
-      - userController.checkAuth
-        - indexController.toggleLike
-  - ## /unlike
-    - ### PUT
-      - userController.checkAuth
-        - indexController.toggleLike
+  - ## /delete ⚡
+    - ### DELETE ✔
+      - userController.checkAuth ✔
+        - indexController.deletePost ✔
+  - ## /comment ⚡
+    - ### PUT ✔
+      - userController.checkAuth ✔
+        - indexController.toggleComment ✔
+  - ## /uncomment ⚡
+    - ### PUT ✔
+      - userController.checkAuth ✔
+        - indexController.toggleComment ✔
+  - ## /like ⚡
+    - ### PUT ✔
+      - userController.checkAuth ✔
+        - indexController.toggleLike ✔
+  - ## /unlike ⚡
+    - ### PUT ✔
+      - userController.checkAuth ✔
+        - indexController.toggleLike ✔
 - # /api, user
   - ## /signup ⚡
     - ### POST ✔

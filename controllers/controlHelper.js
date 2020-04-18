@@ -35,7 +35,7 @@ const sendUploadToGCS = (req, res, next) => {
   req.files.forEach((file) => {
     const type = file.mimetype.split('/')[0];
     const extension = file.mimetype.split('/')[1];
-    const gcsFileName = `${file.filename
+    const gcsFileName = `${file.originalname
       .trim()
       .replace(/\s+/g, '-')}-${Date.now()}.${extension}`;
     if (type !== 'image/') {
