@@ -74,15 +74,18 @@ exports.getPostById = async (req, res, next, id) => {
 };
 
 exports.deletePost = async (req, res) => {
-  const { _id } = req.post;
-
+  const { _id, image } = req.post;
   if (!req.isPoster) {
     return res.status(400).json({
       message: 'You are not authorized to perform this action',
     });
   }
+  const deletedImage = await Image.findOneAndDelete({
+    filename: image.filename,
+  });
+  bucket.file(image.filename).delete();
   const deletedPost = await Post.findOneAndDelete({ _id });
-  res.json(deletedPost);
+  res.json({ deletedPost, deletedImage });
 };
 
 exports.getPostsByUser = async (req, res) => {
