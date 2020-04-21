@@ -5,10 +5,27 @@ import ActiveLink from './ActiveLink';
 
 import { signoutUser } from '../lib/auth';
 
-export const Header = ({ pageProps: { auth } }) => {
+export const Header = ({ pageProps: { auth }, router }) => {
   const { user = {} } = auth || {};
+  // (function prefetchPages() {
+  //   if (typeof window !== 'undefined') {
+  //     router.prefetch(router.pathname);
+  //   }
+  // })();
+
+  // const handleClick = (event) => {
+  //   router.push(href);
+  // };
+
+  // const isCurrentPath = router.pathname === href || router.asPath === href;
   return (
-    <Navbar bg='dark' variant='dark' expand='md' collapseOnSelect>
+    <Navbar
+      bg='dark'
+      style={{ padding: '0px 16px' }}
+      variant='dark'
+      expand='md'
+      collapseOnSelect
+    >
       <Navbar.Brand href='/'>Flask/NextJs App</Navbar.Brand>
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       <Navbar.Collapse id='responsive-navbar-nav'>

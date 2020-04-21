@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const { catchErrors } = require('../controllers/controlHelper');
+const { catchErrors, uploadImage } = require('../controllers/controlHelper');
 
 /**
  * AUTH ROUTES: /api/auth
@@ -31,7 +31,7 @@ router
   .put(
     userController.checkAuth,
     userController.uploadAvatar,
-    catchErrors(userController.resizeAvatar),
+    catchErrors(uploadImage),
     catchErrors(userController.updateUser)
   )
   .delete(userController.checkAuth, catchErrors(userController.deleteUser));

@@ -1,27 +1,26 @@
 // Load Video model
 const Video = require('../models/Video');
+const User = require('../models/User');
 const Post = require('../models/Post');
 const Image = require('../models/Image');
-const { sendUploadToGCS } = require('./controlHelper');
+// const { sendUploadToGCS } = require('./controlHelper');
 // DB Config
-const { bucket, uploadFile: upload } = require('../models/database');
+const { bucket, uploadFile: upload } = require('../models/Database');
 
-exports.uploadVideo = async (req, res, next) => {
-  await upload.fields([
-    {
-      name: 'video',
-      maxCount: 1,
-    },
-    {
-      name: 'images',
-      maxCount: 1,
-    },
-  ]);
-};
+exports.uploadVideo = upload.fields([
+  {
+    name: 'video',
+    maxCount: 1,
+  },
+  {
+    name: 'images',
+    maxCount: 1,
+  },
+]);
 
 exports.uploadToGCS = async (req, res, next) => {
   req.body.author = req.user.id;
-  await sendUploadToGCS(req, res);
+  // await sendUploadToGCS(req, res, next);
   const post = await new Post(req.body).save();
   await Post.populate(post, {
     path: 'author',
@@ -49,6 +48,10 @@ exports.getAdminFeed = async (req, res) => {
     '_id title url description '
   );
   res.json(posts);
+};
+
+exports.sendData = (req, res, data) => {
+  res.json(req.locals.data);
 };
 
 exports.updatePost = async (req, res) => {
@@ -93,30 +96,32 @@ exports.deletePost = async (req, res) => {
   res.json(deletedPost);
 };
 
-exports.deleteVideo = (req, res, next) => {
+exports.deleteVideo = async (req, res, next) => {
   const { _id, video } = req.post;
-  Post.findOneAndUpdate(_id, { $pull: { video: video._id } });
-  Video.findOneAndDelete({ _id: video.filename }).then(() => {
-    const file = bucket.file(video.filename);
-    file
-      .delete()
-      .then(() => {
-        res.json({ status: 'Deleted' });
-      })
-      .catch((err) => res.status(404).json({ err: err.message }));
+  let videoResult = {};
+  videoResult.fromPost = await Post.findOneAndUpdate(_id, {
+    $pull: { video: video._id },
   });
+  videoResult.fromVideo = await Video.findOneAndDelete({
+    filename: video.filename,
+  });
+  videoResult.fromBucket = await bucket.file(video.filename).delete()[0];
+  next(videoResult);
 };
 
-exports.deleteImage = (req, res, next) => {
+exports.deleteImage = async (req, res, next) => {
   const { _id, image } = req.post;
-  Post.findOneAndUpdate(_id, { $pull: { image: image._id } });
-  Image.findOneAndDelete({ _id: image.filename }).then(() => {
-    const file = bucket.file(image.filename);
-    file
-      .delete()
-      .then(() => {
-        res.json({ status: 'Deleted' });
-      })
-      .catch((err) => res.status(404).json({ err: err.message }));
+  let imageResult = {};
+  imageResult.fromPost = await Post.findOneAndUpdate(_id, {
+    $pull: { image: image._id },
   });
+  imageResult.fromImage = await Image.findOneAndDelete({
+    filename: image.filename,
+  });
+  imageResult.fromBucket = await bucket.file(image.filename).delete()[0];
+  next(imageResult);
+};
+
+exports.sendResults = (req, res, results) => {
+  res.json(results);
 };

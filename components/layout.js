@@ -1,12 +1,12 @@
 import React from 'react';
-import { Footer } from './footer';
 import Container from 'react-bootstrap/Container';
 
 export const Layout = (props) => {
   return (
     <>
-      <Container fluid>{props.children}</Container>
-      <Footer />
+      <Container fluid className='d-inline-block'>
+        {props.children}
+      </Container>
     </>
   );
 };

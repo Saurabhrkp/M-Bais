@@ -1,203 +1,149 @@
-import Typography from "@material-ui/core/Typography";
-import Avatar from "@material-ui/core/Avatar";
-import FormControl from "@material-ui/core/FormControl";
-import Paper from "@material-ui/core/Paper";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import Button from "@material-ui/core/Button";
-import Snackbar from "@material-ui/core/Snackbar";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Slide from "@material-ui/core/Slide";
-import Gavel from "@material-ui/icons/Gavel";
-import VerifiedUserTwoTone from "@material-ui/icons/VerifiedUserTwoTone";
-import withStyles from "@material-ui/core/styles/withStyles";
-import Link from "next/link";
+import React, { useState } from 'react';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import Toast from 'react-bootstrap/Toast';
+import { Layout } from '../components/layout';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Link from 'next/link';
 
-import { signupUser } from "../lib/auth";
+import { signupUser } from '../lib/auth';
 
-function Transition(props) {
-  return <Slide direction="up" {...props} />;
-}
+const Signup = () => {
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const [error, setError] = useState('');
+  const [createdUser, setCreatedUser] = useState('');
+  const [openError, setOpenError] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-class Signup extends React.Component {
-  state = {
-    name: "",
-    email: "",
-    password: "",
-    error: "",
-    createdUser: "",
-    openError: false,
-    openSuccess: false,
-    isLoading: false
-  };
+  const handleClose = () => setOpenError(false);
 
-  handleClose = () => this.setState({ openError: false });
-
-  handleChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
-  };
-
-  handleSubmit = event => {
-    const { name, email, password } = this.state;
-
+  const handleSubmit = (event) => {
     event.preventDefault();
-    const user = { name, email, password };
-    this.setState({ isLoading: true, error: "" });
+    const user = { name, email, username, password, passwordConfirmation };
+    setError('');
+    setIsLoading(true);
     signupUser(user)
-      .then(createdUser => {
-        this.setState({
-          createdUser,
-          error: "",
-          openSuccess: true,
-          isLoading: false
-        });
+      .then((data) => {
+        setCreatedUser(data);
+        setError('');
+        setOpenSuccess(true);
+        setIsLoading(false);
       })
-      .catch(this.showError);
+      .catch(showError);
   };
 
-  showError = err => {
+  const showError = (err) => {
     const error = (err.response && err.response.data) || err.message;
-    this.setState({ error, openError: true, isLoading: false });
+    setError(error);
+    setOpenError(true);
+    setIsLoading(false);
   };
 
-  render() {
-    const { classes } = this.props;
-    const {
-      error,
-      openError,
-      openSuccess,
-      createdUser,
-      isLoading
-    } = this.state;
-
-    return (
-      <div className={classes.root}>
-        <Paper className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <Gavel />
-          </Avatar>
-          <Typography variant="h5" component="h1">
-            Sign up
-          </Typography>
-
-          <form onSubmit={this.handleSubmit} className={classes.form}>
-            <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="name">Name</InputLabel>
-              <Input name="name" type="text" onChange={this.handleChange} />
-            </FormControl>
-            <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="email">Email</InputLabel>
-              <Input name="email" type="email" onChange={this.handleChange} />
-            </FormControl>
-            <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="password">Password</InputLabel>
-              <Input
-                name="password"
-                type="password"
-                onChange={this.handleChange}
+  return (
+    <Layout>
+      <Row className='justify-content-center align-items-stretch'>
+        <Col xs={11} lg={5} md={8} className='shadow p-3 m-5 bg-white rounded'>
+          <h1>Sign up</h1>
+          <hr />
+          <Form onSubmit={handleSubmit}>
+            <Form.Group>
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                name='name'
+                type='text'
+                onChange={(event) => setName(event.target.value)}
               />
-            </FormControl>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              disabled={isLoading}
-              className={classes.submit}
-            >
-              {isLoading ? "Signing up..." : "Sign up"}
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                name='username'
+                type='text'
+                onChange={(event) => setUsername(event.target.value)}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                name='email'
+                type='email'
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                name='password'
+                type='password'
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Password Confirmation</Form.Label>
+              <Form.Control
+                name='passwordConfirmation'
+                type='password'
+                onChange={(event) =>
+                  setPasswordConfirmation(event.target.value)
+                }
+              />
+            </Form.Group>
+            <Button type='submit' disabled={isLoading}>
+              {isLoading ? 'Signing up...' : 'Sign up'}
             </Button>
-          </form>
-
-          {/* Error Snackbar */}
-          {error && (
-            <Snackbar
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right"
-              }}
-              open={openError}
-              onClose={this.handleClose}
-              autoHideDuration={6000}
-              message={<span className={classes.snack}>{error}</span>}
-            />
-          )}
-        </Paper>
+          </Form>
+        </Col>
+        {/* Error Snackbar */}
+        {error && (
+          <Toast
+            onClose={handleClose}
+            show={openError}
+            delay={3000}
+            autohide
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+            }}
+          >
+            <Toast.Header>
+              <strong className='mr-auto'>Error</strong>
+            </Toast.Header>
+            <Toast.Body>{error}</Toast.Body>
+          </Toast>
+        )}
 
         {/* Success Dialog */}
-        <Dialog
-          open={openSuccess}
-          disableBackdropClick={true}
-          TransitionComponent={Transition}
+        <Modal
+          show={openSuccess}
+          size='lg'
+          aria-labelledby='contained-modal-title-vcenter'
+          centered
         >
-          <DialogTitle>
-            <VerifiedUserTwoTone className={classes.icon} />
-            New Account
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              User {createdUser} successfully created!
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button color="primary" variant="contained">
-              <Link href="/signin">
-                <a className={classes.signinLink}>Sign in</a>
+          <Modal.Header closeButton>
+            <Modal.Title id='contained-modal-title-vcenter'>
+              New Account
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>User {createdUser} successfully created!</Modal.Body>
+          <Modal.Footer>
+            <Button color='primary' variant='contained'>
+              <Link href='/signin'>
+                <a>Sign in</a>
               </Link>
             </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
-    );
-  }
-}
+          </Modal.Footer>
+        </Modal>
+      </Row>
+    </Layout>
+  );
+};
 
-const styles = theme => ({
-  root: {
-    width: "auto",
-    display: "block",
-    marginLeft: theme.spacing.unit * 3,
-    marginRight: theme.spacing.unit * 3,
-    [theme.breakpoints.up("md")]: {
-      width: 400,
-      marginLeft: "auto",
-      marginRight: "auto"
-    }
-  },
-  paper: {
-    marginTop: theme.spacing.unit * 8,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: theme.spacing.unit * 2
-  },
-  signinLink: {
-    textDecoration: "none",
-    color: "white"
-  },
-  avatar: {
-    margin: theme.spacing.unit,
-    backgroundColor: theme.palette.secondary.main
-  },
-  form: {
-    width: "100%",
-    marginTop: theme.spacing.unit
-  },
-  submit: {
-    marginTop: theme.spacing.unit * 2
-  },
-  snack: {
-    color: theme.palette.secondary.light
-  },
-  icon: {
-    padding: "0px 2px 2px 0px",
-    verticalAlign: "middle",
-    color: "green"
-  }
-});
-
-export default withStyles(styles)(Signup);
+export default Signup;

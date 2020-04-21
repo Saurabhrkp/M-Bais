@@ -17,7 +17,7 @@ nextApp.prepare();
 require('./lib/passport')(passport);
 
 // Calling MongoDB
-require('./models/database');
+require('./models/Database');
 
 // Calling routes
 const indexRouter = require('./routes/index');

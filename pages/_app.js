@@ -4,6 +4,7 @@ import NProgress from 'nprogress';
 import { DefaultSeo } from 'next-seo';
 
 import { Header } from '../components/header';
+import { Footer } from '../components/footer';
 
 const DEFAULT_SEO = {
   title: 'Blog Tutorial Web',
@@ -44,6 +45,7 @@ export default class CustomApp extends App {
         <Header {...this.props} />
         <DefaultSeo {...DEFAULT_SEO} />
         <Component {...pageProps} />
+        <Footer />
       </>
     );
   }

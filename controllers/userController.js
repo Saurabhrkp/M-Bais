@@ -5,7 +5,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
-const { bucket, uploadFile } = require('../models/database');
+const { bucket, uploadFile } = require('../models/Database');
 const { getPublicUrl } = require('./controlHelper');
 
 // ! TODO: Resize Image before storing
@@ -157,47 +157,11 @@ exports.getUserFeed = async (req, res) => {
   res.json(users);
 };
 
-exports.uploadAvatar = uploadFile.single('avatar');
+exports.uploadAvatar = uploadFile.any('avatar');
 // ? Resize Avatar Image
 // const image = await jimp.read(req.file.buffer);
 // req.file = await image.resize(250, jimp.AUTO);
 // image.write(req.file);
-
-exports.resizeAvatar = async (req, res, next) => {
-  if (!req.file) {
-    return next();
-  }
-  const extension = req.file.mimetype.split('/')[1];
-  const gcsFileName = `${req.user.name
-    .trim()
-    .replace(/\s+/g, '-')}-${Date.now()}.${extension}`;
-  const file = bucket.file(gcsFileName);
-  const stream = file.createWriteStream({
-    gzip: true,
-    metadata: {
-      contentType: req.file.mimetype,
-    },
-  });
-  stream.on('error', (err) => {
-    req.file.cloudStorageError = err;
-    next(err);
-  });
-  stream.on('finish', () => {
-    req.file.cloudStorageObject = gcsFileName;
-    file.makePublic();
-    req.file.avatar = getPublicUrl(bucket.name, gcsFileName);
-    const image = new Image({
-      imageURL: req.file.avatar,
-      filename: gcsFileName,
-    });
-    image.save((err, image) => {
-      if (err) return res.send(err);
-    });
-    req.body.avatar = image.imageURL;
-    next();
-  });
-  stream.end(req.file.buffer);
-};
 
 exports.updateUser = async (req, res) => {
   req.body.updatedAt = new Date().toISOString();

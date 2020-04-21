@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 // const jimp = require('jimp');
 
 // DB Config
-const { bucket, uploadFile } = require('../models/database');
+const { bucket, uploadFile } = require('../models/Database');
 const { getPublicUrl, StreamCloudFile } = require('./controlHelper');
 
 exports.uploadImage = uploadFile.single('image');
