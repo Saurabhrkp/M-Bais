@@ -55,9 +55,9 @@ const uploadVideo = async (req, res, next) => {
       const videos = new Video();
       videos.videoURL = video.gcsUrl;
       videos.filename = gcsFileName;
-      req.locals.data = await videos.save();
-      console.log(req.locals.data);
-      next(req.locals.data);
+      await videos.save();
+      req.body.video = videos.id;
+      next();
     })
     .end(video.buffer);
 };
@@ -66,7 +66,12 @@ const uploadImage = async (req, res, next) => {
   if (!req.files) {
     return next();
   }
-  let photo = req.files['avatar'][0] || req.files['image'][0] || req.files[0];
+  let photo;
+  req.files['avatar']
+    ? (photo = req.files['avatar'][0])
+    : req.files['image']
+    ? (photo = req.files['image'][0])
+    : (photo = req.files[0]);
   const extension = photo.mimetype.split('/')[1];
   const gcsFileName = `${req.user.name
     .trim()
@@ -83,7 +88,7 @@ const uploadImage = async (req, res, next) => {
       photo.cloudStorageError = err;
       next(err);
     })
-    .on('finish', () => {
+    .on('finish', async () => {
       photo.cloudStorageObject = gcsFileName;
       file.makePublic();
       photo.avatar = getPublicUrl(bucket.name, gcsFileName);
@@ -91,9 +96,9 @@ const uploadImage = async (req, res, next) => {
         imageURL: photo.avatar,
         filename: gcsFileName,
       });
-      image.save();
+      await image.save();
       req.body.avatar = image.imageURL;
-      req.body.image = image._id;
+      req.body.image = image.id;
       next();
     })
     .end(photo.buffer);
