@@ -3,8 +3,6 @@ const Video = require('../models/Video');
 const Image = require('../models/Image');
 const path = require('path');
 const { bucket } = require('../models/Database');
-// const ffmpeg = require('ffmpeg-static');
-// const genThumbnail = require('simple-thumbnail');
 
 /* Error handler for async / await functions */
 const catchErrors = (fn) => {
@@ -153,15 +151,6 @@ const StreamCloudFile = (req, res, files) => {
 const escapeRegex = (text) => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 };
-
-// ! FIX Thumbnail
-// genThumbnail(video.avatar, req.preview, '80%', {
-//   path: ffmpeg,
-//   seek: '00:00:02.10',
-// });
-
-// videos.preview.data = req.preview;
-// videos.preview.contentType = 'image/jpg';
 
 module.exports = {
   getPublicUrl: getPublicUrl,
