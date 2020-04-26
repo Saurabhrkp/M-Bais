@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const indexController = require('../controllers/indexController');
 const userController = require('../controllers/userController');
-const { catchErrors } = require('../controllers/controlHelper');
+const { catchErrors, uploadImage } = require('../controllers/controlHelper');
 
 /**
  * POST ROUTES: /posts/
@@ -44,8 +44,8 @@ router.delete(
 router.post(
   '/:username/new',
   userController.checkAuth,
-  indexController.uploadImage,
-  catchErrors(indexController.resizeImage),
+  indexController.uploadPhoto,
+  catchErrors(uploadImage),
   catchErrors(indexController.addPost)
 );
 
