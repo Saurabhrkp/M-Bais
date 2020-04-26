@@ -26,19 +26,23 @@ router
     catchErrors(uploadVideo),
     catchErrors(uploadImage),
     catchErrors(adminController.savePost)
+  );
+
+// ! PUT Can be modified for replacing Video and Image
+router
+  .route('/:postId')
+  .delete(
+    userController.checkAuth,
+    adminController.deleteVideo,
+    adminController.deleteImage,
+    catchErrors(adminController.deletePost)
   )
   .put(
     userController.checkAuth,
     adminController.uploadVideo,
     catchErrors(uploadVideo),
     catchErrors(uploadImage),
-    catchErrors(adminController.savePost)
-  )
-  .delete(
-    userController.checkAuth,
-    adminController.deleteVideo,
-    adminController.deleteImage,
-    catchErrors(adminController.deletePost)
+    catchErrors(adminController.updatePost)
   );
 
 router.get('/play/:filename', indexController.playVideo);

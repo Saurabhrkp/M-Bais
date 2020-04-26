@@ -48,6 +48,10 @@ exports.updatePost = async (req, res) => {
     { $set: req.body },
     { new: true, runValidators: true }
   );
+  await Post.populate(updatedPost, {
+    path: 'author video image',
+    select: '_id name avatar videoURL imageURL',
+  });
   res.json(updatedPost);
 };
 
@@ -59,6 +63,9 @@ exports.deletePost = async (req, res) => {
 
 exports.deleteVideo = async (req, res, next) => {
   const { _id, video } = req.post;
+  if (video === null) {
+    return next();
+  }
   await Post.findOneAndUpdate(
     { _id },
     {
@@ -74,6 +81,9 @@ exports.deleteVideo = async (req, res, next) => {
 
 exports.deleteImage = async (req, res, next) => {
   const { _id, image } = req.post;
+  if (image === null) {
+    return next();
+  }
   await Post.findOneAndUpdate(
     { _id },
     {
