@@ -105,7 +105,7 @@ const uploadImage = async (req, res, next) => {
 };
 
 const StreamCloudFile = (req, res, files) => {
-  const video = bucket.file(files.name);
+  const video = bucket.file(files);
   video
     .get()
     .then((data) => {

@@ -2,7 +2,7 @@ import App from 'next/app';
 import Router from 'next/router';
 import NProgress from 'nprogress';
 import { DefaultSeo } from 'next-seo';
-// import 'video.js/dist/video-js.css';
+import 'video.js/dist/video-js.css';
 
 const DEFAULT_SEO = {
   title: 'Mech-Bias',

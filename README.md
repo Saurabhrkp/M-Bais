@@ -77,35 +77,46 @@ Working on Project to show-case for business.
       - userController.checkAuth ✔
         - userController.getUserFeed ❔
 - # /admin, admin
-  - ## userId
-    - userController.getUserById
-  - ## ROUTE /article/:userId
-    - ### GET
-      - userController.getAuthUser
-        - adminController.getAdminFeed
-    - ### POST
+  - ## userId ⚡
+    - userController.getUserById ✔
+  - ## postId ⚡
+    - indexController.getPostById ✔
+  - ## ROUTE /article/:userId ⚡
+    - ### GET ✔
+      - userController.getAuthUser ✔
+        - adminController.getAdminFeed ✔
+    - ### POST ✔
+      - userController.checkAuth ✔
+      - adminController.uploadVideo ✔
+        - uploadVideo ✔
+        - uploadImage ✔
+        - adminController.savePost ✔
+  - ## ROUTE /:postId ❔
+    - ### PUT  ❔
       - userController.checkAuth
       - adminController.uploadVideo
-        - adminController.savePost
-    - ### PUT
-      - userController.checkAuth
-      - adminController.uploadVideo
-        - adminController.savePost
-    - ### DELETE
-      - userController.checkAuth
-      - userController.deleteUser
+        - uploadVideo
+        - uploadImage
+        - adminController.updatePost
+    - ### DELETE ⚡
+      - userController.checkAuth ✔
+      - deleteVideo ✔
+      - deleteImage ✔
+      - userController.deletePost ✔
   - ## /play/:filename
-    - ### GET
+    - ### GET  ❔
       - indexController.playVideo
-  - ## /all/users
-    - ### GET
-      - adminController.getUsers
-  - ## /video/:filename
-    - ### DELETE
-      - adminController.deleteVideo
-  - ## /image/:filename
-    - ## DELETE
-      - adminController.deleteImage -->
+  - ## /all/users ⚡
+    - ### GET ✔
+      - adminController.getUsers ✔
+  - ## /:postId/video ⚡
+    - ### DELETE ✔
+      - adminController.deleteVideo ✔
+        - updatePost ✔
+  - ## /:postId/image ⚡
+    - ## DELETE ✔
+      - adminController.deleteImage ✔
+        - updatePost ✔ -->
 
 <!--
 ? USE ME For Creating Good Article
