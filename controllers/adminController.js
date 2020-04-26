@@ -3,7 +3,7 @@ const Video = require('../models/Video');
 const User = require('../models/User');
 const Post = require('../models/Post');
 const Image = require('../models/Image');
-// const { sendUploadToGCS } = require('./controlHelper');
+
 // DB Config
 const { bucket, uploadFile: upload } = require('../models/Database');
 
@@ -18,9 +18,8 @@ exports.uploadVideo = upload.fields([
   },
 ]);
 
-exports.uploadToGCS = async (req, res, next) => {
+exports.savePost = async (req, res, next) => {
   req.body.author = req.user.id;
-  // await sendUploadToGCS(req, res, next);
   const post = await new Post(req.body).save();
   await Post.populate(post, {
     path: 'author',
@@ -50,10 +49,6 @@ exports.getAdminFeed = async (req, res) => {
   res.json(posts);
 };
 
-exports.sendData = (req, res, data) => {
-  res.json(req.locals.data);
-};
-
 exports.updatePost = async (req, res) => {
   req.body.updatedAt = new Date().toISOString();
   const updatedPost = await Post.findOneAndUpdate(
@@ -65,33 +60,7 @@ exports.updatePost = async (req, res) => {
 };
 
 exports.deletePost = async (req, res) => {
-  const { _id, video, image = {} } = req.post;
-
-  if (!req.isPoster) {
-    return res.status(400).json({
-      message: 'You are not authorized to perform this action',
-    });
-  }
-  await Video.findOneAndDelete({ _id: video.filename }).then(() => {
-    const file = bucket.file(video.filename);
-    file
-      .delete()
-      .then(() => {
-        res.json({ status: 'Deleted' });
-      })
-      .catch((err) => res.status(404).json({ err: err.message }));
-  });
-  if (image !== {}) {
-    await Image.findOneAndDelete({ _id: image.filename }).then(() => {
-      const file = bucket.file(image.filename);
-      file
-        .delete()
-        .then(() => {
-          res.json({ status: 'Deleted' });
-        })
-        .catch((err) => res.status(404).json({ err: err.message }));
-    });
-  }
+  const { _id } = req.post;
   const deletedPost = await Post.findOneAndDelete({ _id });
   res.json(deletedPost);
 };
@@ -120,8 +89,4 @@ exports.deleteImage = async (req, res, next) => {
   });
   imageResult.fromBucket = await bucket.file(image.filename).delete()[0];
   next(imageResult);
-};
-
-exports.sendResults = (req, res, results) => {
-  res.json(results);
 };

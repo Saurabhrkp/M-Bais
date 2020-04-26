@@ -3,7 +3,11 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 const indexController = require('../controllers/indexController');
 const userController = require('../controllers/userController');
-const { catchErrors, uploadVideo } = require('../controllers/controlHelper');
+const {
+  catchErrors,
+  uploadVideo,
+  uploadImage,
+} = require('../controllers/controlHelper');
 
 /**
  * USER ROUTES: /admin
@@ -17,12 +21,16 @@ router
   .post(
     userController.checkAuth,
     adminController.uploadVideo,
-    catchErrors(adminController.uploadToGCS)
+    catchErrors(uploadVideo),
+    catchErrors(uploadImage),
+    catchErrors(adminController.savePost)
   )
   .put(
     userController.checkAuth,
     adminController.uploadVideo,
-    catchErrors(adminController.uploadToGCS)
+    catchErrors(uploadVideo),
+    catchErrors(uploadImage),
+    catchErrors(adminController.savePost)
   )
   .delete(
     userController.checkAuth,
@@ -30,13 +38,7 @@ router
     adminController.deleteImage,
     catchErrors(adminController.deletePost)
   );
-router.post(
-  '/upload',
-  userController.checkAuth,
-  adminController.uploadVideo,
-  catchErrors(uploadVideo),
-  catchErrors(adminController.sendData)
-);
+
 router.get('/play/:filename', indexController.playVideo);
 
 router.get('/all/users', adminController.getUsers);
@@ -44,13 +46,13 @@ router.get('/all/users', adminController.getUsers);
 router.delete(
   '/video/:filename',
   adminController.deleteVideo,
-  catchErrors(adminController.sendResults)
+  catchErrors(adminController.updatePost)
 );
 
 router.delete(
   '/image/:filename',
   adminController.deleteImage,
-  catchErrors(adminController.sendResults)
+  catchErrors(adminController.updatePost)
 );
 
 module.exports = router;

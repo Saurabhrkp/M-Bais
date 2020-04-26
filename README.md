@@ -86,11 +86,11 @@ Working on Project to show-case for business.
     - ### POST
       - userController.checkAuth
       - adminController.uploadVideo
-        - adminController.uploadToGCS
+        - adminController.savePost
     - ### PUT
       - userController.checkAuth
       - adminController.uploadVideo
-        - adminController.uploadToGCS
+        - adminController.savePost
     - ### DELETE
       - userController.checkAuth
       - userController.deleteUser
