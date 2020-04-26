@@ -13,7 +13,7 @@ exports.uploadVideo = upload.fields([
     maxCount: 1,
   },
   {
-    name: 'images',
+    name: 'image',
     maxCount: 1,
   },
 ]);
@@ -22,17 +22,9 @@ exports.savePost = async (req, res, next) => {
   req.body.author = req.user.id;
   const post = await new Post(req.body).save();
   await Post.populate(post, {
-    path: 'author',
-    select: '_id name avatar',
-  })
-    .populate({
-      path: 'video',
-      select: '_id preview videoURL',
-    })
-    .populate({
-      path: 'image',
-      select: '_id imageURL filename',
-    });
+    path: 'author video image',
+    select: '_id name avatar videoURL imageURL',
+  });
   res.json(post);
 };
 
@@ -44,7 +36,7 @@ exports.getUsers = async (req, res) => {
 exports.getAdminFeed = async (req, res) => {
   const { _id } = req.profile;
   const posts = await Post.find({ author: _id }).select(
-    '_id title url description '
+    '_id title slug description '
   );
   res.json(posts);
 };
