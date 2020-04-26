@@ -42,7 +42,7 @@ exports.getAdminFeed = async (req, res) => {
 };
 
 exports.updatePost = async (req, res) => {
-  req.body.updatedAt = new Date().toISOString();
+  req.body.publishedDate = new Date().toISOString();
   const updatedPost = await Post.findOneAndUpdate(
     { _id: req.post._id },
     { $set: req.body },
@@ -59,26 +59,30 @@ exports.deletePost = async (req, res) => {
 
 exports.deleteVideo = async (req, res, next) => {
   const { _id, video } = req.post;
-  let videoResult = {};
-  videoResult.fromPost = await Post.findOneAndUpdate(_id, {
-    $pull: { video: video._id },
-  });
-  videoResult.fromVideo = await Video.findOneAndDelete({
+  await Post.findOneAndUpdate(
+    { _id },
+    {
+      $set: { video: null },
+    }
+  );
+  await Video.findOneAndDelete({
     filename: video.filename,
   });
-  videoResult.fromBucket = await bucket.file(video.filename).delete()[0];
-  next(videoResult);
+  await bucket.file(video.filename).delete();
+  next();
 };
 
 exports.deleteImage = async (req, res, next) => {
   const { _id, image } = req.post;
-  let imageResult = {};
-  imageResult.fromPost = await Post.findOneAndUpdate(_id, {
-    $pull: { image: image._id },
-  });
-  imageResult.fromImage = await Image.findOneAndDelete({
+  await Post.findOneAndUpdate(
+    { _id },
+    {
+      $set: { image: null },
+    }
+  );
+  await Image.findOneAndDelete({
     filename: image.filename,
   });
-  imageResult.fromBucket = await bucket.file(image.filename).delete()[0];
-  next(imageResult);
+  await bucket.file(image.filename).delete();
+  next();
 };

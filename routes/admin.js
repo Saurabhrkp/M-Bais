@@ -15,6 +15,8 @@ const {
 
 router.param('userId', userController.getUserById);
 
+router.param('postId', indexController.getPostById);
+
 router
   .route('/article/:userId')
   .get(userController.checkAuth, catchErrors(adminController.getAdminFeed))
@@ -44,13 +46,13 @@ router.get('/play/:filename', indexController.playVideo);
 router.get('/all/users', adminController.getUsers);
 
 router.delete(
-  '/video/:filename',
+  '/:postId/video',
   adminController.deleteVideo,
   catchErrors(adminController.updatePost)
 );
 
 router.delete(
-  '/image/:filename',
+  '/:postId/image',
   adminController.deleteImage,
   catchErrors(adminController.updatePost)
 );
