@@ -1,12 +1,10 @@
 // Loading models
 const User = require('../models/User');
-const Image = require('../models/Image');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
-const { bucket, uploadFile } = require('../models/Database');
-const { getPublicUrl } = require('./controlHelper');
+const { uploadFile } = require('../models/Database');
 
 // ! TODO: Resize Image before storing
 // const jimp = require('jimp');
@@ -158,10 +156,6 @@ exports.getUserFeed = async (req, res) => {
 };
 
 exports.uploadAvatar = uploadFile.any('avatar');
-// ? Resize Avatar Image
-// const image = await jimp.read(req.file.buffer);
-// req.file = await image.resize(250, jimp.AUTO);
-// image.write(req.file);
 
 exports.updateUser = async (req, res) => {
   req.body.updatedAt = new Date().toISOString();
