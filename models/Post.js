@@ -1,27 +1,19 @@
 const mongoose = require('mongoose');
 const mongodbErrorHandler = require('mongoose-mongodb-errors');
-const shortId = require('crypto-random-string');
-var Schema = mongoose.Schema;
+const URLSlugs = require('mongoose-url-slugs');
+const Schema = mongoose.Schema;
 
-function URI() {
-  var random = shortId({ length: 6, type: 'distinguishable' });
-  var url = this.title + ' ' + random;
-  return url.replace(/\s+/g, '-');
-}
-
-var PostSchema = new Schema(
+const PostSchema = new Schema(
   {
-    title: { type: String, required: false, max: 100 },
-    author: { type: Schema.ObjectId, ref: 'User', required: false },
+    title: { type: String, required: true, max: 100 },
+    author: { type: Schema.ObjectId, ref: 'User', required: true },
     video: { type: Schema.ObjectId, ref: 'Video', required: false },
-    body: { type: String, required: false },
-    description: { type: String, required: false },
+    body: { type: String, required: true },
+    description: { type: String, required: true },
     publishedDate: { type: Date, default: Date.now },
     image: { type: Schema.ObjectId, ref: 'Image', required: false },
     tags: [{ type: String }],
-    url: { type: String, required: false, default: URI },
     likes: [{ type: Schema.ObjectId, ref: 'User' }],
-    createdAt: { type: Date, default: Date.now },
     comments: [
       {
         text: String,
@@ -64,6 +56,9 @@ PostSchema.index({ postedBy: 1, createdAt: 1 });
 
 /* The MongoDBErrorHandler plugin gives us a better 'unique' error, rather than: "11000 duplicate key" */
 PostSchema.plugin(mongodbErrorHandler);
+
+/* Thi URLSlug plugin creates a slug that is human-readable unique identifier that can be used in a URL instead of an ID or hash*/
+PostSchema.plugin(URLSlugs('title'));
 
 const Post = mongoose.model('Post', PostSchema);
 
