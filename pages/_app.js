@@ -2,19 +2,17 @@ import App from 'next/app';
 import Router from 'next/router';
 import NProgress from 'nprogress';
 import { DefaultSeo } from 'next-seo';
-
-import { Header } from '../components/header';
-import { Footer } from '../components/footer';
+// import 'video.js/dist/video-js.css';
 
 const DEFAULT_SEO = {
-  title: 'Blog Tutorial Web',
-  description: 'Awesome blog tutorial website',
+  title: 'Mech-Bias',
+  description: 'Awesome Mech-Bias website',
   openGraph: {
     type: 'website',
     locale: 'en',
-    title: 'Blog Tutorial website',
-    description: 'Awesome blog tutorial website',
-    site_name: 'BlogTutorial',
+    title: 'Mech-Bias website',
+    description: 'Awesome Mech-Bias website',
+    site_name: 'Mech-Bias',
   },
 };
 
@@ -42,10 +40,8 @@ export default class CustomApp extends App {
 
     return (
       <>
-        <Header {...this.props} />
         <DefaultSeo {...DEFAULT_SEO} />
         <Component {...pageProps} />
-        <Footer />
       </>
     );
   }

@@ -1,141 +1,103 @@
-// import Typography from "@material-ui/core/Typography";
-// import Avatar from "@material-ui/core/Avatar";
-// import FormControl from "@material-ui/core/FormControl";
-// import Paper from "@material-ui/core/Paper";
-// import Input from "@material-ui/core/Input";
-// import InputLabel from "@material-ui/core/InputLabel";
-// import Button from "@material-ui/core/Button";
-// import Snackbar from "@material-ui/core/Snackbar";
-// import Lock from "@material-ui/icons/Lock";
-// import withStyles from "@material-ui/core/styles/withStyles";
-// import Router from "next/router";
+import React, { useState } from 'react';
+import Router from 'next/router';
 
-// import { signinUser } from "../lib/auth";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Toast from 'react-bootstrap/Toast';
 
-// class Signin extends React.Component {
-//   state = {
-//     email: "",
-//     password: "",
-//     error: "",
-//     openError: false,
-//     isLoading: false
-//   };
+import { useForm } from 'react-hook-form';
 
-//   handleClose = () => this.setState({ openError: false });
+import { signinUser } from '../lib/auth';
 
-//   handleChange = event => {
-//     this.setState({ [event.target.name]: event.target.value });
-//   };
+// ? FIXME: Remove Row, Col with div to align form in center
 
-//   handleSubmit = event => {
-//     const { email, password } = this.state;
+const Signin = () => {
+  const [error, setError] = useState('');
+  const [openError, setOpenError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { register, handleSubmit } = useForm();
 
-//     event.preventDefault();
-//     const user = { email, password };
-//     this.setState({ isLoading: true, error: "" });
-//     signinUser(user)
-//       .then(() => {
-//         Router.push("/");
-//       })
-//       .catch(this.showError);
-//   };
+  const handleClose = () => setOpenError(false);
 
-//   showError = err => {
-//     const error = (err.response && err.response.data) || err.message;
-//     this.setState({ error, openError: true, isLoading: false });
-//   };
+  const onSubmit = (form) => {
+    setError('');
+    setIsLoading(true);
+    console.log(form);
+    signinUser(form)
+      .then(() => {
+        Router.push('/');
+      })
+      .catch(showError);
+  };
 
-//   render() {
-//     const { classes } = this.props;
-//     const { error, openError, isLoading } = this.state;
+  const showError = (err) => {
+    const error = (err.response && err.response.data) || err.message;
+    setError(error);
+    setOpenError(true);
+    setIsLoading(false);
+  };
 
-//     return (
-//       <div className={classes.root}>
-//         <Paper className={classes.paper}>
-//           <Avatar className={classes.avatar}>
-//             <Lock />
-//           </Avatar>
-//           <Typography variant="h5" component="h1">
-//             Sign in
-//           </Typography>
+  return (
+    <Container fluid className='vh-100'>
+      <Row className='justify-content-center'>
+        <Col xs={10} lg={4} md={6} sm={8} className='shadow p-4 m-5'>
+          <h1>Signin</h1>
+          <hr />
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <Form.Group>
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                name='email'
+                type='email'
+                ref={register({ required: true, pattern: /^\S+@\S+$/i })}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                name='password'
+                type='password'
+                ref={register({ required: true })}
+              />
+            </Form.Group>
+            <Button type='submit' className='mr-3' disabled={isLoading}>
+              {isLoading ? 'Signing in...' : 'Sign In'}
+            </Button>
+            <Button
+              onClick={() => {
+                Router.push('/signup');
+              }}
+            >
+              Sign up
+            </Button>
+          </Form>
+        </Col>
+        {/* Error Snackbar */}
+        {error && (
+          <Toast
+            onClose={handleClose}
+            show={openError}
+            delay={3000}
+            autohide
+            style={{
+              margin: '15px',
+              position: 'absolute',
+              top: 0,
+              right: 0,
+            }}
+          >
+            <Toast.Header>
+              <strong className='mr-auto'>Error</strong>
+            </Toast.Header>
+            <Toast.Body>{error}</Toast.Body>
+          </Toast>
+        )}
+      </Row>
+    </Container>
+  );
+};
 
-//           <form onSubmit={this.handleSubmit} className={classes.form}>
-//             <FormControl margin="normal" required fullWidth>
-//               <InputLabel htmlFor="email">Email</InputLabel>
-//               <Input name="email" type="email" onChange={this.handleChange} />
-//             </FormControl>
-//             <FormControl margin="normal" required fullWidth>
-//               <InputLabel htmlFor="password">Password</InputLabel>
-//               <Input
-//                 name="password"
-//                 type="password"
-//                 onChange={this.handleChange}
-//               />
-//             </FormControl>
-//             <Button
-//               type="submit"
-//               fullWidth
-//               variant="contained"
-//               color="primary"
-//               disabled={isLoading}
-//               className={classes.submit}
-//             >
-//               {isLoading ? "Signing in..." : "Sign in"}
-//             </Button>
-//           </form>
-
-//           {/* Error Snackbar */}
-//           {error && (
-//             <Snackbar
-//               anchorOrigin={{
-//                 vertical: "bottom",
-//                 horizontal: "right"
-//               }}
-//               open={openError}
-//               onClose={this.handleClose}
-//               autoHideDuration={6000}
-//               message={<span className={classes.snack}>{error}</span>}
-//             />
-//           )}
-//         </Paper>
-//       </div>
-//     );
-//   }
-// }
-
-// const styles = theme => ({
-//   root: {
-//     width: "auto",
-//     display: "block",
-//     marginLeft: theme.spacing.unit * 3,
-//     marginRight: theme.spacing.unit * 3,
-//     [theme.breakpoints.up("md")]: {
-//       width: 400,
-//       marginLeft: "auto",
-//       marginRight: "auto"
-//     }
-//   },
-//   paper: {
-//     marginTop: theme.spacing.unit * 8,
-//     display: "flex",
-//     flexDirection: "column",
-//     alignItems: "center",
-//     padding: theme.spacing.unit * 2
-//   },
-//   avatar: {
-//     margin: theme.spacing.unit,
-//     backgroundColor: theme.palette.secondary.main
-//   },
-//   form: {
-//     width: "100%",
-//     marginTop: theme.spacing.unit
-//   },
-//   submit: {
-//     marginTop: theme.spacing.unit * 2
-//   },
-//   snack: {
-//     color: theme.palette.secondary.light
-//   }
-// });
-
-// export default withStyles(styles)(Signin);
+export default Signin;

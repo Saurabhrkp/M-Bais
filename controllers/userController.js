@@ -75,7 +75,7 @@ exports.signup = async (req, res) => {
       }
       user.password = hash;
       user.save();
-      res.json(user.name);
+      res.json(user);
     });
   });
 };

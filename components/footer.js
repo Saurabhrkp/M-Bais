@@ -1,6 +1,6 @@
 export const Footer = () => {
   return (
-    <footer className='border p-3'>
+    <footer className='shadow-lg p-3'>
       <h3 className='text-center'>Statically Generated with Next.js.</h3>
       <div className='text-center'>
         <a href='https://nextjs.org/docs/basic-features/pages' className='m-1'>

@@ -1,7 +1,6 @@
-import React from "react";
-import { BlogPost } from "services";
-import styled from "styled-components";
-import ReactMarkdown from "react-markdown";
+import React from 'react';
+import styled from 'styled-components';
+import ReactMarkdown from 'react-markdown';
 
 const Image = styled.img`
   width: 80%;
@@ -9,25 +8,21 @@ const Image = styled.img`
   object-fit: cover;
 `;
 
-type BlogDetailProps = {
-  post: BlogPost;
-};
-
-export const BlogDetail = (props: BlogDetailProps) => {
+export const BlogDetail = (props) => {
   const { post } = props;
-  const mainTag = post.tags.length > 0 ? post.tags[0] : "";
+  const mainTag = post.tags.length > 0 ? post.tags[0] : '';
   return (
-    <article className="post-full post">
-      <header className="post-full-header">
-        <h1 className="post-full-title">{post.title}</h1>
-        <div className="text-center meta">{`${post.publishedDate} / ${mainTag}`}</div>
+    <article className='post-full post'>
+      <header className='post-full-header'>
+        <h1 className='post-full-title'>{post.title}</h1>
+        <div className='text-center meta'>{`${post.publishedDate} / ${mainTag}`}</div>
       </header>
-      <figure className="post-full-image text-center">
+      <figure className='post-full-image text-center'>
         <Image src={post.heroImage.imageUrl} alt={post.heroImage.title} />
       </figure>
       <section
-        style={{ overflowY: "inherit", marginBottom: "2em" }}
-        className="post-full-content"
+        style={{ overflowY: 'inherit', marginBottom: '2em' }}
+        className='post-full-content'
       >
         <ReactMarkdown source={post.body} />
       </section>

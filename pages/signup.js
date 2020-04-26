@@ -1,35 +1,34 @@
 import React, { useState } from 'react';
+import Router from 'next/router';
+
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Toast from 'react-bootstrap/Toast';
-import { Layout } from '../components/layout';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Link from 'next/link';
+
+import { useForm } from 'react-hook-form';
 
 import { signupUser } from '../lib/auth';
 
+// ? FIXME: Remove Row, Col with div to align form in center
+
 const Signup = () => {
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [error, setError] = useState('');
   const [createdUser, setCreatedUser] = useState('');
   const [openError, setOpenError] = useState(false);
   const [openSuccess, setOpenSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { register, handleSubmit } = useForm();
 
   const handleClose = () => setOpenError(false);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const user = { name, email, username, password, passwordConfirmation };
+  const onSubmit = (form) => {
     setError('');
     setIsLoading(true);
-    signupUser(user)
+    signupUser(form)
       .then((data) => {
         setCreatedUser(data);
         setError('');
@@ -47,18 +46,26 @@ const Signup = () => {
   };
 
   return (
-    <Layout>
-      <Row className='justify-content-center align-items-stretch'>
-        <Col xs={11} lg={5} md={8} className='shadow p-3 m-5 bg-white rounded'>
+    <Container fluid className='vh-100'>
+      <Row className='justify-content-center'>
+        <Col xs={10} lg={4} md={6} sm={8} className='shadow p-4 m-5'>
           <h1>Sign up</h1>
           <hr />
-          <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <Form.Group>
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                name='email'
+                type='email'
+                ref={register({ required: true, pattern: /^\S+@\S+$/i })}
+              />
+            </Form.Group>
             <Form.Group>
               <Form.Label>Name</Form.Label>
               <Form.Control
                 name='name'
                 type='text'
-                onChange={(event) => setName(event.target.value)}
+                ref={register({ required: true, maxLength: 80 })}
               />
             </Form.Group>
             <Form.Group>
@@ -66,15 +73,7 @@ const Signup = () => {
               <Form.Control
                 name='username'
                 type='text'
-                onChange={(event) => setUsername(event.target.value)}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                name='email'
-                type='email'
-                onChange={(event) => setEmail(event.target.value)}
+                ref={register({ required: true, maxLength: 80 })}
               />
             </Form.Group>
             <Form.Group>
@@ -82,7 +81,7 @@ const Signup = () => {
               <Form.Control
                 name='password'
                 type='password'
-                onChange={(event) => setPassword(event.target.value)}
+                ref={register({ required: true })}
               />
             </Form.Group>
             <Form.Group>
@@ -90,13 +89,18 @@ const Signup = () => {
               <Form.Control
                 name='passwordConfirmation'
                 type='password'
-                onChange={(event) =>
-                  setPasswordConfirmation(event.target.value)
-                }
+                ref={register({ required: true })}
               />
             </Form.Group>
-            <Button type='submit' disabled={isLoading}>
+            <Button type='submit' className='mr-3' disabled={isLoading}>
               {isLoading ? 'Signing up...' : 'Sign up'}
+            </Button>
+            <Button
+              onClick={() => {
+                Router.push('/signin');
+              }}
+            >
+              Sign in
             </Button>
           </Form>
         </Col>
@@ -105,9 +109,10 @@ const Signup = () => {
           <Toast
             onClose={handleClose}
             show={openError}
-            delay={3000}
+            delay={6000}
             autohide
             style={{
+              margin: '15px',
               position: 'absolute',
               top: 0,
               right: 0,
@@ -126,23 +131,28 @@ const Signup = () => {
           size='lg'
           aria-labelledby='contained-modal-title-vcenter'
           centered
+          onHide={() => setOpenSuccess(false)}
         >
           <Modal.Header closeButton>
             <Modal.Title id='contained-modal-title-vcenter'>
               New Account
             </Modal.Title>
           </Modal.Header>
-          <Modal.Body>User {createdUser} successfully created!</Modal.Body>
+          <Modal.Body>
+            User {createdUser.username} successfully created!
+          </Modal.Body>
           <Modal.Footer>
-            <Button color='primary' variant='contained'>
-              <Link href='/signin'>
-                <a>Sign in</a>
-              </Link>
+            <Button
+              onClick={() => {
+                Router.push('/signin');
+              }}
+            >
+              Sign in
             </Button>
           </Modal.Footer>
         </Modal>
       </Row>
-    </Layout>
+    </Container>
   );
 };
 
