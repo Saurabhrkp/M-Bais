@@ -98,5 +98,28 @@ exports.toggleComment = async (req, res) => {
 };
 
 exports.playVideo = (req, res, next) => {
-  StreamCloudFile(req, res, req.params.filename);
+  const files = bucket.file(req.params.filename);
+  files.get().then((data) => {
+    const file = data[0];
+    // Check if the input is a valid image or not
+    if (!file || file.metadata.size === 0) {
+      return res.status(404).json({
+        err: 'No file exists',
+      });
+    }
+
+    // If the file exists then check whether it is an image
+    if (
+      file.metadata.contentType === 'image/jpeg' ||
+      file.metadata.contentType === 'image/png' ||
+      file.metadata.contentType === 'video/mp4'
+    ) {
+      // Read output to browser
+      StreamCloudFile(req, res, file);
+    } else {
+      res.status(404).json({
+        err: 'Not available',
+      });
+    }
+  });
 };
