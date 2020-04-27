@@ -71,11 +71,9 @@ exports.updatePost = async (req, res) => {
 };
 
 exports.getPosts = async (req, res) => {
-  const posts = await Post.find()
-    .sort({
-      createdAt: 'desc',
-    })
-    .populate('author image video');
+  const posts = await Post.find().where({ byAdmin: false }).sort({
+    createdAt: 'desc',
+  });
   res.json(posts);
 };
 
