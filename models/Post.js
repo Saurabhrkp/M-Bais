@@ -7,6 +7,7 @@ const PostSchema = new Schema(
   {
     title: { type: String, required: true, max: 100 },
     author: { type: Schema.ObjectId, ref: 'User', required: true },
+    byAdmin: { type: Boolean, enum: [true, false], default: false },
     video: { type: Schema.ObjectId, ref: 'Video', required: false },
     body: { type: String, required: true },
     description: { type: String, required: true },
@@ -39,7 +40,7 @@ PostSchema.virtual('metaDescription').get(function () {
 /* Must be a function declaration (not an arrow function), because we want to use 'this' to reference our schema */
 const autoPopulatePostedBy = function (next) {
   this.populate('video', '_id s3_key videoURL');
-  this.populate('author', '_id name avatar');
+  this.populate('author', '_id name avatar author');
   this.populate('image', '_id imageURL s3_key');
   this.populate('comments.postedBy', '_id name avatar');
   next();
