@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 
 // DB Config
 const { bucket, uploadFile } = require('../models/Database');
-const { StreamCloudFile } = require('./controlHelper');
 
 exports.uploadPhoto = uploadFile.any('postImage');
 
@@ -39,9 +38,9 @@ exports.deletePost = async (req, res) => {
     });
   }
   const deletedImage = await Image.findOneAndDelete({
-    filename: image.filename,
+    s3_key: image.s3_key,
   });
-  bucket.file(image.filename).delete();
+  bucket.deleteObject(image.s3_key);
   const deletedPost = await Post.findOneAndDelete({ _id });
   res.json({ deletedPost, deletedImage });
 };
@@ -95,31 +94,4 @@ exports.toggleComment = async (req, res) => {
     .populate('author', '_id name avatar')
     .populate('comments.postedBy', '_id name avatar');
   res.json(updatedPost);
-};
-
-exports.playVideo = (req, res, next) => {
-  const files = bucket.file(req.params.filename);
-  files.get().then((data) => {
-    const file = data[0];
-    // Check if the input is a valid image or not
-    if (!file || file.metadata.size === 0) {
-      return res.status(404).json({
-        err: 'No file exists',
-      });
-    }
-
-    // If the file exists then check whether it is an image
-    if (
-      file.metadata.contentType === 'image/jpeg' ||
-      file.metadata.contentType === 'image/png' ||
-      file.metadata.contentType === 'video/mp4'
-    ) {
-      // Read output to browser
-      StreamCloudFile(req, res, file);
-    } else {
-      res.status(404).json({
-        err: 'Not available',
-      });
-    }
-  });
 };

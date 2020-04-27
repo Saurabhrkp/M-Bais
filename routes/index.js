@@ -53,6 +53,4 @@ router.get('/by/:username', catchErrors(indexController.getPostsByUser));
 
 router.get('/:username/feed', catchErrors(indexController.getPostFeed));
 
-router.get('/play/:filename', indexController.playVideo);
-
 module.exports = router;

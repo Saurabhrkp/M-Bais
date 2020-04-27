@@ -45,8 +45,6 @@ router
     catchErrors(adminController.updatePost)
   );
 
-router.get('/play/:filename', indexController.playVideo);
-
 router.get('/all/users', adminController.getUsers);
 
 router.delete(
