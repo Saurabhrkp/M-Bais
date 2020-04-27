@@ -118,17 +118,6 @@ exports.checkAuth = (req, res, next) => {
   res.redirect('/signin');
 };
 
-exports.getUserById = async (req, res, next, id) => {
-  const user = await User.findOne({ _id: id });
-  req.profile = user;
-  const profileId = mongoose.Types.ObjectId(req.profile._id);
-  if (req.user && profileId.equals(req.user._id)) {
-    req.isAuthUser = true;
-    return next();
-  }
-  next();
-};
-
 exports.getUserByUsername = async (req, res, next, username) => {
   const user = await User.findOne({ username: username });
   req.profile = user;
