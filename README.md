@@ -57,7 +57,7 @@ Working on Project to show-case for business.
     - ## GET ✔
       - userController.signout ✔
   - ## PARAMS userId
-    - userController.getUserById
+    - userController.getUserByUsername
   - ## /users/:userId ⚡
     - ### GET ✔
       - userController.getAuthUser ✔
@@ -78,7 +78,7 @@ Working on Project to show-case for business.
         - userController.getUserFeed ❔
 - # /admin, admin
   - ## userId ⚡
-    - userController.getUserById ✔
+    - userController.getUserByUsername ✔
   - ## postId ⚡
     - indexController.getPostById ✔
   - ## ROUTE /article/:userId ⚡
@@ -93,11 +93,11 @@ Working on Project to show-case for business.
         - adminController.savePost ✔
   - ## ROUTE /:postId ❔
     - ### PUT  ❔
-      - userController.checkAuth
-      - adminController.uploadVideo
-        - uploadVideo
-        - uploadImage
-        - adminController.updatePost
+      - userController.checkAuth ✔
+      - adminController.uploadVideo ✔
+        - uploadVideo ✔
+        - uploadImage ✔
+        - adminController.updatePost ✔
     - ### DELETE ⚡
       - userController.checkAuth ✔
       - deleteVideo ✔

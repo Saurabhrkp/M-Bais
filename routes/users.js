@@ -23,10 +23,10 @@ router.get('/auth/signout', userController.signout);
 /**
  * USER ROUTES: /api/users
  */
-router.param('userId', userController.getUserById);
+router.param('username', userController.getUserByUsername);
 
 router
-  .route('/users/:userId')
+  .route('/:username')
   .get(userController.getAuthUser)
   .put(
     userController.checkAuth,
@@ -36,10 +36,10 @@ router
   )
   .delete(userController.checkAuth, catchErrors(userController.deleteUser));
 
-router.get('/users/profile/:userId', userController.getUserProfile);
+router.get('/profile/:username', userController.getUserProfile);
 
 router.get(
-  '/users/feed/:userId',
+  '/:username/feed',
   userController.checkAuth,
   catchErrors(userController.getUserFeed)
 );

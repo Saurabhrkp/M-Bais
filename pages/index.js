@@ -9,9 +9,9 @@ const Index = ({ auth }) => {
     <>
       <Header {...auth} />
       <div>
-        <h1>Hello World</h1>{' '}
+        <h1>Hello World</h1>
         <Player>
-          <source src='/admin/play/single_blog_1-1587910407739.mp4' />
+          <source src='https://awsbucketformbias.s3.ap-south-1.amazonaws.com/single_blog_1.mp4' />
         </Player>
       </div>
     </>

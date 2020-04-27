@@ -7,7 +7,7 @@ const { catchErrors, uploadImage } = require('../controllers/controlHelper');
 /**
  * POST ROUTES: /posts/
  */
-router.param('postId', indexController.getPostById);
+router.param('slug', indexController.getPostBySlug);
 
 router.param('username', userController.getUserByUsername);
 
@@ -35,12 +35,6 @@ router.put(
   catchErrors(indexController.toggleComment)
 );
 
-router.delete(
-  '/delete/:postId',
-  userController.checkAuth,
-  catchErrors(indexController.deletePost)
-);
-
 router.post(
   '/:username/new',
   userController.checkAuth,
@@ -51,6 +45,10 @@ router.post(
 
 router.get('/by/:username', catchErrors(indexController.getPostsByUser));
 
-router.get('/:username/feed', catchErrors(indexController.getPostFeed));
+router
+  .route('/:slug')
+  .get(catchErrors(indexController.sendPost))
+  .put(userController.checkAuth, catchErrors(indexController.updatePost))
+  .delete(userController.checkAuth, catchErrors(indexController.deletePost));
 
 module.exports = router;
