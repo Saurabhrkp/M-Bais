@@ -1,5 +1,6 @@
 // Loading models
 const User = require('../models/User');
+const Post = require('../models/Post');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
@@ -140,8 +141,8 @@ exports.getUserProfile = (req, res) => {
 
 exports.getUserFeed = async (req, res) => {
   const { _id } = req.profile;
-  const users = await User.find({ _id: _id }).select('_id name avatar ');
-  res.json(users);
+  const posts = await Post.find({ author: _id }).populate('image author video');
+  res.json(posts);
 };
 
 exports.uploadAvatar = uploadFile.any('avatar');
