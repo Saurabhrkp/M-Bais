@@ -21,6 +21,7 @@ exports.uploadVideo = upload.fields([
 
 exports.savePost = async (req, res, next) => {
   req.body.author = req.user.id;
+  req.body.byAdmin = true;
   const post = await new Post(req.body).save();
   await Post.populate(post, {
     path: 'author video image',
