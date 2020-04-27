@@ -20,9 +20,6 @@ router.post('/auth/signin', userController.signin);
 // Logout
 router.get('/auth/signout', userController.signout);
 
-/**
- * USER ROUTES: /api/users
- */
 router.param('username', userController.getUserByUsername);
 
 router

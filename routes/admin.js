@@ -45,7 +45,11 @@ router
     catchErrors(adminController.updatePost)
   );
 
-router.get('/all/users', adminController.getUsers);
+router.get(
+  '/all/users',
+  userController.checkAuth,
+  catchErrors(adminController.getUsers)
+);
 
 router.delete(
   '/:slug/video',
