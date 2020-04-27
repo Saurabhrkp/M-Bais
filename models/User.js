@@ -11,7 +11,7 @@ const UserSchema = new Schema(
       type: String,
       default: '/public/images/profile-image.jpg',
     },
-    username: { type: String },
+    username: { type: String, unique: true, lowercase: true },
     phone: { type: Number, required: false },
     shortBio: { type: String, required: false, max: 50 },
     posts: [{ type: Schema.ObjectId, ref: 'Post', required: false }],
