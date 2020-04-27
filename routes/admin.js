@@ -13,12 +13,12 @@ const {
  * USER ROUTES: /admin
  */
 
-router.param('userId', userController.getUserById);
+router.param('username', userController.getUserByUsername);
 
-router.param('postId', indexController.getPostById);
+router.param('slug', indexController.getPostBySlug);
 
 router
-  .route('/article/:userId')
+  .route('/article/:username')
   .get(userController.checkAuth, catchErrors(adminController.getAdminFeed))
   .post(
     userController.checkAuth,
@@ -30,7 +30,7 @@ router
 
 // ! PUT Can be modified for replacing Video and Image
 router
-  .route('/:postId')
+  .route('/:slug')
   .delete(
     userController.checkAuth,
     adminController.deleteVideo,
@@ -48,13 +48,13 @@ router
 router.get('/all/users', adminController.getUsers);
 
 router.delete(
-  '/:postId/video',
+  '/:slug/video',
   adminController.deleteVideo,
   catchErrors(adminController.updatePost)
 );
 
 router.delete(
-  '/:postId/image',
+  '/:slug/image',
   adminController.deleteImage,
   catchErrors(adminController.updatePost)
 );
