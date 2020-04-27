@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 
 // DB Config
 const { bucket, uploadFile } = require('../models/Database');
+const { deleteParams } = require('./controlHelper');
 
 exports.uploadPhoto = uploadFile.any('postImage');
 
@@ -12,14 +13,14 @@ exports.addPost = async (req, res) => {
   req.body.author = req.user.id;
   const post = await new Post(req.body).save();
   await Post.populate(post, {
-    path: 'author',
-    select: '_id name avatar',
+    path: 'author image',
+    select: '_id name avatar imageURL',
   });
   res.json(post);
 };
 
-exports.getPostById = async (req, res, next, id) => {
-  const post = await Post.findOne({ _id: id });
+exports.getPostBySlug = async (req, res, next, slug) => {
+  const post = await Post.findOne({ slug: slug });
   req.post = post;
 
   const posterId = mongoose.Types.ObjectId(req.post.author._id);
@@ -30,6 +31,11 @@ exports.getPostById = async (req, res, next, id) => {
   next();
 };
 
+exports.sendPost = async (req, res) => {
+  const { post } = req;
+  res.json(post);
+};
+
 exports.deletePost = async (req, res) => {
   const { _id, image } = req.post;
   if (!req.isPoster) {
@@ -37,22 +43,34 @@ exports.deletePost = async (req, res) => {
       message: 'You are not authorized to perform this action',
     });
   }
-  const deletedImage = await Image.findOneAndDelete({
+  await Image.findOneAndDelete({
     s3_key: image.s3_key,
   });
-  bucket.deleteObject(image.s3_key);
+  const params = deleteParams(image);
+  bucket.deleteObject(params, (err, data) => {
+    if (err) {
+      console.log(err);
+    }
+  });
   const deletedPost = await Post.findOneAndDelete({ _id });
-  res.json({ deletedPost, deletedImage });
+  res.json(deletedPost);
+};
+
+exports.updatePost = async (req, res) => {
+  req.body.publishedDate = new Date().toISOString();
+  const updatedPost = await Post.findOneAndUpdate(
+    { _id: req.post._id },
+    { $set: req.body },
+    { new: true, runValidators: true }
+  );
+  await Post.populate(updatedPost, {
+    path: 'author image',
+    select: '_id name avatar imageURL',
+  });
+  res.json(updatedPost);
 };
 
 exports.getPostsByUser = async (req, res) => {
-  const posts = await Post.find({ author: req.profile._id }).sort({
-    createdAt: 'desc',
-  });
-  res.json(posts);
-};
-
-exports.getPostFeed = async (req, res) => {
   const posts = await Post.find().sort({
     createdAt: 'desc',
   });
