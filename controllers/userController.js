@@ -158,14 +158,14 @@ exports.updateUser = async (req, res) => {
 };
 
 exports.deleteUser = async (req, res) => {
-  const { userId } = req.params;
+  const { username } = req.params;
 
   if (!req.isAuthUser) {
     return res.status(400).json({
       message: 'You are not authorized to perform this action',
     });
   }
-  const deletedUser = await User.findOneAndDelete({ _id: userId });
+  const deletedUser = await User.findOneAndDelete({ username: username });
   res.json(deletedUser);
 };
 
