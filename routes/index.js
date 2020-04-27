@@ -7,6 +7,8 @@ const { catchErrors, uploadImage } = require('../controllers/controlHelper');
 /**
  * POST ROUTES: /posts/
  */
+router.get('/', catchErrors(indexController.getPosts));
+
 router.param('slug', indexController.getPostBySlug);
 
 router.param('username', userController.getUserByUsername);
