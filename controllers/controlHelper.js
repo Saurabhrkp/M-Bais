@@ -13,7 +13,7 @@ const catchErrors = (fn) => {
 const uploadParams = (file) => {
   return {
     Bucket: 'awsbucketformbias',
-    Key: file.originalname,
+    Key: `${Date.now()}-${file.originalname.trim().replace(/\s+/g, '-')}`,
     Body: file.buffer,
     ContentType: file.mimetype,
     ACL: 'public-read',
@@ -63,7 +63,6 @@ const uploadImage = async (req, res, next) => {
         imageURL: data.Location,
         s3_key: params.Key,
       });
-      console.log(data);
       await image.save();
       req.body.avatar = image.imageURL;
       req.body.image = image.id;
