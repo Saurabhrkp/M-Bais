@@ -6,6 +6,7 @@ const Image = require('../models/Image');
 
 // DB Config
 const { bucket, uploadFile: upload } = require('../models/Database');
+const { deleteParams } = require('./controlHelper');
 
 exports.uploadVideo = upload.fields([
   {
@@ -73,10 +74,16 @@ exports.deleteVideo = async (req, res, next) => {
     }
   );
   await Video.findOneAndDelete({
-    filename: video.filename,
+    s3_key: video.s3_key,
   });
-  await bucket.file(video.filename).delete();
-  next();
+  const params = deleteParams(video);
+  bucket.deleteObject(params, (err, data) => {
+    if (err) {
+      console.log(err);
+    } else {
+      next();
+    }
+  });
 };
 
 exports.deleteImage = async (req, res, next) => {
@@ -91,8 +98,14 @@ exports.deleteImage = async (req, res, next) => {
     }
   );
   await Image.findOneAndDelete({
-    filename: image.filename,
+    s3_key: image.s3_key,
   });
-  await bucket.file(image.filename).delete();
-  next();
+  const params = deleteParams(image);
+  bucket.deleteObject(params, (err, data) => {
+    if (err) {
+      console.log(err);
+    } else {
+      next();
+    }
+  });
 };
