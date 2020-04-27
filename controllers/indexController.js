@@ -70,10 +70,22 @@ exports.updatePost = async (req, res) => {
   res.json(updatedPost);
 };
 
+exports.getPosts = async (req, res) => {
+  const posts = await Post.find()
+    .sort({
+      createdAt: 'desc',
+    })
+    .populate('author image video');
+  res.json(posts);
+};
+
 exports.getPostsByUser = async (req, res) => {
-  const posts = await Post.find().sort({
-    createdAt: 'desc',
-  });
+  const { _id } = req.profile;
+  const posts = await Post.find({ author: _id })
+    .sort({
+      createdAt: 'desc',
+    })
+    .populate('author image video');
   res.json(posts);
 };
 
