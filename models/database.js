@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
+var S3 = require('aws-sdk/clients/s3');
 const Multer = require('multer');
-const { Storage } = require('@google-cloud/storage');
-const path = require('path');
 
 // DB Config
-const { mongoURI, bucketURI } = require('../bin/keys');
+const { mongoURI, config } = require('../bin/keys');
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, {
@@ -30,10 +29,8 @@ connectionURI.on(
 );
 
 // Instantiate a storage client
-const storage = new Storage({
-  keyFilename: path.join(__dirname, '../bin/mech-bais.json'),
-  projectId: 'mech-bais',
-});
+const S3Client = new S3(config);
+/*  Notice that if you don't provide a dirName, the file will be automatically uploaded to the root of your bucket */
 
 // Multer is required to process file uploads and make them available via
 // req.files.
@@ -54,7 +51,4 @@ const upload = Multer({
   },
 });
 
-// A bucket is a container for objects (files).
-const bucket = storage.bucket(bucketURI);
-
-module.exports = { bucket: bucket, uploadFile: upload };
+module.exports = { bucket: S3Client, uploadFile: upload };

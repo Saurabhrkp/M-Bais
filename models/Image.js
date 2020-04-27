@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var ImageSchema = new Schema({
   imageURL: { type: String, required: true },
-  filename: { type: String, required: true },
+  s3_key: { type: String, required: true },
 });
 
 // Export model.
