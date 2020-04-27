@@ -50,7 +50,12 @@ router.get('/by/:username', catchErrors(indexController.getPostsByUser));
 router
   .route('/:slug')
   .get(catchErrors(indexController.sendPost))
-  .put(userController.checkAuth, catchErrors(indexController.updatePost))
+  .put(
+    userController.checkAuth,
+    indexController.uploadPhoto,
+    catchErrors(uploadImage),
+    catchErrors(indexController.updatePost)
+  )
   .delete(userController.checkAuth, catchErrors(indexController.deletePost));
 
 module.exports = router;
