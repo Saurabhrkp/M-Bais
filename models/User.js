@@ -9,7 +9,7 @@ const UserSchema = new Schema(
     },
     avatar: {
       type: String,
-      default: '/public/images/profile-image.jpg',
+      default: '/images/profile-image.jpg',
     },
     username: { type: String, unique: true, lowercase: true },
     phone: { type: Number, required: false },

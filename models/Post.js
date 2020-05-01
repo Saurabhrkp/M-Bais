@@ -28,12 +28,16 @@ const PostSchema = new Schema(
 
 // Virtual for this metaTitle.
 PostSchema.virtual('metaTitle').get(function () {
-  return this.title;
+  return this.title.length > 30
+    ? this.title.substr(0, 30) + '&hellip;'
+    : this.title;
 });
 
 // Virtual for this metaDescription.
 PostSchema.virtual('metaDescription').get(function () {
-  return this.description;
+  return this.description.length > 50
+    ? this.description.substr(0, 60) + '&hellip;'
+    : this.description;
 });
 
 /* Kind of like a middleware function after creating our schema (since we have access to next) */
@@ -53,7 +57,7 @@ PostSchema.pre('findOne', autoPopulatePostedBy).pre(
 );
 
 /* Create index on keys for more performant querying/post sorting */
-PostSchema.index({ postedBy: 1, createdAt: 1 });
+PostSchema.index({ author: 1, publishedDate: 1 });
 
 /* The MongoDBErrorHandler plugin gives us a better 'unique' error, rather than: "11000 duplicate key" */
 PostSchema.plugin(mongodbErrorHandler);
