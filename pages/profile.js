@@ -56,6 +56,6 @@ const Profile = ({ auth }) => {
   );
 };
 
-Profile.getInitialProps = async (ctx) => authInitialProps(true, ctx);
+Profile.getInitialProps = authInitialProps(true);
 
 export default Profile;

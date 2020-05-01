@@ -1,12 +1,9 @@
 import React from 'react';
-import { Layout } from 'components/layout';
-import { BlogApi, BlogPost } from 'services';
-import { BlogBox } from 'components/blog';
+import { getPostFeed } from '../../lib/api';
 
-export default class BlogPage extends React.Component {
+export default class PostPage extends React.Component {
   static async getInitialProps() {
-    const api = new BlogApi();
-    const entries = await api.fetchBlogEntries();
+    const entries = await getPostFeed();
     return { entries };
   }
 
@@ -29,13 +26,13 @@ export default class BlogPage extends React.Component {
   render() {
     const { entries } = this.props;
     return (
-      <Layout>
+      <React.Fragment>
         <h1>Blog</h1>
         <div className='row mt-3'>
           {entries.length > 0 && this.renderBlogList(entries)}
           {entries.length == 0 && <div>Loading...</div>}
         </div>
-      </Layout>
+      </React.Fragment>
     );
   }
 }

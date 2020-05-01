@@ -1,19 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+import { Layout } from '../components/layout';
+import MoreStories from '../components/more-stories';
+
 import { Header } from '../components/Navbar';
+import Intro from '../components/intro';
+
 import { authInitialProps } from '../lib/auth';
-import Router from 'next/router';
-import { Player } from 'video-react';
+import { getPosts } from '../lib/api';
 
 const Index = ({ auth }) => {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    getPosts()
+      .then((posts) => {
+        setPosts(posts);
+      })
+      .catch((err) => console.log(err.message));
+  }, []);
+
   return (
     <>
-      <Header {...auth} />
-      <div>
-        <h1>Hello World</h1>
-        <Player>
-          <source src='https://awsbucketformbias.s3.ap-south-1.amazonaws.com/single_blog_1.mp4' />
-        </Player>
-      </div>
+      <Header auth={auth} />
+      <Layout>
+        <Intro />
+        <main className='container my-5'>
+          <MoreStories posts={posts} />
+        </main>
+      </Layout>
     </>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Router from 'next/router';
 
-import Container from 'react-bootstrap/Container';
+import { Layout } from '../components/layout';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
@@ -25,7 +25,6 @@ const Signin = () => {
   const onSubmit = (form) => {
     setError('');
     setIsLoading(true);
-    console.log(form);
     signinUser(form)
       .then(() => {
         Router.push('/');
@@ -41,7 +40,7 @@ const Signin = () => {
   };
 
   return (
-    <Container fluid className='vh-100'>
+    <Layout>
       <Row className='justify-content-center'>
         <Col xs={10} lg={4} md={6} sm={8} className='shadow p-4 m-5'>
           <h1>Signin</h1>
@@ -96,7 +95,7 @@ const Signin = () => {
           </Toast>
         )}
       </Row>
-    </Container>
+    </Layout>
   );
 };
 
