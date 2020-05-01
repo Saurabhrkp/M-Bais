@@ -3,6 +3,7 @@ import { getPostFeed } from '../../lib/api';
 
 export default class PostPage extends React.Component {
   static async getInitialProps() {
+    // will require help
     const entries = await getPostFeed();
     return { entries };
   }

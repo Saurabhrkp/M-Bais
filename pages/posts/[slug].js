@@ -1,13 +1,10 @@
 import React from 'react';
-import { Layout } from 'components/layout';
-import { BlogDetail } from 'components/blog';
-import { BlogApi, BlogPost } from 'services';
 import { NextSeo } from 'next-seo';
 
 export default class BlogDetailPage extends React.Component {
   static async getInitialProps(ctx) {
     const { slug } = ctx.query;
-    const api = new BlogApi();
+    // here you will need help... but its simple
     const post = await api.fetchBlogById(slug);
     return { post };
   }
@@ -15,7 +12,7 @@ export default class BlogDetailPage extends React.Component {
   render() {
     const { post } = this.props;
     return (
-      <Layout>
+      <>
         <NextSeo
           openGraph={{
             type: 'article',
@@ -39,7 +36,7 @@ export default class BlogDetailPage extends React.Component {
             {post && <BlogDetail post={post} />}
           </div>
         </div>
-      </Layout>
+      </>
     );
   }
 }

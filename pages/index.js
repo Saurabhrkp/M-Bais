@@ -1,38 +1,18 @@
-import React, { useEffect, useState } from 'react';
-
-import { Layout } from '../components/layout';
-import MoreStories from '../components/more-stories';
-
-import { Header } from '../components/Navbar';
-import Intro from '../components/intro';
+import React from 'react';
 
 import { authInitialProps } from '../lib/auth';
+
 import { getPosts } from '../lib/api';
 
-const Index = ({ auth }) => {
-  const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    getPosts()
-      .then((posts) => {
-        setPosts(posts);
-      })
-      .catch((err) => console.log(err.message));
-  }, []);
-
+const Index = () => {
   return (
     <>
-      <Header auth={auth} />
-      <Layout>
-        <Intro />
-        <main className='container my-5'>
-          <MoreStories posts={posts} />
-        </main>
-      </Layout>
+      <h1>Start from here</h1>
     </>
   );
 };
 
+// Just let authInitialProps() be there it would do any thing
 Index.getInitialProps = authInitialProps();
 
 export default Index;
