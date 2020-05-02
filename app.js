@@ -19,6 +19,14 @@ require('./lib/passport')(passport);
 // Calling MongoDB
 require('./models/Database');
 
+// Get Status of MongoDB
+const mongo_express = require('mongo-express/lib/middleware');
+var mongo_express_config = require('./models/config');
+app.use('/mongo-express', mongo_express(mongo_express_config));
+
+// Gets Status of Express app
+app.use(require('express-status-monitor')());
+
 // Calling routes
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users');
