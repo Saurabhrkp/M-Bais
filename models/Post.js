@@ -2,10 +2,16 @@ const mongoose = require('mongoose');
 const mongodbErrorHandler = require('mongoose-mongodb-errors');
 const URLSlugs = require('mongoose-url-slugs');
 const mongoosePaginate = require('mongoose-paginate-v2');
+const shortId = require('crypto-random-string');
 const Schema = mongoose.Schema;
+
+const URI = () => {
+  return (random = shortId({ length: 8, type: 'distinguishable' }));
+};
 
 const PostSchema = new Schema(
   {
+    code: { type: String, unique: true, default: URI },
     title: { type: String, required: true, max: 100 },
     author: { type: Schema.ObjectId, ref: 'User', required: true },
     byAdmin: { type: Boolean, enum: [true, false], default: false },
@@ -58,7 +64,7 @@ PostSchema.pre('findOne', autoPopulatePostedBy).pre(
 );
 
 /* Create index on keys for more performant querying/post sorting */
-PostSchema.index({ author: 1, publishedDate: 1 });
+PostSchema.index({ code: 1, author: 1, publishedDate: 1 });
 
 /* The MongoDBErrorHandler plugin gives us a better 'unique' error, rather than: "11000 duplicate key" */
 PostSchema.plugin(mongodbErrorHandler);
