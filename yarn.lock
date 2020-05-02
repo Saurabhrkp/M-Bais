@@ -2189,7 +2189,7 @@ content-type@~1.0.4:
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
   integrity sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA==
 
-"context-eval@github:durran/context-eval":
+context-eval@durran/context-eval:
   version "0.1.0"
   resolved "https://codeload.github.com/durran/context-eval/tar.gz/8900e57d1e9995f641ee601761672d1f9c5c726d"
 
@@ -4822,6 +4822,11 @@ mongoose-mongodb-errors@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/mongoose-mongodb-errors/-/mongoose-mongodb-errors-0.0.2.tgz#7feacb8c901b5f899c616652337b2f499717291c"
   integrity sha1-f+rLjJAbX4mcYWZSM3svSZcXKRw=
+
+mongoose-paginate-v2@^1.3.9:
+  version "1.3.9"
+  resolved "https://registry.yarnpkg.com/mongoose-paginate-v2/-/mongoose-paginate-v2-1.3.9.tgz#dc0f58c22e061d78fc3a898195b884870a737c54"
+  integrity sha512-KXLmsTYDaS7zHqT45B2MZcCGzJtBySGANor5Xf6c0nU3y34xkRMqcDiVTizLd27KGqy5smqLe6LVNkTK994XGA==
 
 mongoose-url-slugs@^1.0.2:
   version "1.0.2"

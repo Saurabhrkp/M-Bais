@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const mongodbErrorHandler = require('mongoose-mongodb-errors');
 const URLSlugs = require('mongoose-url-slugs');
+const mongoosePaginate = require('mongoose-paginate-v2');
 const Schema = mongoose.Schema;
 
 const PostSchema = new Schema(
@@ -62,8 +63,11 @@ PostSchema.index({ author: 1, publishedDate: 1 });
 /* The MongoDBErrorHandler plugin gives us a better 'unique' error, rather than: "11000 duplicate key" */
 PostSchema.plugin(mongodbErrorHandler);
 
-/* Thi URLSlug plugin creates a slug that is human-readable unique identifier that can be used in a URL instead of an ID or hash*/
+/* The URLSlug plugin creates a slug that is human-readable unique identifier that can be used in a URL instead of an ID or hash*/
 PostSchema.plugin(URLSlugs('title'));
+
+/* The mongoosePaginate plugin adds paginate method to the Model for Pagination*/
+PostSchema.plugin(mongoosePaginate);
 
 const Post = mongoose.model('Post', PostSchema);
 
