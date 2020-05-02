@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Router from 'next/router';
 
-import { Layout } from '../components/layout';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
@@ -40,7 +39,7 @@ const Signin = () => {
   };
 
   return (
-    <Layout>
+    <div className='container-fluid'>
       <Row className='justify-content-center'>
         <Col xs={10} lg={4} md={6} sm={8} className='shadow p-4 m-5'>
           <h1>Signin</h1>
@@ -95,7 +94,7 @@ const Signin = () => {
           </Toast>
         )}
       </Row>
-    </Layout>
+    </div>
   );
 };
 
