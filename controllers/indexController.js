@@ -4,7 +4,7 @@ const Image = require('../models/Image');
 const mongoose = require('mongoose');
 
 // DB Config
-const { bucket, uploadFile } = require('../models/Database');
+const { bucket, uploadFile } = require('../models/database');
 const { deleteParams } = require('./controlHelper');
 
 exports.uploadPhoto = uploadFile.any('postImage');

@@ -209,7 +209,7 @@ module.exports = {
   // If no keyname is specified, it defaults to '_id', which is a mandatory field.
   // For Example :
   // defaultKeyNames{
-  //   "world_db":{  //Database Name
+  //   "world_db":{  //database Name
   //     "continent":"cont_name", // collection:field
   //     "country":"country_name",
   //     "city":"name"

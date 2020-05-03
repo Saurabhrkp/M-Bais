@@ -5,7 +5,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
-const { uploadFile } = require('../models/Database');
+const { uploadFile } = require('../models/database');
 
 // ! TODO: Resize Image before storing
 // const jimp = require('jimp');

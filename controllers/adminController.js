@@ -5,7 +5,7 @@ const Post = require('../models/Post');
 const Image = require('../models/Image');
 
 // DB Config
-const { bucket, uploadFile: upload } = require('../models/Database');
+const { bucket, uploadFile: upload } = require('../models/database');
 const { deleteParams } = require('./controlHelper');
 
 exports.uploadVideo = upload.fields([

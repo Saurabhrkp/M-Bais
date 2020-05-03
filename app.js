@@ -19,7 +19,7 @@ nextApp.prepare();
 require('./lib/passport')(passport);
 
 // Calling MongoDB
-require('./models/Database');
+require('./models/database');
 
 // Get Status of MongoDB
 const mongo_express = require('mongo-express/lib/middleware');
