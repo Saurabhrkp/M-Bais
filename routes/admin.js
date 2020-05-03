@@ -24,7 +24,7 @@ router
     userController.checkAuth,
     adminController.uploadVideo,
     catchErrors(uploadVideo),
-    catchErrors(uploadImage),
+    // catchErrors(uploadImage),
     catchErrors(adminController.savePost)
   );
 
@@ -34,7 +34,7 @@ router
   .delete(
     userController.checkAuth,
     adminController.deleteVideo,
-    adminController.deleteImage,
+    // adminController.deleteImage,
     catchErrors(adminController.deletePost)
   )
   .put(
