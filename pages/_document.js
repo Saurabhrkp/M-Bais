@@ -50,7 +50,7 @@ export default class MyDocument extends Document {
           />
           <link
             rel='stylesheet'
-            href='https://video-react.github.io/assets/video-react.css'
+            href='https://video-react.js.org/assets/video-react.css'
           />
           <link rel='stylesheet' href='/stylesheets/style.css' />
         </Head>
