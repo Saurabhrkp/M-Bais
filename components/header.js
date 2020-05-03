@@ -9,13 +9,19 @@ export const Header = ({ auth }) => {
   return (
     <Navbar
       className='shadow-lg px-0 navbar-custom'
-      bg='dark'
+      style={{ backgroundcolor: '#4633af' }}
       variant='dark'
       expand='md'
       collapseOnSelect
     >
       <Navbar.Brand href='/' className='ml-2'>
-        M-bais App
+        <img
+          src='/assets/M-Bias.png'
+          width='80'
+          height='30'
+          className='d-inline-block align-top'
+          alt='React Bootstrap logo'
+        />
       </Navbar.Brand>
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       <Navbar.Collapse id='responsive-navbar-nav'>
