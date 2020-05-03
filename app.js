@@ -6,7 +6,9 @@ const path = require('path');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const next = require('next');
+require('dotenv').config();
 const dev = process.env.NODE_DEV !== 'production'; //true false
+console.log(process.env);
 
 const app = express();
 const nextApp = next({ dev });

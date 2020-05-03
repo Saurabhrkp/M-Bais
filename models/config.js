@@ -3,7 +3,7 @@
 let mongo = {
   // Setting the connection string will only give access to that database
   // to see more databases you need to set mongodb.admin to true or add databases to the mongodb.auth list
-  connectionString: process.env.ME_CONFIG_MONGODB_SERVER
+  connectionString: process.env.DBURI
     ? 'mongodb://localhost:27017/mbais'
     : process.env.ME_CONFIG_MONGODB_URL,
   host: 'localhost',
@@ -73,11 +73,11 @@ module.exports = {
 
     // server: mongodb hostname or IP address
     // for replica set, use array of string instead
-    server:
-      (meConfigMongodbServer.length > 1
-        ? meConfigMongodbServer
-        : meConfigMongodbServer[0]) || mongo.host,
-    port: process.env.ME_CONFIG_MONGODB_PORT || mongo.port,
+    // server:
+    //   (meConfigMongodbServer.length > 1
+    //     ? meConfigMongodbServer
+    //     : meConfigMongodbServer[0]) || mongo.host,
+    // port: process.env.ME_CONFIG_MONGODB_PORT || mongo.port,
 
     // ssl: connect to the server using secure SSL
     ssl: process.env.ME_CONFIG_MONGODB_SSL || mongo.ssl,
@@ -133,8 +133,8 @@ module.exports = {
     baseUrl: process.env.ME_CONFIG_SITE_BASEURL || '/',
     cookieKeyName: 'mongo-express',
     cookieSecret: process.env.ME_CONFIG_SITE_COOKIESECRET || 'cookiesecret',
-    host: process.env.VCAP_APP_HOST || 'localhost',
-    port: process.env.VCAP_APP_PORT || 8081,
+    host: process.env.VCAP_APP_HOST || 'https://mech-bais.herokuapp.com/',
+    port: process.env.PORT || 8081,
     requestSizeLimit: process.env.ME_CONFIG_REQUEST_SIZE || '50mb',
     sessionSecret: process.env.ME_CONFIG_SITE_SESSIONSECRET || 'sessionsecret',
     sslCert: process.env.ME_CONFIG_SITE_SSL_CRT_PATH || '',
