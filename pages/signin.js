@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Router from 'next/router';
 
+import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
@@ -39,10 +40,17 @@ const Signin = () => {
   };
 
   return (
-    <div className='container-fluid'>
-      <Row className='justify-content-center'>
-        <Col xs={10} lg={4} md={6} sm={8} className='shadow p-4 m-5'>
-          <h1>Signin</h1>
+    <Container fluid>
+      <Row className='justify-content-center align-items-center vh-100'>
+        <Col
+          xs={10}
+          lg={5}
+          md={6}
+          sm={8}
+          className='shadow p-5 m-2 rounded-lg'
+          style={{ backgroundImage: `url('/assets/banner.png')` }}
+        >
+          <h1 className='text-white'>SIGN IN</h1>
           <hr />
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Form.Group>
@@ -94,7 +102,7 @@ const Signin = () => {
           </Toast>
         )}
       </Row>
-    </div>
+    </Container>
   );
 };
 

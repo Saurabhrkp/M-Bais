@@ -46,10 +46,17 @@ const Signup = () => {
   };
 
   return (
-    <Container fluid className='vh-100'>
-      <Row className='justify-content-center'>
-        <Col xs={10} lg={4} md={6} sm={8} className='shadow p-4 m-5'>
-          <h1>Sign up</h1>
+    <Container fluid>
+      <Row className='justify-content-center align-items-center vh-100'>
+        <Col
+          xs={10}
+          lg={5}
+          md={6}
+          sm={8}
+          className='shadow p-5 m-2 rounded-lg'
+          style={{ backgroundImage: `url('/assets/banner.png')` }}
+        >
+          <h1 className='text-white'>SIGN UP</h1>
           <hr />
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Form.Group>
