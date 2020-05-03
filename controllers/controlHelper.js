@@ -1,7 +1,7 @@
 // Load Admin model
 const Video = require('../models/Video');
 const Image = require('../models/Image');
-const { bucket } = require('../models/Database');
+const { bucket } = require('../models/database');
 
 /* Error handler for async / await functions */
 const catchErrors = (fn) => {
