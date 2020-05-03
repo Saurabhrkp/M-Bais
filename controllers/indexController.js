@@ -31,6 +31,19 @@ exports.getPostBySlug = async (req, res, next, slug) => {
   next();
 };
 
+exports.searchPost = async (req, res, next, slug) => {
+  const code = req.query.search;
+  const post = await Post.findOne({ code: code });
+  req.post = post;
+
+  const posterId = mongoose.Types.ObjectId(req.post.author._id);
+  if (req.user && posterId.equals(req.user._id)) {
+    req.isPoster = true;
+    return next();
+  }
+  next();
+};
+
 exports.sendPost = async (req, res) => {
   const { post } = req;
   res.json(post);

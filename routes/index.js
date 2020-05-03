@@ -47,6 +47,12 @@ router.post(
 
 router.get('/by/:username', catchErrors(indexController.getPostsByUser));
 
+router.get(
+  '/search',
+  catchErrors(indexController.searchPost),
+  catchErrors(indexController.sendPost)
+);
+
 router
   .route('/:slug')
   .get(catchErrors(indexController.sendPost))
