@@ -1,7 +1,9 @@
-// Load Admin model
-const Video = require('../models/Video');
-const Image = require('../models/Image');
 const { bucket } = require('../models/database');
+const Photo = require('../models/Photo');
+const Multer = require('multer');
+const multerS3 = require('multer-s3-transform');
+const { v4: uuidv4 } = require('uuid');
+const sharp = require('sharp');
 
 /* Error handler for async / await functions */
 const catchErrors = (fn) => {
@@ -10,65 +12,87 @@ const catchErrors = (fn) => {
   };
 };
 
-const uploadParams = (file) => {
-  return {
-    Bucket: 'awsbucketformbias',
-    Key: `${Date.now()}-${file.originalname.trim().replace(/\s+/g, '-')}`,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-    ACL: 'public-read',
-  };
+const imageString = (buffer) => {
+  var str = buffer.toString('base64');
+  var size = Buffer.byteLength(str, 'base64');
+  return { source: `data:image/webp;base64,${str}`, size };
 };
 
-const deleteParams = (file) => {
-  return { Bucket: 'awsbucketformbias', Key: file.s3_key };
-};
+// Multer is required to process file uploads and make them available via req.files.
+const upload = Multer({
+  storage: multerS3({
+    s3: bucket,
+    bucket: 'awsbucketformbias',
+    shouldTransform: function (req, file, cb) {
+      cb(null, /^image/i.test(file.mimetype));
+    },
+    setResizeOptions: function (req, file, cb) {
+      file.options = { height: 600 };
+      if (file.filename == 'avatar') {
+        file.options = { height: 200, width: 200 };
+      }
+      cb(null, file.options);
+    },
+    transforms: [
+      {
+        id: 'original',
+        key: function (req, file, cb) {
+          cb(null, `${uuidv4()}.jpg`);
+        },
+        transform: function (req, file, cb) {
+          cb(null, sharp().resize(file.options).webp());
+        },
+      },
+    ],
+  }),
+  limits: {
+    fileSize: 100 * 1024 * 1024, // no larger than 100mb, you can change as needed.
+  },
+  fileFilter: (req, file, next) => {
+    if (
+      file.mimetype.startsWith('image/') ||
+      file.mimetype.startsWith('video/')
+    ) {
+      next(null, true);
+    } else {
+      next(null, false);
+    }
+  },
+});
 
-const uploadVideo = async (req, res, next) => {
+const savePhoto = async (req, res, next) => {
   if (!req.files) {
     return next();
   }
-  const video = req.files['video'][0];
-  const params = uploadParams(video);
-  bucket.upload(params, async (err, data) => {
-    if (err) {
-      res.status(500).json({ error: true, Message: err });
-    } else {
-      const videos = new Video();
-      videos.videoURL = data.Location;
-      videos.s3_key = params.Key;
-      await videos.save();
-      req.body.video = videos.id;
-      next();
-    }
-  });
-};
 
-const uploadImage = async (req, res, next) => {
-  if (!req.files) {
+  if (req.files['avatar']) {
+    const encode_image = await sharp(req.files['avatar'].path)
+      .resize(200, 200)
+      .webp()
+      .toBuffer();
+    const { source, size } = imageString(encode_image);
+    const photo = new Photo({ source, size });
+    await photo.save();
+    req.body.avatar = photo.id;
     return next();
   }
-  var photo;
-  req.files['avatar']
-    ? (photo = req.files['avatar'][0])
-    : req.files['image']
-    ? (photo = req.files['image'][0])
-    : (photo = req.files[0]);
-  const params = uploadParams(photo);
-  bucket.upload(params, async (err, data) => {
-    if (err) {
-      res.status(500).json({ error: true, Message: err });
-    } else {
-      const image = new Image({
-        imageURL: data.Location,
-        s3_key: params.Key,
-      });
-      await image.save();
-      req.body.avatar = image.imageURL;
-      req.body.image = image.id;
-      next();
-    }
-  });
+  const photos = req.files;
+  photos.map((p) =>
+    data.push({
+      name: p.originalname,
+      mimetype: p.mimetype,
+      size: p.size,
+    })
+  );
+  const encode_image = await sharp(req.files['avatar'].path)
+    .resize(200, 200)
+    .webp()
+    .toBuffer();
+  const { source, size } = imageString(encode_image);
+  const photo = new Photo({ source, size });
+  await photo.save();
+  req.body.avatar = photo.id;
+  next();
 };
 
 const escapeRegex = (text) => {
@@ -78,7 +102,5 @@ const escapeRegex = (text) => {
 module.exports = {
   escapeRegex: escapeRegex,
   catchErrors: catchErrors,
-  uploadImage: uploadImage,
-  uploadVideo: uploadVideo,
-  deleteParams: deleteParams,
+  upload: upload,
 };

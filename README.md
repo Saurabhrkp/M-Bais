@@ -11,7 +11,7 @@ Working on Project to show-case for business.
   - ## /new ❔
     - ### POST ✔
       - userController.checkAuth ✔
-      - indexController.uploadImage ✔
+      - indexController.upload ✔
         - indexController.resizeImage ❔
         - indexController.addPost ✔
   - ## PARAMS username
@@ -89,14 +89,14 @@ Working on Project to show-case for business.
       - userController.checkAuth ✔
       - adminController.uploadVideo ✔
         - uploadVideo ✔
-        - uploadImage ✔
+        - upload ✔
         - adminController.savePost ✔
   - ## ROUTE /:postId ❔
     - ### PUT  ❔
       - userController.checkAuth ✔
       - adminController.uploadVideo ✔
         - uploadVideo ✔
-        - uploadImage ✔
+        - upload ✔
         - adminController.updatePost ✔
     - ### DELETE ⚡
       - userController.checkAuth ✔
