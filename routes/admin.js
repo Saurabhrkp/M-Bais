@@ -6,7 +6,7 @@ const userController = require('../controllers/userController');
 const {
   catchErrors,
   uploadVideo,
-  uploadImage,
+  upload,
 } = require('../controllers/controlHelper');
 
 /**
@@ -22,9 +22,7 @@ router
   .get(userController.checkAuth, catchErrors(adminController.getAdminFeed))
   .post(
     userController.checkAuth,
-    adminController.uploadVideo,
-    catchErrors(uploadVideo),
-    // catchErrors(uploadImage),
+    upload.array('video', 1),
     catchErrors(adminController.savePost)
   );
 
@@ -39,9 +37,7 @@ router
   )
   .put(
     userController.checkAuth,
-    adminController.uploadVideo,
-    catchErrors(uploadVideo),
-    catchErrors(uploadImage),
+    upload.array('photo', 6),
     catchErrors(adminController.updatePost)
   );
 
