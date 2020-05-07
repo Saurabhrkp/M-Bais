@@ -10,10 +10,7 @@ export const Content = (props) => {
     <article className='post-full post'>
       {!props.post.video ? (
         <>
-          <header className='post-full-header'>
-            <h1 className='post-full-title'>{post.title}</h1>
-            <div className='text-center meta'>{`${post.publishedDate}/ ${post.code} / ${mainTag}`}</div>
-          </header>
+          <br />
           <figure className='post-full-image text-center'>
             <img
               className='img-fluid'
@@ -30,10 +27,7 @@ export const Content = (props) => {
         </>
       ) : (
         <>
-          <header className='post-full-header'>
-            <h1 className='post-full-title'>{post.title}</h1>
-            <div className='text-center meta'>{`${post.publishedDate} / ${mainTag}`}</div>
-          </header>
+          <br />
           <figure className='post-full-image text-center'>
             <Video URL={post.video.videoURL} />
           </figure>
