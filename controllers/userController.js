@@ -5,10 +5,6 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
-const { uploadFile } = require('../models/database');
-
-// ! TODO: Resize Image before storing
-// const jimp = require('jimp');
 
 exports.validateSignup = async (req, res, next) => {
   await body('name')
@@ -145,8 +141,6 @@ exports.getUserFeed = async (req, res) => {
   res.json(posts);
 };
 
-exports.uploadAvatar = uploadFile.any('avatar');
-
 exports.updateUser = async (req, res) => {
   req.body.updatedAt = new Date().toISOString();
   const updatedUser = await User.findOneAndUpdate(
@@ -168,17 +162,6 @@ exports.deleteUser = async (req, res) => {
   const deletedUser = await User.findOneAndDelete({ username: username });
   res.json(deletedUser);
 };
-
-/**
- * SAVE AND REDIRECT
-TODO:
-Data from form is valid. Save member.
-member.save(function (err) {
-  if (err) { return next(err); }
-// Successful - redirect to new member record.
-   res.redirect(member.url);
-  });
-*/
 
 /**
  * Convert the type to an array.
