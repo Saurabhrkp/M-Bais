@@ -1,11 +1,8 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
-import { getSessionFromServer, getUserScript } from '../lib/auth';
-
 export default class MyDocument extends Document {
   static async getInitialProps(ctx) {
-    const user = getSessionFromServer(ctx.req);
     const sheet = new ServerStyleSheet();
     const originalRenderPage = ctx.renderPage;
 
@@ -19,7 +16,6 @@ export default class MyDocument extends Document {
       const initialProps = await Document.getInitialProps(ctx);
 
       return {
-        ...user,
         ...initialProps,
         styles: (
           <>
@@ -34,7 +30,6 @@ export default class MyDocument extends Document {
   }
 
   render() {
-    const { user = {} } = this.props;
     return (
       <Html lang='en'>
         <Head>
@@ -48,23 +43,10 @@ export default class MyDocument extends Document {
             rel='stylesheet'
             href='https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css'
           />
-          <link
-            rel='stylesheet'
-            href='https://video-react.js.org/assets/video-react.css'
-          />
-          <link
-            rel='stylesheet'
-            href='https://video-react.github.io/assets/video-react.css'
-          />
           <link rel='stylesheet' href='/stylesheets/style.css' />
         </Head>
         <body>
           <Main />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: getUserScript(user),
-            }}
-          />
           <NextScript />
         </body>
       </Html>

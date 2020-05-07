@@ -1,10 +1,10 @@
 import React from 'react';
-import { Player, BigPlayButton } from 'video-react';
 
 export default (props) => {
   return (
-    <Player src={props.URL}>
-      <BigPlayButton position='center' />
-    </Player>
+    <video width='80%' controls>
+      <source src={props.URL} />
+      Your browser does not support HTML video.
+    </video>
   );
 };
