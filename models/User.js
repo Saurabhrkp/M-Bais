@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema(
   {
     name: { type: String },
-    avatar: { data: Buffer, contentType: String },
+    avatar: { type: Schema.ObjectId, ref: 'Photo', required: false },
     username: { type: String, unique: true, lowercase: true },
     phone: { type: Number, required: false },
     shortBio: { type: String, required: false, max: 50 },
