@@ -14,12 +14,15 @@ const PostSchema = new Schema(
     code: { type: String, unique: true, default: URI },
     title: { type: String, required: true, max: 100 },
     author: { type: Schema.ObjectId, ref: 'User', required: true },
-    byAdmin: { type: Boolean, enum: [true, false], default: false },
-    video: { type: Schema.ObjectId, ref: 'Video', required: false },
+    video: {
+      preview: { data: Buffer, contentType: String },
+      videoURL: { type: String, required: true },
+      s3_key: { type: String, required: true },
+    },
     body: { type: String, required: true },
     description: { type: String, required: true },
     publishedDate: { type: Date, default: Date.now },
-    image: { type: Schema.ObjectId, ref: 'Image', required: false },
+    image: [{ data: Buffer, contentType: String }],
     tags: [{ type: String }],
     likes: [{ type: Schema.ObjectId, ref: 'User' }],
     comments: [
@@ -30,29 +33,28 @@ const PostSchema = new Schema(
       },
     ],
   },
-  { toJSON: { virtuals: true } }
+  {
+    toJSON: { virtuals: true },
+    _id: false,
+  }
 );
 
 // Virtual for this metaTitle.
 PostSchema.virtual('metaTitle').get(function () {
-  return this.title.length > 30
-    ? this.title.substr(0, 30) + '&hellip;'
-    : this.title;
+  return this.title.length > 30 ? this.title.substr(0, 30) + '...' : this.title;
 });
 
 // Virtual for this metaDescription.
 PostSchema.virtual('metaDescription').get(function () {
   return this.description.length > 50
-    ? this.description.substr(0, 60) + '&hellip;'
+    ? this.description.substr(0, 60) + '...'
     : this.description;
 });
 
 /* Kind of like a middleware function after creating our schema (since we have access to next) */
 /* Must be a function declaration (not an arrow function), because we want to use 'this' to reference our schema */
 const autoPopulatePostedBy = function (next) {
-  this.populate('video', '_id s3_key videoURL');
   this.populate('author', '_id name avatar author');
-  this.populate('image', '_id imageURL s3_key');
   this.populate('comments.postedBy', '_id name avatar');
   next();
 };
@@ -70,7 +72,7 @@ PostSchema.index({ code: 1, author: 1, publishedDate: 1 });
 PostSchema.plugin(mongodbErrorHandler);
 
 /* The URLSlug plugin creates a slug that is human-readable unique identifier that can be used in a URL instead of an ID or hash*/
-PostSchema.plugin(URLSlugs('title'));
+PostSchema.plugin(URLSlugs('title code'));
 
 /* The mongoosePaginate plugin adds paginate method to the Model for Pagination*/
 PostSchema.plugin(mongoosePaginate);
