@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const ImageSchema = new Schema({
+const FileSchema = new Schema({
+  contentType: { type: String, required: true },
   source: { type: String, required: true },
   key: { type: String, required: true },
   size: { type: Number, required: true },
 });
 
-const Image = mongoose.model('Image', ImageSchema);
+const File = mongoose.model('File', FileSchema);
 
-module.exports = Image;
+module.exports = File;
