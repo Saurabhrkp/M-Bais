@@ -1,8 +1,7 @@
 const { bucket } = require('../models/database');
-const Photo = require('../models/Photo');
+const File = require('../models/File');
 const Multer = require('multer');
 const multerS3 = require('multer-s3-transform');
-const { v4: uuidv4 } = require('uuid');
 const sharp = require('sharp');
 
 /* Error handler for async / await functions */
@@ -10,12 +9,6 @@ const catchErrors = (fn) => {
   return function (req, res, next) {
     return fn(req, res, next).catch(next);
   };
-};
-
-const imageString = (buffer) => {
-  var str = buffer.toString('base64');
-  var size = Buffer.byteLength(str, 'base64');
-  return { source: `data:image/webp;base64,${str}`, size };
 };
 
 // Multer is required to process file uploads and make them available via req.files.
@@ -26,21 +19,28 @@ const upload = Multer({
     shouldTransform: function (req, file, cb) {
       cb(null, /^image/i.test(file.mimetype));
     },
-    setResizeOptions: function (req, file, cb) {
-      file.options = { height: 600 };
-      if (file.filename == 'avatar') {
-        file.options = { height: 200, width: 200 };
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    filename: function (req, file, cb) {
+      var name = file.fieldname;
+      if (!file.mimetype.startsWith('image/')) {
+        cb(null, `${Date.now()}-${name}.webp`);
       }
-      cb(null, file.options);
+      cb(null, `${Date.now()}-${name}.${file.mimetype.split('/')[1]}`);
     },
     transforms: [
       {
         id: 'original',
         key: function (req, file, cb) {
-          cb(null, `${uuidv4()}.jpg`);
+          cb(null, `${Date.now()}-${file.fieldname}.webp`);
         },
         transform: function (req, file, cb) {
-          cb(null, sharp().resize(file.options).webp());
+          var options = { height: 600 };
+          if (file.fieldname == 'avatar') {
+            options = { height: 200, width: 200 };
+          }
+          cb(null, sharp().resize(options).webp());
         },
       },
     ],
@@ -60,47 +60,50 @@ const upload = Multer({
   },
 });
 
-const savePhoto = async (req, res, next) => {
+const savingFile = async (file) => {
+  try {
+    var files = new File({
+      source: file.transforms[0].location,
+      size: file.transforms[0].size,
+      key: file.transforms[0].key,
+    });
+    var { id } = await files.save();
+    return Promise.resolve(id);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+const saveFile = async (req, res, next) => {
   if (!req.files) {
     return next();
   }
-
   if (req.files['avatar']) {
-    const encode_image = await sharp(req.files['avatar'].path)
-      .resize(200, 200)
-      .webp()
-      .toBuffer();
-    const { source, size } = imageString(encode_image);
-    const photo = new Photo({ source, size });
-    await photo.save();
-    req.body.avatar = photo.id;
+    const file = req.files['avatar'][0];
+    req.body.avatar = await savingFile(file);
     return next();
   }
-  const photos = req.files;
-  photos.map((p) =>
-    data.push({
-      name: p.originalname,
-      mimetype: p.mimetype,
-      size: p.size,
-    })
-  );
-  const encode_image = await sharp(req.files['avatar'].path)
-    .resize(200, 200)
-    .webp()
-    .toBuffer();
-  const { source, size } = imageString(encode_image);
-  const photo = new Photo({ source, size });
-  await photo.save();
-  req.body.avatar = photo.id;
-  next();
+  if (req.files['photos']) {
+    const photos = req.files['photos'];
+    const arrayOfPhoto = [];
+    for (const key in photos) {
+      if (photos.hasOwnProperty(key)) {
+        const file = photos[key];
+        var id = await savingFile(file);
+        arrayOfPhoto.push(id);
+      }
+    }
+    req.body.photos = new Array(...arrayOfPhoto);
+  }
+  if (req.files['video'][0]) {
+    const file = req.files['video'][0];
+    req.body.video = await savingFile(file);
+  }
+  return next();
 };
 
 const escapeRegex = (text) => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 };
 
-module.exports = {
-  escapeRegex: escapeRegex,
-  catchErrors: catchErrors,
-  upload: upload,
-};
+module.exports = { escapeRegex, catchErrors, upload, saveFile };
