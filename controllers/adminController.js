@@ -5,13 +5,13 @@ const File = require('../models/File');
 // DB Config
 const { bucket } = require('../models/database');
 
-const deleteParams = (file) => {
-  return { Bucket: 'awsbucketformbias', Key: file.key };
-};
-
 exports.savePost = async (req, res, next) => {
   req.body.author = req.user.id;
+  const tags = req.body.tagArray.toLowerCase().split(' ');
+  req.body.tags = new Array(...tags);
   const post = await new Post(req.body).save();
+  const user = await User.findById(req.user.id);
+  user.posts.push(post._id).save();
   await Post.populate(post, {
     path: 'author video photos',
     select: '_id name avatar source key',
@@ -24,13 +24,15 @@ exports.getUsers = async (req, res) => {
   res.json(users);
 };
 
-exports.getAdminFeed = async (req, res) => {
+exports.getAllPosts = async (req, res) => {
   const posts = await Post.find();
   res.json(posts);
 };
 
 exports.updatePost = async (req, res) => {
   req.body.publishedDate = new Date().toISOString();
+  const tags = req.body.tagArray.toLowerCase().split(' ');
+  req.body.tags = new Array(...tags);
   const updatedPost = await Post.findOneAndUpdate(
     { _id: req.post._id },
     { $set: req.body },
@@ -45,23 +47,29 @@ exports.updatePost = async (req, res) => {
 
 exports.deletePost = async (req, res) => {
   const { _id } = req.post;
+  await User.findOneAndUpdate(req.user.id, { $pull: { posts: _id } });
   const deletedPost = await Post.findOneAndDelete({ _id });
   res.json(deletedPost);
 };
 
-exports.deleteAllFile = async (req, res, next) => {
+const deleteFileFromBucket = async (file) => {
+  try {
+    return await bucket
+      .deleteObject({ Bucket: 'awsbucketformbias', Key: file.key })
+      .promise();
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+exports.deleteAllFiles = async (req, res, next) => {
   try {
     const { video = {}, photos = [{}] } = req.post;
     if (video !== {}) {
       await File.findOneAndDelete({
         key: video.key,
       });
-      const params = deleteParams(video);
-      bucket.deleteObject(params, (error, data) => {
-        if (error) {
-          return Promise.reject(error);
-        }
-      });
+      await deleteFileFromBucket(video);
     }
     if (photos !== [{}]) {
       for (const key in photos) {
@@ -70,12 +78,7 @@ exports.deleteAllFile = async (req, res, next) => {
           await File.findOneAndDelete({
             key: file.key,
           });
-          const params = deleteParams(file);
-          bucket.deleteObject(params, (error, data) => {
-            if (error) {
-              return Promise.reject(error);
-            }
-          });
+          await deleteFileFromBucket(file);
         }
       }
     }
@@ -105,12 +108,7 @@ exports.deleteFile = async (req, res, next, file) => {
       { [operator]: { [field]: [data] } },
       { new: true, runValidators: true }
     );
-    const params = deleteParams(file);
-    bucket.deleteObject(params, (error, data) => {
-      if (error) {
-        return Promise.reject(error);
-      }
-    });
+    await deleteFileFromBucket(file);
     res.json({ message: `Files deleted: ${file.key}` });
   } catch (error) {
     return Promise.reject(error);
