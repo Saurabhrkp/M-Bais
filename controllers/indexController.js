@@ -52,15 +52,15 @@ exports.toggleLike = async (req, res) => {
 };
 
 exports.toggleComment = async (req, res) => {
-  const { comment, _id } = req.post;
+  const { _id } = req.post;
   let operator;
   let data;
   if (req.url.includes('uncomment')) {
     operator = '$pull';
-    data = { _id: comment._id };
+    data = { _id: req.body.comment._id };
   } else {
     operator = '$push';
-    data = { text: comment.text, postedBy: req.user._id };
+    data = { text: req.body.comment.text, postedBy: req.user._id };
   }
   const updatedPost = await Post.findOneAndUpdate(
     { _id: _id },
