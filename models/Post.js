@@ -14,14 +14,11 @@ const PostSchema = new Schema(
     code: { type: String, unique: true, default: URI },
     title: { type: String, required: true, max: 100 },
     author: { type: Schema.ObjectId, ref: 'User', required: true },
-    video: {
-      videoURL: { type: String, required: true },
-      s3_key: { type: String, required: true },
-    },
     body: { type: String, required: true },
     description: { type: String, required: true },
     publishedDate: { type: Date, default: Date.now },
-    image: [{ type: Schema.ObjectId, ref: 'Image' }],
+    video: { type: Schema.ObjectId, ref: 'File' },
+    photos: [{ type: Schema.ObjectId, ref: 'File' }],
     tags: [{ type: String }],
     likes: [{ type: Schema.ObjectId, ref: 'User' }],
     comments: [
@@ -53,7 +50,8 @@ PostSchema.virtual('metaDescription').get(function () {
 /* Must be a function declaration (not an arrow function), because we want to use 'this' to reference our schema */
 const autoPopulatePostedBy = function (next) {
   this.populate('author', '_id name avatar author');
-  this.populate('image', '_id source');
+  this.populate('video', '_id source key');
+  this.populate('photos', '_id source key');
   this.populate('comments.postedBy', '_id name avatar');
   next();
 };
