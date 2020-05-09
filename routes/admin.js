@@ -5,8 +5,8 @@ const indexController = require('../controllers/indexController');
 const userController = require('../controllers/userController');
 const {
   catchErrors,
-  uploadVideo,
   upload,
+  saveFile,
 } = require('../controllers/controlHelper');
 
 /**
@@ -22,22 +22,28 @@ router
   .get(userController.checkAuth, catchErrors(adminController.getAdminFeed))
   .post(
     userController.checkAuth,
-    upload.array('video', 1),
+    upload.fields([
+      { name: 'video', maxCount: 1 },
+      { name: 'photos', maxCount: 6 },
+    ]),
+    catchErrors(saveFile),
     catchErrors(adminController.savePost)
   );
 
-// ! PUT Can be modified for replacing Video and Image
 router
   .route('/:slug')
   .delete(
     userController.checkAuth,
-    adminController.deleteVideo,
-    // adminController.deleteImage,
+    catchErrors(adminController.deleteAllFile),
     catchErrors(adminController.deletePost)
   )
   .put(
     userController.checkAuth,
-    upload.array('photo', 6),
+    upload.fields([
+      { name: 'video', maxCount: 1 },
+      { name: 'photos', maxCount: 6 },
+    ]),
+    catchErrors(saveFile),
     catchErrors(adminController.updatePost)
   );
 
@@ -47,16 +53,8 @@ router.get(
   catchErrors(adminController.getUsers)
 );
 
-router.delete(
-  '/:slug/video',
-  adminController.deleteVideo,
-  catchErrors(adminController.updatePost)
-);
+router.delete('/:slug/photos/:file', catchErrors(adminController.deleteFile));
 
-router.delete(
-  '/:slug/image',
-  adminController.deleteImage,
-  catchErrors(adminController.updatePost)
-);
+router.delete('/:slug/video/:file', catchErrors(adminController.deleteFile));
 
 module.exports = router;
