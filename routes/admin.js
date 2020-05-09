@@ -10,7 +10,7 @@ const {
 } = require('../controllers/controlHelper');
 
 /**
- * USER ROUTES: /admin
+ * Admin ROUTES: /admin
  */
 
 router.param('username', userController.getUserByUsername);
@@ -19,7 +19,7 @@ router.param('slug', indexController.getPostBySlug);
 
 router
   .route('/article/:username')
-  .get(userController.checkAuth, catchErrors(adminController.getAdminFeed))
+  .get(userController.checkAuth, catchErrors(adminController.getAllPosts))
   .post(
     userController.checkAuth,
     upload.fields([
@@ -34,7 +34,7 @@ router
   .route('/:slug')
   .delete(
     userController.checkAuth,
-    catchErrors(adminController.deleteAllFile),
+    catchErrors(adminController.deleteAllFiles),
     catchErrors(adminController.deletePost)
   )
   .put(
