@@ -16,31 +16,31 @@ const upload = Multer({
   storage: multerS3({
     s3: bucket,
     bucket: 'awsbucketformbias',
+    acl: 'public-read',
     shouldTransform: function (req, file, cb) {
       cb(null, /^image/i.test(file.mimetype));
     },
     metadata: function (req, file, cb) {
       cb(null, { fieldName: file.fieldname });
     },
-    filename: function (req, file, cb) {
-      var name = file.fieldname;
-      if (!file.mimetype.startsWith('image/')) {
-        cb(null, `${Date.now()}-${name}.webp`);
-      }
-      cb(null, `${Date.now()}-${name}.${file.mimetype.split('/')[1]}`);
+    key: function (req, file, cb) {
+      cb(
+        null,
+        `${Date.now()}-${file.fieldname}.${file.mimetype.split('/')[1]}`
+      );
     },
     transforms: [
       {
         id: 'original',
         key: function (req, file, cb) {
-          cb(null, `${Date.now()}-${file.fieldname}.webp`);
+          cb(null, `${Date.now()}-${file.fieldname}.png`);
         },
         transform: function (req, file, cb) {
           var options = { height: 600 };
           if (file.fieldname == 'avatar') {
             options = { height: 200, width: 200 };
           }
-          cb(null, sharp().resize(options).webp());
+          cb(null, sharp().resize(options).png({ compressionLevel: 6 }));
         },
       },
     ],
@@ -63,9 +63,10 @@ const upload = Multer({
 const savingFile = async (file) => {
   try {
     var files = new File({
-      source: file.transforms[0].location,
-      size: file.transforms[0].size,
-      key: file.transforms[0].key,
+      contentType: file.mimetype,
+      source: file.location ? file.location : file.transforms[0].location,
+      size: file.size ? file.size : file.transforms[0].size,
+      key: file.key ? file.key : file.transforms[0].key,
     });
     var { id } = await files.save();
     return Promise.resolve(id);
@@ -75,7 +76,7 @@ const savingFile = async (file) => {
 };
 
 const saveFile = async (req, res, next) => {
-  if (!req.files) {
+  if (!!req.files) {
     return next();
   }
   if (req.files['avatar']) {
