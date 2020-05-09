@@ -163,25 +163,3 @@ exports.deleteUser = async (req, res) => {
   const deletedUser = await User.findOneAndDelete({ username: username });
   res.json(deletedUser);
 };
-
-/**
- * Convert the type to an array.
-(req, res, next) => {
-    if(!(req.body.type instanceof Array)){
-        if(typeof req.body.type==='undefined')
-        req.body.type=[];
-        else
-        req.body.type=new Array(req.body.type);
-    }
-    next();
-},
-*/
-
-/**
-  *  Mark our selected types as checked.
-for (let i = 0; i < results.types.length; i++) {
-    if (member.type(results.types[i]._id) > -1) {
-        results.types[i].checked='true';
-    }
-}
-*/

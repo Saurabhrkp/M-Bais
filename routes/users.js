@@ -37,7 +37,11 @@ router
   )
   .delete(userController.checkAuth, catchErrors(userController.deleteUser));
 
-router.get('/profile/:username', userController.getUserProfile);
+router.get(
+  '/profile/:username',
+  userController.checkAuth,
+  userController.getUserProfile
+);
 
 // ! Should be convert to get saved posts
 router.get(
