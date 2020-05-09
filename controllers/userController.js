@@ -1,6 +1,6 @@
 // Loading models
 const User = require('../models/User');
-const Post = require('../models/Post');
+const Post = require('../models/Post'); // ! Should be convert to get saved posts
 const passport = require('passport');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
@@ -135,6 +135,7 @@ exports.getUserProfile = (req, res) => {
   res.json(req.profile);
 };
 
+// ! Should be convert to get saved posts
 exports.getUserFeed = async (req, res) => {
   const { _id } = req.profile;
   const posts = await Post.find({ author: _id }).populate('image author video');

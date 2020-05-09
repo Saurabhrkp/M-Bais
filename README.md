@@ -84,7 +84,7 @@ Working on Project to show-case for business.
   - ## ROUTE /article/:userId ⚡
     - ### GET ✔
       - userController.getAuthUser ✔
-        - adminController.getAdminFeed ✔
+        - adminController.getAllPosts ✔
     - ### POST ✔
       - userController.checkAuth ✔
       - adminController.uploadVideo ✔
