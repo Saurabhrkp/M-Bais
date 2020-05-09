@@ -1,19 +1,20 @@
 const User = require('../models/User');
 const Post = require('../models/Post');
-const Photo = require('../models/Photo');
-const sharp = require('sharp');
-const { imageString } = require('./controlHelper');
+const File = require('../models/File');
 
 // DB Config
 const { bucket } = require('../models/database');
-const { deleteParams } = require('./controlHelper');
+
+const deleteParams = (file) => {
+  return { Bucket: 'awsbucketformbias', Key: file.key };
+};
 
 exports.savePost = async (req, res, next) => {
   req.body.author = req.user.id;
   const post = await new Post(req.body).save();
   await Post.populate(post, {
-    path: 'author',
-    select: '_id name avatar',
+    path: 'author video photos',
+    select: '_id name avatar source key',
   });
   res.json(post);
 };
@@ -24,28 +25,20 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.getAdminFeed = async (req, res) => {
-  const { _id } = req.profile;
-  const posts = await Post.find({ author: _id }).select(
-    '_id title slug description '
-  );
+  const posts = await Post.find();
   res.json(posts);
 };
 
 exports.updatePost = async (req, res) => {
   req.body.publishedDate = new Date().toISOString();
-  const encode_image = await sharp(req.file.path)
-    .resize(200, 200)
-    .webp()
-    .toBuffer();
-  req.body.avatar = imageString(encode_image);
   const updatedPost = await Post.findOneAndUpdate(
     { _id: req.post._id },
     { $set: req.body },
     { new: true, runValidators: true }
   );
   await Post.populate(updatedPost, {
-    path: 'author video image',
-    select: '_id name avatar videoURL imageURL',
+    path: 'author video photos',
+    select: '_id name avatar source key',
   });
   res.json(updatedPost);
 };
@@ -56,50 +49,70 @@ exports.deletePost = async (req, res) => {
   res.json(deletedPost);
 };
 
-exports.deleteVideo = async (req, res, next) => {
-  const { _id, video } = req.post;
-  if (video === null) {
+exports.deleteAllFile = async (req, res, next) => {
+  try {
+    const { video = {}, photos = [{}] } = req.post;
+    if (video !== {}) {
+      await File.findOneAndDelete({
+        key: video.key,
+      });
+      const params = deleteParams(video);
+      bucket.deleteObject(params, (error, data) => {
+        if (error) {
+          return Promise.reject(error);
+        }
+      });
+    }
+    if (photos !== [{}]) {
+      for (const key in photos) {
+        if (photos.hasOwnProperty(key)) {
+          const file = photos[key];
+          await File.findOneAndDelete({
+            key: file.key,
+          });
+          const params = deleteParams(file);
+          bucket.deleteObject(params, (error, data) => {
+            if (error) {
+              return Promise.reject(error);
+            }
+          });
+        }
+      }
+    }
     return next();
+  } catch (error) {
+    return Promise.reject(error);
   }
-  await Post.findOneAndUpdate(
-    { _id },
-    {
-      $set: { video: null },
-    }
-  );
-  await Video.findOneAndDelete({
-    s3_key: video.s3_key,
-  });
-  const params = deleteParams(video);
-  bucket.deleteObject(params, (err, data) => {
-    if (err) {
-      console.log(err);
-    } else {
-      next();
-    }
-  });
 };
 
-exports.deleteImage = async (req, res, next) => {
-  const { _id, image } = req.post;
-  if (image === null) {
-    return next();
-  }
-  await Post.findOneAndUpdate(
-    { _id },
-    {
-      $set: { image: null },
-    }
-  );
-  await Image.findOneAndDelete({
-    s3_key: image.s3_key,
-  });
-  const params = deleteParams(image);
-  bucket.deleteObject(params, (err, data) => {
-    if (err) {
-      console.log(err);
+exports.deleteFile = async (req, res, next, file) => {
+  try {
+    await File.findOneAndDelete({
+      _id: file,
+    });
+    let operator, field, data;
+    if (req.url.includes('photos')) {
+      operator = '$pull';
+      field = 'photos';
+      data = file._id;
     } else {
-      next();
+      operator = '$unset';
+      field = 'video';
+      data = 1;
     }
-  });
+    await Post.findByIdAndUpdate(
+      { _id: req.post._id },
+      { [operator]: { [field]: [data] } },
+      { new: true, runValidators: true }
+    );
+    const params = deleteParams(file);
+    bucket.deleteObject(params, (error, data) => {
+      if (error) {
+        return Promise.reject(error);
+      }
+    });
+    res.json({ message: `Files deleted: ${file.key}` });
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
