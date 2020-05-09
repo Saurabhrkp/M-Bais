@@ -37,10 +37,13 @@ router.put(
 
 router.get(
   '/search',
+  userController.checkAuth,
   catchErrors(indexController.searchPost),
   catchErrors(indexController.sendPost)
 );
 
-router.route('/:slug').get(catchErrors(indexController.sendPost));
+router
+  .route('/:slug')
+  .get(userController.checkAuth, catchErrors(indexController.sendPost));
 
 module.exports = router;
