@@ -76,7 +76,7 @@ const savingFile = async (file) => {
 };
 
 const saveFile = async (req, res, next) => {
-  if (!!req.files) {
+  if (!req.files) {
     return next();
   }
   if (req.files['avatar']) {
@@ -96,7 +96,7 @@ const saveFile = async (req, res, next) => {
     }
     req.body.photos = new Array(...arrayOfPhoto);
   }
-  if (req.files['video'][0]) {
+  if (req.files['video']) {
     const file = req.files['video'][0];
     req.body.video = await savingFile(file);
   }
