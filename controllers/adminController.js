@@ -5,13 +5,18 @@ const File = require('../models/File');
 // DB Config
 const { bucket } = require('../models/database');
 
+const extractTags = (string) => {
+  var tags = string.toLowerCase().split(' ');
+  return new Array(...tags);
+};
+
 exports.savePost = async (req, res, next) => {
   req.body.author = req.user.id;
-  const tags = req.body.tagArray.toLowerCase().split(' ');
-  req.body.tags = new Array(...tags);
+  req.body.tags = extractTags(req.body.tagString);
   const post = await new Post(req.body).save();
   const user = await User.findById(req.user.id);
-  user.posts.push(post._id).save();
+  user.posts.push(post._id);
+  user.save();
   await Post.populate(post, {
     path: 'author video photos',
     select: '_id name avatar source key',
@@ -31,8 +36,7 @@ exports.getAllPosts = async (req, res) => {
 
 exports.updatePost = async (req, res) => {
   req.body.publishedDate = new Date().toISOString();
-  const tags = req.body.tagArray.toLowerCase().split(' ');
-  req.body.tags = new Array(...tags);
+  req.body.tags = extractTags(req.body.tagString);
   const updatedPost = await Post.findOneAndUpdate(
     { _id: req.post._id },
     { $set: req.body },
