@@ -22,7 +22,7 @@ export default class CustomApp extends App {
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx);
     }
-    if (ctx.req && ctx.req.session.passport) {
+    if (ctx.req && ctx.req.session && ctx.req.session.passport) {
       pageProps.user = ctx.req.session.passport.user;
     }
     return { pageProps };
