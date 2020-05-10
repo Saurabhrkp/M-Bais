@@ -6,6 +6,8 @@ const path = require('path');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const next = require('next');
+const MongoStore = require('connect-mongo')(session);
+const mongoose = require('mongoose');
 const dev = process.env.NODE_DEV !== 'production'; //true false
 
 const app = express();
@@ -48,9 +50,10 @@ app.use(
   session({
     secret: 'secret',
     name: 'next-express-connect.sid',
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
     rolling: true,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 14 /* expires in 14 days*/,
       httpOnly: true,
