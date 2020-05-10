@@ -12,7 +12,7 @@ mongoose
     useCreateIndex: true,
     useFindAndModify: false,
   })
-  .then(() => console.log(`MongoDB is Connected on ${mongoURI}`))
+  .then(() => console.info(`MongoDB is Connected on ${mongoURI}`))
   .catch((err) => console.error(`Unable to MongoDB due to ${err.message}`));
 
 // Promise of mongoose
