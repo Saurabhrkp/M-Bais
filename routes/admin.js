@@ -13,6 +13,8 @@ const {
  * Admin ROUTES: /admin
  */
 
+router.get('/', catchErrors(indexController.getPosts));
+
 router.param('username', userController.getUserByUsername);
 
 router.param('slug', indexController.getPostBySlug);
