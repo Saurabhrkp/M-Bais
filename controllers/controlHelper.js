@@ -62,8 +62,9 @@ const upload = Multer({
 
 const savingFile = async (file) => {
   try {
+    var mimeTypeCheck = file.mimetype.startsWith('image/');
     var files = new File({
-      contentType: file.mimetype,
+      contentType: mimeTypeCheck ? 'image/png' : file.mimetype,
       source: file.location ? file.location : file.transforms[0].location,
       size: file.size ? file.size : file.transforms[0].size,
       key: file.key ? file.key : file.transforms[0].key,
