@@ -13,8 +13,7 @@ exports.getPostBySlug = async (req, res, next, slug) => {
   next();
 };
 
-exports.searchPost = async (req, res, next) => {
-  const code = req.query.search;
+exports.searchPost = async (req, res, next, code) => {
   const post = await Post.findOne({ code: code });
   req.post = post;
   const posterId = mongoose.Types.ObjectId(req.post.author._id);

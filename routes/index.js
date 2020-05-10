@@ -36,7 +36,7 @@ router.put(
 );
 
 router.get(
-  '/search',
+  '/search/:code',
   userController.checkAuth,
   catchErrors(indexController.searchPost),
   catchErrors(indexController.sendPost)
