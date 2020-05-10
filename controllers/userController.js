@@ -95,7 +95,9 @@ exports.signin = (req, res, next) => {
 exports.signout = (req, res) => {
   res.clearCookie('next-express-connect.sid');
   req.logout();
-  res.json({ message: 'You are now signed out!' });
+  req.session.destroy((err) => {
+    res.redirect('/');
+  });
 };
 
 exports.getAuthUser = (req, res) => {
