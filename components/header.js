@@ -1,18 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Link from 'next/link';
 
-import { signoutUser } from '../lib/auth';
+import { signoutUser } from '../lib/user';
 
-export const Header = () => {
-  const [auth, setAuth] = useState({});
-  useEffect(() => {
-    let user = window.localStorage.getItem('token');
-    user = JSON.parse(user);
-    setAuth(user);
-  }, []);
-
+export const Header = ({ user }) => {
   return (
     <Navbar
       className='shadow-lg px-0 navbar-custom'
@@ -27,13 +21,13 @@ export const Header = () => {
           width='60'
           height='50'
           className='d-inline-block align-top ml-4'
-          alt='React Bootstrap logo'
+          alt='M-Bias logo'
         />
       </Navbar.Brand>
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       <Navbar.Collapse id='responsive-navbar-nav'>
         <Nav className='ml-auto'>
-          {auth && auth._id ? (
+          {user && (
             // Auth Navigation
             <>
               <Nav.Item>
@@ -46,7 +40,8 @@ export const Header = () => {
                 <Nav.Link>Sign out</Nav.Link>
               </Nav.Item>
             </>
-          ) : (
+          )}
+          {!user && (
             // UnAuth Navigation
             <>
               <Nav.Item className='mr-2 m-2'>

@@ -12,8 +12,7 @@ import { Header } from '../components/header';
 import { Footer } from '../components/footer';
 import { Posts } from '../components/posts';
 
-import { authInitialProps } from '../lib/auth';
-import { getPosts, searchPost } from '../lib/api';
+import { getPosts, searchPost } from '../lib/index';
 
 const Index = (props) => {
   const [posts, setPosts] = useState([]);
@@ -44,69 +43,64 @@ const Index = (props) => {
   };
   return (
     <>
-      <Header auth={props.auth} />
-      <>
+      <Header user={props.user} />
+      <Container fluid>
+        <Row
+          style={{
+            backgroundImage: `url('/assets/banner.png')`,
+            width: 'auto',
+            height: 460,
+          }}
+          className='align-items-center justify-content-center row-cols-2'
+        >
+          <Col xs={10} lg={6} md={8} sm={9} className='text-center p-0'>
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <Form.Group>
+                <Form.Control
+                  name='search'
+                  type='text'
+                  size='lg'
+                  placeholder='Enter Code here'
+                  ref={register({ required: true })}
+                />
+                <Button
+                  size='lg'
+                  type='submit'
+                  className='btn-block'
+                  disabled={isLoading}
+                >
+                  Search
+                </Button>
+              </Form.Group>
+            </Form>
+          </Col>
+        </Row>
+      </Container>
+      {!error ? (
         <Container fluid>
-          <Row
-            style={{
-              backgroundImage: `url('/assets/banner.png')`,
-              width: 'auto',
-              height: 460,
-            }}
-            className='align-items-center justify-content-center row-cols-2'
-          >
-            <Col xs={10} lg={6} md={8} sm={9} className='text-center p-0'>
-              <Form onSubmit={handleSubmit(onSubmit)}>
-                <Form.Group>
-                  <Form.Control
-                    name='search'
-                    type='text'
-                    size='lg'
-                    placeholder='Enter Code here'
-                    ref={register({ required: true })}
-                  />
-                  <Button
-                    size='lg'
-                    type='submit'
-                    className='btn-block'
-                    disabled={isLoading}
-                  >
-                    Search
-                  </Button>
-                </Form.Group>
-              </Form>
+          <Row>
+            <Col className='text-center pt-4'>
+              <br />
+              <h1>Read Recent Post</h1>
+              <Posts posts={posts} />
+              <br />
             </Col>
           </Row>
         </Container>
-        {!error ? (
-          <Container fluid>
-            <Row>
-              <Col className='text-center pt-4'>
-                <br />
-                <h1>Read Recent Post</h1>
-                <Posts posts={posts} />
-                <br />
-              </Col>
-            </Row>
-          </Container>
-        ) : (
-          <Container fluid>
-            <Row>
-              <Col className='text-center pt-4'>
-                <br />
-                <h1>404 Not Found</h1>
-                <br />
-              </Col>
-            </Row>
-          </Container>
-        )}
-      </>
+      ) : (
+        <Container fluid>
+          <Row>
+            <Col className='text-center pt-4'>
+              <br />
+              <h1>404 Not Found</h1>
+              <br />
+            </Col>
+          </Row>
+        </Container>
+      )}
       <Footer />
     </>
   );
 };
-
-// Just let authInitialProps() be there it would do any thing
-Index.getInitialProps = authInitialProps();
 
 export default Index;

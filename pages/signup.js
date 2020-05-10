@@ -11,7 +11,7 @@ import Toast from 'react-bootstrap/Toast';
 
 import { useForm } from 'react-hook-form';
 
-import { signupUser } from '../lib/auth';
+import { signupUser } from '../lib/user';
 
 // ? FIXME: Remove Row, Col with div to align form in center
 
