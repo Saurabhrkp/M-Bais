@@ -38,7 +38,13 @@ router.put(
 router.put(
   '/:slug/save',
   userController.checkAuth,
-  catchErrors(userController.addSavedPost)
+  catchErrors(userController.toggleSavedPost)
+);
+
+router.put(
+  '/:slug/remove',
+  userController.checkAuth,
+  catchErrors(userController.toggleSavedPost)
 );
 
 router.get(

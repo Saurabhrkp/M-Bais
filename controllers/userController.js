@@ -143,12 +143,17 @@ exports.getUserSaved = async (req, res) => {
   res.json(posts);
 };
 
-exports.addSavedPost = async (req, res) => {
-  const savedPost = await User.findOneAndUpdate(
-    { _id: req.user.id },
-    { $push: { saved: req.post.id } }
-  );
-  res.json({ message: `Saved post to user: ${savedPost}` });
+exports.toggleSavedPost = async (req, res) => {
+  const user = await User.findOne({ _id: req.user.id });
+  const savedIds = user.saved.map((id) => id.toString());
+  const postId = req.post._id.toString();
+  if (savedIds.includes(postId)) {
+    await user.saved.pull(postId);
+  } else {
+    await user.saved.push(postId);
+  }
+  await user.save();
+  res.json(user);
 };
 
 exports.updateUser = async (req, res) => {
