@@ -14,14 +14,19 @@ exports.getPostBySlug = async (req, res, next, slug) => {
 };
 
 exports.searchPost = async (req, res, next, code) => {
-  const post = await Post.findOne({ code: code });
-  req.post = post;
-  const posterId = mongoose.Types.ObjectId(req.post.author._id);
-  if (req.user && posterId.equals(req.user._id)) {
-    req.isPoster = true;
-    return next();
+  try {
+    const post = await Post.findOne({ code: code });
+    req.post = post;
+    const posterId = mongoose.Types.ObjectId(req.post.author._id);
+    if (req.user && posterId.equals(req.user._id)) {
+      req.isPoster = true;
+      return next();
+    }
+    next();
+  } catch (error) {
+    console.error(error);
+    res.json({ message: `Not post for ${code} found` });
   }
-  next();
 };
 
 exports.sendPost = async (req, res) => {
@@ -30,10 +35,16 @@ exports.sendPost = async (req, res) => {
 };
 
 exports.getPosts = async (req, res) => {
-  const posts = await Post.find().sort({
-    createdAt: 'desc',
-  });
-  res.json(posts);
+  try {
+    const options = {
+      page: req.query.page || 1,
+      limit: req.query.limit || 2,
+    };
+    const posts = await Post.paginate({}, options);
+    return res.json(posts);
+  } catch (error) {
+    return res.json(error);
+  }
 };
 
 exports.toggleLike = async (req, res) => {
