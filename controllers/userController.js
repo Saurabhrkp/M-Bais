@@ -137,11 +137,18 @@ exports.getUserProfile = (req, res) => {
   res.json(req.profile);
 };
 
-// ! Should be convert to get saved posts
-exports.getUserFeed = async (req, res) => {
+exports.getUserSaved = async (req, res) => {
   const { _id } = req.profile;
-  const posts = await Post.find({ author: _id }).populate('image author video');
+  const posts = await User.find({ _id: _id }).populate({ path: 'saved' });
   res.json(posts);
+};
+
+exports.addSavedPost = async (req, res) => {
+  const savedPost = await User.findOneAndUpdate(
+    { _id: req.user.id },
+    { $push: { saved: req.post.id } }
+  );
+  res.json({ message: `Saved post to user: ${savedPost}` });
 };
 
 exports.updateUser = async (req, res) => {

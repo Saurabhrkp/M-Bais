@@ -43,11 +43,10 @@ router.get(
   userController.getUserProfile
 );
 
-// ! Should be convert to get saved posts
 router.get(
-  '/:username/feed',
+  '/:username/savedPost',
   userController.checkAuth,
-  catchErrors(userController.getUserFeed)
+  catchErrors(userController.getUserSaved)
 );
 
 module.exports = router;

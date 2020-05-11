@@ -35,6 +35,12 @@ router.put(
   catchErrors(indexController.toggleComment)
 );
 
+router.put(
+  '/:slug/save',
+  userController.checkAuth,
+  catchErrors(userController.addSavedPost)
+);
+
 router.get(
   '/search/:code',
   userController.checkAuth,
