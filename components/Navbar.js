@@ -1,8 +1,11 @@
 import React from 'react';
+import Link from 'next/link';
 
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-import Link from 'next/link';
+import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
+import Button from 'react-bootstrap/Button';
 
 import { signoutUser } from '../lib/user';
 
@@ -30,12 +33,14 @@ export const Header = ({ user }) => {
           {user && (
             // Auth Navigation
             <>
-              <Nav.Item>
-                <Link href='/home'>
-                  <a className='nav-link'>Search Video</a>
-                </Link>
-              </Nav.Item>
-
+              <Form inline>
+                <FormControl
+                  type='text'
+                  placeholder='Search'
+                  className='mr-sm-2'
+                />
+                <Button variant='outline-light'>Search</Button>
+              </Form>
               <Nav.Item onClick={() => signoutUser()}>
                 <Nav.Link>Sign out</Nav.Link>
               </Nav.Item>
