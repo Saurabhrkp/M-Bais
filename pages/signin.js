@@ -27,7 +27,7 @@ const Signin = () => {
     setIsLoading(true);
     signinUser(form)
       .then(() => {
-        Router.push('/');
+        Router.replace('/');
       })
       .catch(showError);
   };
