@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema(
   {
     name: { type: String },
-    avatar: { type: Schema.ObjectId, ref: 'Photo', required: false },
+    avatar: { type: Schema.ObjectId, ref: 'File', required: false },
     username: { type: String, unique: true, lowercase: true },
     phone: { type: Number, required: false },
     shortBio: { type: String, required: false, max: 50 },
@@ -18,6 +18,13 @@ const UserSchema = new Schema(
   } /* gives us "createdAt" and "updatedAt" fields automatically */,
   { timestamps: true }
 );
+
+const autoPopulateUserBy = function (next) {
+  this.populate('avatar', '_id source key contentType size');
+  next();
+};
+
+UserSchema.pre('findOne', autoPopulateUserBy).pre('find', autoPopulateUserBy);
 
 /* The MongoDBErrorHandler plugin gives us a better 'unique' error, rather than: "11000 duplicate key" */
 UserSchema.plugin(mongodbErrorHandler);

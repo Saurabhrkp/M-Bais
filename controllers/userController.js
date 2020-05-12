@@ -139,7 +139,9 @@ exports.getUserProfile = (req, res) => {
 
 exports.getUserSaved = async (req, res) => {
   const { _id } = req.profile;
-  const posts = await User.find({ _id: _id }).populate({ path: 'saved' });
+  const posts = await User.find({ _id: _id })
+    .select('-posts -author -email -password -avatar -phone')
+    .populate({ path: 'saved' });
   res.json(posts);
 };
 
