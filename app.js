@@ -5,15 +5,10 @@ const session = require('express-session');
 const path = require('path');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-const next = require('next');
 const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
-const dev = process.env.NODE_DEV !== 'production'; //true false
 
 const app = express();
-const nextApp = next({ dev });
-const handle = nextApp.getRequestHandler(); //part of next config
-nextApp.prepare();
 
 // Passport Config
 require('./lib/passport')(passport);
@@ -30,11 +25,7 @@ const userRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
 
 // Logging
-app.use(
-  logger('dev', {
-    skip: (req) => req.url.includes('_next'),
-  })
-);
+app.use(logger('dev'));
 
 // Body parser for Forms
 app.use(bodyParser.json());
@@ -74,11 +65,6 @@ app.use((req, res, next) => {
   next();
 });
 
-/* give all Next.js's requests to Next.js server */
-app.get('/_next/*', (req, res) => {
-  handle(req, res);
-});
-
 // Routes
 app.use('/posts', indexRouter);
 app.use('/api', userRouter);
@@ -88,15 +74,6 @@ app.use('/admin', adminRouter);
 app.use((err, req, res, next) => {
   const { status = 500, message } = err;
   res.status(status).json(message);
-});
-
-/* default route
-  - allows Next to handle all other routes
-  - includes the numerous `/_next/...` routes which must be exposed for the next app to work correctly
-  - includes 404'ing on unknown routes 
-*/
-app.get('*', (req, res) => {
-  return handle(req, res);
 });
 
 // Connect flash
