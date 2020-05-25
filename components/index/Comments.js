@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form';
 const Comments = (props) => {
   const [text, setText] = useState('');
   const { register, handleSubmit } = useForm();
-  const { slug, user, handleDeleteComment } = props;
+  const { slug, user, handleAddComment, handleDeleteComment } = props;
 
   const onSubmit = (form) => {
     console.info(form);
@@ -54,6 +54,7 @@ const Comments = (props) => {
               onChange={(e) => setText(e.target.value)}
             />
           </Form.Group>
+          <Button type='submit'>Post</Button>
         </Form>
       </Card>
 
