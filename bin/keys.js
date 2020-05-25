@@ -1,5 +1,6 @@
-dburl = 'mongodb://localhost:27017/mbais';
-// dburl =
+//! Really import you dont give this code to anyone
+
+const mongoURI = 'mongodb://localhost:27017/mbais';
 // 'mongodb+srv://gymdb:password21@gymdb-paqxb.mongodb.net/dharvesh?retryWrites=true&w=majority';
 
 const config = {
@@ -9,7 +10,4 @@ const config = {
   secretAccessKey: 'OdWYM/S9YuwUoxgHHGiXKXiccL9P96s1LBohHQRC',
 };
 
-module.exports = {
-  mongoURI: dburl,
-  config: config,
-};
+module.exports = { mongoURI, config };
