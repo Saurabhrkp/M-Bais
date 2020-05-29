@@ -11,49 +11,71 @@ const extractTags = (string) => {
 };
 
 exports.savePost = async (req, res, next) => {
-  req.body.author = req.user.id;
-  req.body.tags = extractTags(req.body.tagString);
-  const post = await new Post(req.body).save();
-  const user = await User.findById(req.user.id);
-  user.posts.push(post._id);
-  user.save();
-  await Post.populate(post, {
-    path: 'author video photos',
-    select: '_id name avatar source key',
-  });
-  res.json(post);
+  try {
+    req.body.author = req.user.id;
+    req.body.tags = extractTags(req.body.tagString);
+    const post = await new Post(req.body).save();
+    const user = await User.findById(req.user.id);
+    user.posts.push(post._id);
+    user.save();
+    await Post.populate(post, {
+      path: 'author video photos',
+      select: '_id name avatar source key',
+    });
+    res.json(post);
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.getUsers = async (req, res) => {
-  const users = await User.find().select('_id name email createdAt updatedAt');
-  res.json(users);
+exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find().select(
+      '_id name email createdAt updatedAt'
+    );
+    res.json(users);
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.getAllPosts = async (req, res) => {
-  const posts = await Post.find();
-  res.json(posts);
+exports.getAllPosts = async (req, res, next) => {
+  try {
+    const posts = await Post.find();
+    res.json(posts);
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.updatePost = async (req, res) => {
-  req.body.publishedDate = new Date().toISOString();
-  req.body.tags = extractTags(req.body.tagString);
-  const updatedPost = await Post.findOneAndUpdate(
-    { _id: req.post._id },
-    { $set: req.body },
-    { new: true, runValidators: true }
-  );
-  await Post.populate(updatedPost, {
-    path: 'author video photos',
-    select: '_id name avatar source key',
-  });
-  res.json(updatedPost);
+exports.updatePost = async (req, res, next) => {
+  try {
+    req.body.publishedDate = new Date().toISOString();
+    req.body.tags = extractTags(req.body.tagString);
+    const updatedPost = await Post.findOneAndUpdate(
+      { _id: req.post._id },
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+    await Post.populate(updatedPost, {
+      path: 'author video photos',
+      select: '_id name avatar source key',
+    });
+    res.json(updatedPost);
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.deletePost = async (req, res) => {
-  const { _id } = req.post;
-  await User.findOneAndUpdate(req.user.id, { $pull: { posts: _id } });
-  const deletedPost = await Post.findOneAndDelete({ _id });
-  res.json(deletedPost);
+exports.deletePost = async (req, res, next) => {
+  try {
+    const { _id } = req.post;
+    await User.findOneAndUpdate(req.user.id, { $pull: { posts: _id } });
+    const deletedPost = await Post.findOneAndDelete({ _id });
+    res.json(deletedPost);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const deleteFileFromBucket = async (file) => {
@@ -88,7 +110,7 @@ exports.deleteAllFiles = async (req, res, next) => {
     }
     return next();
   } catch (error) {
-    return Promise.reject(error);
+    next(error);
   }
 };
 
@@ -115,6 +137,6 @@ exports.deleteFile = async (req, res, next, file) => {
     await deleteFileFromBucket(file);
     res.json({ message: `Files deleted: ${file.key}` });
   } catch (error) {
-    return Promise.reject(error);
+    next(error);
   }
 };

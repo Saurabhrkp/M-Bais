@@ -60,19 +60,18 @@ exports.validateSignup = async (req, res, next) => {
   next();
 };
 
-exports.signup = async (req, res) => {
-  const { name, email, password, username } = req.body;
-  const user = await new User({ name, email, username, password });
-  bcrypt.genSalt(10, (err, salt) => {
-    bcrypt.hash(user.password, salt, (err, hash) => {
-      if (err) {
-        return res.status(500).send(err.message);
-      }
-      user.password = hash;
-      user.save();
-      res.json(user);
-    });
-  });
+exports.signup = async (req, res, next) => {
+  try {
+    const { name, email, password, username } = req.body;
+    const user = await new User({ name, email, username, password });
+    let salt = await bcrypt.genSalt(10);
+    let hash = await bcrypt.hash(user.password, salt);
+    user.password = hash;
+    await user.save();
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.signin = (req, res, next) => {
@@ -118,17 +117,21 @@ exports.checkAuth = (req, res, next) => {
 };
 
 exports.getUserByUsername = async (req, res, next, username) => {
-  const user = await User.findOne({ username: username });
-  req.profile = user;
-  const profileId = mongoose.Types.ObjectId(req.profile._id);
-  if (req.user && profileId.equals(req.user._id)) {
-    req.isAuthUser = true;
-    return next();
+  try {
+    const user = await User.findOne({ username: username });
+    req.profile = user;
+    const profileId = mongoose.Types.ObjectId(req.profile._id);
+    if (req.user && profileId.equals(req.user._id)) {
+      req.isAuthUser = true;
+      return next();
+    }
+    next();
+  } catch (error) {
+    next(error);
   }
-  next();
 };
 
-exports.getUserProfile = (req, res) => {
+exports.getUserProfile = (req, res, next) => {
   if (!req.profile) {
     return res.status(404).json({
       message: 'No user found',
@@ -137,45 +140,60 @@ exports.getUserProfile = (req, res) => {
   res.json(req.profile);
 };
 
-exports.getUserSaved = async (req, res) => {
-  const { _id } = req.profile;
-  const posts = await User.find({ _id: _id })
-    .select('-posts -author -email -password -avatar -phone')
-    .populate({ path: 'saved' });
-  res.json(posts);
-};
-
-exports.toggleSavedPost = async (req, res) => {
-  const user = await User.findOne({ _id: req.user.id });
-  const savedIds = user.saved.map((id) => id.toString());
-  const postId = req.post._id.toString();
-  if (savedIds.includes(postId)) {
-    await user.saved.pull(postId);
-  } else {
-    await user.saved.push(postId);
+exports.getUserSaved = async (req, res, next) => {
+  try {
+    const { _id } = req.profile;
+    const posts = await User.find({ _id: _id })
+      .select('-posts -author -email -password -avatar -phone')
+      .populate({ path: 'saved' });
+    res.json(posts);
+  } catch (error) {
+    next(error);
   }
-  await user.save();
-  res.json(user);
 };
 
-exports.updateUser = async (req, res) => {
-  req.body.updatedAt = new Date().toISOString();
-  const updatedUser = await User.findOneAndUpdate(
-    { _id: req.user._id },
-    { $set: req.body },
-    { new: true, runValidators: true }
-  );
-  res.json(updatedUser);
-};
-
-exports.deleteUser = async (req, res) => {
-  const { username } = req.params;
-
-  if (!req.isAuthUser) {
-    return res.status(400).json({
-      message: 'You are not authorized to perform this action',
-    });
+exports.toggleSavedPost = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ _id: req.user.id });
+    const savedIds = user.saved.map((id) => id.toString());
+    const postId = req.post._id.toString();
+    if (savedIds.includes(postId)) {
+      await user.saved.pull(postId);
+    } else {
+      await user.saved.push(postId);
+    }
+    await user.save();
+    res.json(user);
+  } catch (error) {
+    next(error);
   }
-  const deletedUser = await User.findOneAndDelete({ username: username });
-  res.json(deletedUser);
+};
+
+exports.updateUser = async (req, res, next) => {
+  try {
+    req.body.updatedAt = new Date().toISOString();
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+    res.json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteUser = async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    if (!req.isAuthUser) {
+      return res.status(400).json({
+        message: 'You are not authorized to perform this action',
+      });
+    }
+    const deletedUser = await User.findOneAndDelete({ username: username });
+    res.json(deletedUser);
+  } catch (error) {
+    next(error);
+  }
 };
