@@ -17,7 +17,7 @@ exports.savePost = async (req, res, next) => {
     const post = await new Post(req.body).save();
     const user = await User.findById(req.user.id);
     user.posts.push(post._id);
-    user.save();
+    await user.save();
     await Post.populate(post, {
       path: 'author video photos',
       select: '_id name avatar source key',
