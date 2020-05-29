@@ -33,9 +33,6 @@ app.use(bodyParser.json());
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
 
-// Servering static files
-app.use(express.static(path.join(__dirname, 'public')));
-
 // Express session
 app.use(
   session({
