@@ -18,7 +18,10 @@ router
   .post(userController.validateSignup, catchErrors(userController.signup));
 
 // Login
-router.post('/signin', userController.signin);
+router
+  .route('/signin')
+  .get(userController.get_signin)
+  .post(userController.signin);
 
 // Logout
 router.get('/signout', userController.signout);

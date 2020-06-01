@@ -79,23 +79,27 @@ exports.signup = async (req, res, next) => {
     let hash = await bcrypt.hash(user.password, salt);
     user.password = hash;
     await user.save();
-    res.json(user);
+    res.redirect('/api/signin');
   } catch (error) {
     next(error);
   }
 };
 
+exports.get_signin = (req, res) => {
+  res.render('signin');
+};
+
 exports.signin = (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
-      return res.status(500).json(err.message);
+      return res.render('signin', { error: err.message });
     }
     if (!user) {
-      return res.status(400).json(info.message);
+      return res.render('signin', { error: info.message });
     }
     req.logIn(user, (err) => {
       if (err) {
-        return res.status(500).json(err.message);
+        return res.render('signin', { error: err.message });
       }
       res.json(user);
     });
