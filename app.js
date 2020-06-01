@@ -7,6 +7,7 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
+const expressLayouts = require('express-ejs-layouts');
 
 const app = express();
 
@@ -23,6 +24,12 @@ app.use(require('express-status-monitor')());
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
+
+// view engine setup
+app.use(expressLayouts);
+app.set('view engine', 'ejs');
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Logging
 app.use(logger('dev'));
