@@ -5,6 +5,10 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 
+exports.get_signup = (req, res) => {
+  res.render('signup');
+};
+
 exports.validateSignup = async (req, res, next) => {
   await body('name')
     .trim()
@@ -54,7 +58,15 @@ exports.validateSignup = async (req, res, next) => {
   const errors = validationResult(req).array();
   if (errors.length > 0) {
     const firstError = errors.map((error) => error.msg)[0];
-    return res.status(400).send(firstError);
+    const { name, email, username, password, passwordConfirmation } = req.body;
+    return res.render('signup', {
+      firstError,
+      name,
+      username,
+      email,
+      password,
+      passwordConfirmation,
+    });
   }
   next();
 };

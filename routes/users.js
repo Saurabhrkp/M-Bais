@@ -8,21 +8,20 @@ const {
 } = require('../controllers/controlHelper');
 
 /**
- * AUTH ROUTES: /api/auth
+ * AUTH ROUTES: /api
  */
 
 // Register
-router.post(
-  '/auth/signup',
-  userController.validateSignup,
-  catchErrors(userController.signup)
-);
+router
+  .route('/signup')
+  .get(userController.get_signup)
+  .post(userController.validateSignup, catchErrors(userController.signup));
 
 // Login
-router.post('/auth/signin', userController.signin);
+router.post('/signin', userController.signin);
 
 // Logout
-router.get('/auth/signout', userController.signout);
+router.get('/signout', userController.signout);
 
 router.param('username', userController.getUserByUsername);
 
