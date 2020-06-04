@@ -7,7 +7,9 @@ const { catchErrors } = require('../controllers/controlHelper');
 /**
  * POST ROUTES: /posts/
  */
-router.get('/', catchErrors(indexController.getPosts));
+router.get('/', indexController.index);
+
+router.get('/posts', catchErrors(indexController.getPosts));
 
 router.param('slug', indexController.getPostBySlug);
 

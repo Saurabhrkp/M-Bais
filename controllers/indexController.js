@@ -2,6 +2,10 @@
 const Post = require('../models/Post');
 const mongoose = require('mongoose');
 
+exports.index = (req, res) => {
+  res.render('index');
+};
+
 exports.getPostBySlug = async (req, res, next, slug) => {
   try {
     const post = await Post.findOne({ slug: slug });
