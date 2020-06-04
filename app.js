@@ -70,7 +70,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/posts', indexRouter);
+app.use('/', indexRouter);
 app.use('/api', userRouter);
 app.use('/admin', adminRouter);
 
