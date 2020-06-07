@@ -2,10 +2,6 @@
 const Post = require('../models/Post');
 const mongoose = require('mongoose');
 
-exports.index = (req, res) => {
-  res.render('index');
-};
-
 exports.getPostBySlug = async (req, res, next, slug) => {
   try {
     const post = await Post.findOne({ slug: slug });
@@ -48,12 +44,16 @@ exports.sendPost = async (req, res, next) => {
 
 exports.getPosts = async (req, res, next) => {
   try {
-    const options = {
-      page: req.query.page || 1,
-      limit: req.query.limit || 2,
-    };
-    const posts = await Post.paginate({}, options);
-    res.json(posts);
+    if (!req.user) {
+      res.render('index', { user: null });
+    } else {
+      const options = {
+        page: req.query.page || 1,
+        limit: req.query.limit || 2,
+      };
+      const posts = await Post.paginate({}, options);
+      res.render('index', { posts, user: req.user, page: 'index' });
+    }
   } catch (error) {
     next(error);
   }
