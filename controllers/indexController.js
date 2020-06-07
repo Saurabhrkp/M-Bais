@@ -4,8 +4,7 @@ const mongoose = require('mongoose');
 
 exports.getPostBySlug = async (req, res, next, slug) => {
   try {
-    const post = await Post.findOne({ slug: slug });
-    req.post = post;
+    req.post = await Post.findOne({ slug: slug });
     const posterId = mongoose.Types.ObjectId(req.post.author._id);
     if (req.user && posterId.equals(req.user._id)) {
       req.isPoster = true;
@@ -19,8 +18,7 @@ exports.getPostBySlug = async (req, res, next, slug) => {
 
 exports.searchPost = async (req, res, next, code) => {
   try {
-    const post = await Post.findOne({ code: code });
-    req.post = post;
+    req.post = await Post.findOne({ code: code });
     const posterId = mongoose.Types.ObjectId(req.post.author._id);
     if (req.user && posterId.equals(req.user._id)) {
       req.isPoster = true;
@@ -35,8 +33,7 @@ exports.searchPost = async (req, res, next, code) => {
 
 exports.sendPost = async (req, res, next) => {
   try {
-    const { post } = req;
-    res.json(post);
+    res.render('post', { post: req.post, user: req.user });
   } catch (error) {
     next(error);
   }
@@ -52,7 +49,7 @@ exports.getPosts = async (req, res, next) => {
         limit: req.query.limit || 4,
       };
       const posts = await Post.paginate({}, options);
-      res.render('index', { posts, user: req.user, page: 'index' });
+      res.render('index', { posts, user: req.user });
     }
   } catch (error) {
     next(error);
@@ -71,7 +68,7 @@ exports.toggleLike = async (req, res, next) => {
       await post.likes.push(authUserId);
     }
     await post.save();
-    res.json(post);
+    res.redirect(`/${req.post.slug}`);
   } catch (error) {
     next(error);
   }
@@ -89,14 +86,12 @@ exports.toggleComment = async (req, res, next) => {
       operator = '$push';
       data = { text: req.body.comment.text, postedBy: req.user._id };
     }
-    const updatedPost = await Post.findOneAndUpdate(
+    await Post.findOneAndUpdate(
       { _id: _id },
       { [operator]: { comments: data } },
       { new: true }
-    )
-      .populate('author', '_id name avatar')
-      .populate('comments.postedBy', '_id name avatar');
-    res.json(updatedPost);
+    );
+    res.redirect(`/${req.post.slug}`);
   } catch (error) {
     next(error);
   }
