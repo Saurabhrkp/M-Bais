@@ -1,86 +1,26 @@
-<%- include('./partials/navbar') %>
-<section>
-  <article>
-    <div id="particles-js"></div>
-    <div class="hero-content text-center">
-      <img class="hero-banner" src="/img/edu_illustration.png" alt="..." />
+<%- include('./partials/navbar') %> <% if(user){ %>
+<div class="row justify-content-center mr-0">
+  <% for( let i = 0; i < posts.docs.length; i++ ) { %>
+  <div class="card text-white bg-dark m-3">
+    <div class="card-body">
+      <h5 class="card-title"><%= posts.docs[i].title %></h5>
+      <h6 class="card-subtitle text-muted"><%= posts.docs[i].description %></h6>
     </div>
-  </article>
-</section>
-
-<div class="clear"></div>
-
-<div class="container">
-  <h2 class="text-dark heroText">
-    <span style="color: blue;">M-Bias</span> a Digital Content Platform,
-    Specifically tailoered for HSC Students directly alligned with thier text
-    books and easily accessible at their finger tips with just a QR Code scan.
-  </h2>
+    <div class="card-body">
+      <p class="card-text"><%= posts.docs[i].body %></p>
+    </div>
+    <div class="card-body">
+      <a href="#" class="card-link">
+        <span class="bg-info text-white"
+          ><%= posts.docs[i].author.name %></span
+        ></a
+      >
+    </div>
+    <div class="card-footer text-muted">
+      <%= posts.docs[i].publishedDate %>
+    </div>
+  </div>
+  <% } %>
 </div>
-
-<div class="clear"></div>
-
-<section>
-  <article class="info">
-    <div class="info-content row mr-0 justify-content-center">
-      <div class="text-center col-sm-10 col-md-6 col-lg-6">
-        <p>
-          <span class="text-dark">M-Bias</span><br />
-          We want to lead in generating practical quality content that helps
-          students in understanding the world around us and logically improve
-          our community.
-        </p>
-      </div>
-      <div class="col-sm-8 col-md-5 col-lg-4 m-5 justify-content-center">
-        <img class="img-fluid" src="/img/mission.png" alt="" />
-      </div>
-    </div>
-  </article>
-</section>
-
-<div class="clear"></div>
-
-<section>
-  <article class="vision-banner">
-    <div class="vision-content row mr-0 justify-content-center">
-      <div class="col-sm-8 col-md-5 col-lg-4 m-5">
-        <img class="img-fluid" src="/img/vision.png" alt="" />
-      </div>
-      <div class="text-center col-sm-10 col-md-6 col-lg-6">
-        <p>
-          <span class="text-light">Our Vision</span><br />
-          Our Vision is to give our next generation what we missed in our
-          education system in past few decades, A new perspective of how
-          education relates to our daily life.
-        </p>
-      </div>
-    </div>
-  </article>
-</section>
-
-<section>
-  <article class="smart-banner">
-    <div class="smart-content">
-      <p class="text-center">
-        <span class="text-dark">Smart and simple</span><br />
-        We want to lead in generating practical quality content that helps
-        students in understanding the world around us and logically improve our
-        community.
-      </p>
-      <div class="container text-center">
-        <img class="smart-pic col" src="/img/demo.png" alt="" />
-      </div>
-    </div>
-  </article>
-</section>
-
-<%- include('./partials/footer.ejs') %>
-
-<!--particles.js script-->
-<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-
-<script>
-  particlesJS.load('particles-js', '/js/particles.json', function () {
-    console.log('callback - particles.js config loaded');
-  });
-</script>
+<% } else{ %> <%- include('./partials/index') %> <% } %>
+<%-include('./partials/footer.ejs') %>
