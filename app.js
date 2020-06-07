@@ -7,6 +7,7 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
+const methodOverride = require('method-override');
 const expressLayouts = require('express-ejs-layouts');
 
 const app = express();
@@ -19,6 +20,9 @@ require('./models/database');
 
 // Gets Status of Express app
 app.use(require('express-status-monitor')());
+
+// override with POST having ?_method=DELETE
+app.use(methodOverride('_method'));
 
 // Calling routes
 const indexRouter = require('./routes/index');
