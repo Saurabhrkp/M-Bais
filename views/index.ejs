@@ -1,4 +1,5 @@
 <%- include('./partials/navbar') %> <% if(user){ %>
+<title>Home | M-Bais</title>
 <div class="row justify-content-center mr-0 ml-2">
   <% for( let i = 0; i < posts.docs.length; i++ ) { const post = posts.docs[i]
   %>
@@ -8,7 +9,7 @@
       <h6 class="card-subtitle text-muted"><%= post.description %></h6>
       <h6 class="card-subtitle text-muted mt-2">
         <% post.tags.forEach(tag => { %>
-        <span class="bg-warning text-white"><%= tag %></span>
+        <span class="badge badge-warning"><%= tag %></span>
         <% });%>
       </h6>
     </div>
