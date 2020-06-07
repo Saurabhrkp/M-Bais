@@ -49,7 +49,7 @@ exports.getPosts = async (req, res, next) => {
     } else {
       const options = {
         page: req.query.page || 1,
-        limit: req.query.limit || 2,
+        limit: req.query.limit || 4,
       };
       const posts = await Post.paginate({}, options);
       res.render('index', { posts, user: req.user, page: 'index' });
