@@ -1,23 +1,33 @@
 <%- include('./partials/navbar') %> <% if(user){ %>
-<div class="row justify-content-center mr-0">
-  <% for( let i = 0; i < posts.docs.length; i++ ) { %>
+<div class="row justify-content-center mr-0 ml-2">
+  <% for( let i = 0; i < posts.docs.length; i++ ) { const post = posts.docs[i]
+  %>
   <div class="card text-white bg-dark m-3">
     <div class="card-body">
-      <h5 class="card-title"><%= posts.docs[i].title %></h5>
-      <h6 class="card-subtitle text-muted"><%= posts.docs[i].description %></h6>
+      <h5 class="card-title"><%= post.title %></h5>
+      <h6 class="card-subtitle text-muted"><%= post.description %></h6>
+      <h6 class="card-subtitle text-muted mt-2">
+        <% post.tags.forEach(tag => { %>
+        <span class="bg-warning text-white"><%= tag %></span>
+        <% });%>
+      </h6>
     </div>
-    <div class="card-body">
-      <p class="card-text"><%= posts.docs[i].body %></p>
+    <div class="card-body py-0">
+      <a href="/<%= post.slug %>"
+        ><img
+          class="img-fluid"
+          style="width: 500px;"
+          src="<%= post.thumbnail.source %>"
+          alt="<%= post.thumbnail.key %>"
+      /></a>
     </div>
     <div class="card-body">
       <a href="#" class="card-link">
-        <span class="bg-info text-white"
-          ><%= posts.docs[i].author.name %></span
-        ></a
+        <span class="bg-info text-white"><%= post.author.name %></span></a
       >
     </div>
     <div class="card-footer text-muted">
-      <%= posts.docs[i].publishedDate %>
+      <%= post.publishedDate %>
     </div>
   </div>
   <% } %>
