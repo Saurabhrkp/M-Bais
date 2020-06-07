@@ -19,7 +19,7 @@ exports.savePost = async (req, res, next) => {
     user.posts.push(post._id);
     await user.save();
     await Post.populate(post, {
-      path: 'author video photos',
+      path: 'author video photos thumbnail',
       select: '_id name avatar source key',
     });
     res.json(post);
@@ -58,7 +58,7 @@ exports.updatePost = async (req, res, next) => {
       { new: true, runValidators: true }
     );
     await Post.populate(updatedPost, {
-      path: 'author video photos',
+      path: 'author video photos thumbnail',
       select: '_id name avatar source key',
     });
     res.json(updatedPost);

@@ -18,6 +18,7 @@ const PostSchema = new Schema(
     description: { type: String, required: true },
     publishedDate: { type: Date, default: Date.now },
     video: { type: Schema.ObjectId, ref: 'File' },
+    thumbnail: { type: Schema.ObjectId, ref: 'File', required: true },
     photos: [{ type: Schema.ObjectId, ref: 'File' }],
     tags: [{ type: String }],
     likes: [{ type: Schema.ObjectId, ref: 'User' }],
@@ -52,6 +53,7 @@ const autoPopulatePostedBy = function (next) {
   this.populate('author', '_id name avatar author');
   this.populate('video', '_id source key');
   this.populate('photos', '_id source key');
+  this.populate('thumbnail', '_id source key');
   this.populate('comments.postedBy', '_id name avatar');
   next();
 };
