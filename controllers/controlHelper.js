@@ -101,6 +101,10 @@ const saveFile = async (req, res, next) => {
     const file = req.files['video'][0];
     req.body.video = await savingFile(file);
   }
+  if (req.files['thumbnail']) {
+    const file = req.files['thumbnail'][0];
+    req.body.thumbnail = await savingFile(file);
+  }
   return next();
 };
 

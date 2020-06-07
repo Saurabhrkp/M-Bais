@@ -27,6 +27,7 @@ router
     upload.fields([
       { name: 'video', maxCount: 1 },
       { name: 'photos', maxCount: 6 },
+      { name: 'thumbnail', maxCount: 1 },
     ]),
     catchErrors(saveFile),
     catchErrors(adminController.savePost)
@@ -44,6 +45,7 @@ router
     upload.fields([
       { name: 'video', maxCount: 1 },
       { name: 'photos', maxCount: 6 },
+      { name: 'thumbnail', maxCount: 1 },
     ]),
     catchErrors(saveFile),
     catchErrors(adminController.updatePost)
