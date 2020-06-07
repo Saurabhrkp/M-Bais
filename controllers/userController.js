@@ -101,7 +101,7 @@ exports.signin = (req, res, next) => {
       if (err) {
         return res.render('signin', { error: err.message });
       }
-      res.json(user);
+      res.redirect('/');
     });
   })(req, res, next);
 };
