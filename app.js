@@ -44,6 +44,9 @@ app.use(bodyParser.json());
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
 
+// Moment Locals
+app.locals.moment = require('moment');
+
 // Express session
 app.use(
   session({
