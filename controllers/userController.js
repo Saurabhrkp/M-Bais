@@ -123,7 +123,7 @@ exports.getAuthUser = (req, res) => {
     );
     return res.redirect('/signin');
   }
-  res.json(req.user);
+  res.json(req.profile);
 };
 
 exports.checkAuth = (req, res, next) => {
@@ -136,8 +136,10 @@ exports.checkAuth = (req, res, next) => {
 
 exports.getUserByUsername = async (req, res, next, username) => {
   try {
-    const user = await User.findOne({ username: username });
-    req.profile = user;
+    req.profile = await User.findOne({ username: username }).populate(
+      'saved',
+      '-photos -video -author -comments -likes -tags -body'
+    );
     const profileId = mongoose.Types.ObjectId(req.profile._id);
     if (req.user && profileId.equals(req.user._id)) {
       req.isAuthUser = true;

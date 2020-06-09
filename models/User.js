@@ -20,7 +20,9 @@ const UserSchema = new Schema(
 );
 
 const autoPopulateUserBy = function (next) {
-  this.populate('avatar', '_id source key contentType size');
+  if (this.avatar != undefined) {
+    this.populate('avatar', '_id source key contentType size');
+  }
   next();
 };
 
