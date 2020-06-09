@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const expressLayouts = require('express-ejs-layouts');
 
+// Creating express app
 const app = express();
 
 // Passport Config
@@ -33,6 +34,7 @@ const adminRouter = require('./routes/admin');
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
+// Serving static public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Logging
@@ -51,7 +53,7 @@ app.locals.moment = require('moment');
 app.use(
   session({
     secret: 'secret',
-    name: 'next-express-connect.sid',
+    name: 'connect.sid',
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
     rolling: true,
     resave: false,

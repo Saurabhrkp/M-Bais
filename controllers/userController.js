@@ -57,10 +57,10 @@ exports.validateSignup = async (req, res, next) => {
     .run(req);
   const errors = validationResult(req).array();
   if (errors.length > 0) {
-    const firstError = errors.map((error) => error.msg)[0];
+    const error = errors.map((error) => error.msg)[0];
     const { name, email, username, password, passwordConfirmation } = req.body;
     return res.render('signup', {
-      firstError,
+      error,
       name,
       username,
       email,
@@ -79,6 +79,7 @@ exports.signup = async (req, res, next) => {
     let hash = await bcrypt.hash(user.password, salt);
     user.password = hash;
     await user.save();
+    req.flash('success_msg', 'You are now registered and can log in');
     res.redirect('/api/signin');
   } catch (error) {
     next(error);
@@ -107,7 +108,7 @@ exports.signin = (req, res, next) => {
 };
 
 exports.signout = (req, res) => {
-  res.clearCookie('next-express-connect.sid');
+  res.clearCookie('connect.sid');
   req.logout();
   req.session.destroy((err) => {
     res.redirect('/');
@@ -116,9 +117,10 @@ exports.signout = (req, res) => {
 
 exports.getAuthUser = (req, res) => {
   if (!req.isAuthUser) {
-    res.status(403).json({
-      message: 'You are unauthenticated. Please sign in or sign up',
-    });
+    req.flash(
+      'error_msg',
+      'You are unauthenticated. Please sign in or sign up'
+    );
     return res.redirect('/signin');
   }
   res.json(req.user);
@@ -128,6 +130,7 @@ exports.checkAuth = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   }
+  req.flash('error_msg', 'You have to be registered and logged in');
   res.redirect('/signin');
 };
 
