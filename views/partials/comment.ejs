@@ -2,15 +2,25 @@
   class="list-group-item list-group-item-action flex-column align-items-start"
 >
   <div class="w-100 mb-2">
+    <% if (comment.postedBy.avatar != null) { %>
     <img
       src="<%= comment.postedBy.avatar.source %>"
       class="d-inline-block mr-2 rounded-circle"
       style="width: 40px;"
       alt="<%= comment.postedBy.avatar.key %>"
     />
+    <% } else {%>
+    <img
+      src="/img/profile-image.jpg"
+      class="d-inline-block mr-2 rounded-circle"
+      style="width: 40px;"
+      alt="profile-image"
+    />
+    <% }%>
     <h5 class="mt-2 text-capitalize d-inline-block">
       <%= comment.postedBy.name %>
     </h5>
+    <% if (comment.postedBy.id == user.id) { %>
     <button
       type="button"
       class="btn btn-outline-danger btn-sm float-right"
@@ -19,6 +29,7 @@
     >
       Delete
     </button>
+    <% } %>
   </div>
   <p class="mb-1"><%- comment.text%></p>
   <small class="text-muted"><%= moment(comment.createdAt).fromNow()%></small>
