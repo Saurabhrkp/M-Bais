@@ -178,7 +178,7 @@ exports.toggleSavedPost = async (req, res, next) => {
       await user.saved.push(postId);
     }
     await user.save();
-    res.json(user);
+    res.redirect(`/${req.post.slug}`);
   } catch (error) {
     next(error);
   }
