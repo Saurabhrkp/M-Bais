@@ -67,12 +67,19 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Connect flash
+app.use(flash());
+
+// Global variables
 app.use((req, res, next) => {
   /* custom middleware to put our user data (from passport)
-   * on the req.user so we can access it as such anywhere
-   * in our app
+     on the req.user so we can access it as such anywhere
+     in our app
    */
   res.locals.user = req.user || null;
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
   next();
 });
 
@@ -86,8 +93,5 @@ app.use((err, req, res, next) => {
   const { status = 500, message } = err;
   res.status(status).json(message);
 });
-
-// Connect flash
-app.use(flash());
 
 module.exports = app;
