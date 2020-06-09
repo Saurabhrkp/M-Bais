@@ -81,10 +81,10 @@ exports.toggleComment = async (req, res, next) => {
     let data;
     if (req.url.includes('uncomment')) {
       operator = '$pull';
-      data = { _id: req.body.comment._id };
+      data = { _id: req.body.id };
     } else {
       operator = '$push';
-      data = { text: req.body.comment.text, postedBy: req.user._id };
+      data = { text: req.body.comment, postedBy: req.user._id };
     }
     await Post.findOneAndUpdate(
       { _id: _id },
