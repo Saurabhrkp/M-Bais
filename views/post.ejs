@@ -12,60 +12,27 @@
           <span class="bg-danger text-white"><%= post.code %></span>
         </h3>
         <p class="card-subtitle mb-1"><%= post.description %></p>
-        <h6 class="float-right">
-          <% if (post.likes.includes(user.id)) { %>
-          <form method="post" action="/<%=post.slug%>/unlike?_method=PUT">
-            <input type="hidden" name="name" value="value" />
-            <a
-              onclick="this.parentNode.submit();"
-              data-toggle="tooltip"
-              title="Unlike"
-              ><svg
-                class="bi bi-heart-fill"
-                width="3em"
-                height="3em"
-                viewBox="0 0 16 16"
-                fill="red"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"
-                /></svg
-            ></a>
-          </form>
-          <% } else { %>
-          <form method="post" action="/<%=post.slug%>/like?_method=PUT">
-            <input type="hidden" name="name" value="value" />
-            <a
-              onclick="this.parentNode.submit();"
-              data-toggle="tooltip"
-              title="Unlike"
-              ><svg
-                class="bi bi-heart"
-                width="3em"
-                height="3em"
-                viewBox="0 0 16 16"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M8 2.748l-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"
-                /></svg
-            ></a>
-          </form>
-          <% } %> <%= post.like %>
-        </h6>
+        <div class="float-right">
+          <%- include('./partials/save') %> <%- include('./partials/like') %>
+        </div>
+        <div class="w-100 mb-2">
+          <img
+            src="<%= post.author.avatar.source %>"
+            class="d-inline-block mr-2 rounded-circle"
+            style="width: 40px;"
+            alt="<%= post.author.avatar.key %>"
+          />
+          <h5 class="bg-info mt-2 text-capitalize d-inline-block">
+            <%= post.author.name %>
+          </h5>
+        </div>
         <p class="text-white mb-1">
           <span class="bg-success"
             ><%= moment(post.publishedDate).fromNow() %></span
           >
         </p>
-        <p class="text-white">
-          <span class="bg-info"><%= post.author.name %></span>
-        </p>
-        <hr />
+        <br />
+        <hr class="mt-0" />
         <p class="card-text">
           <%= post.body %>
         </p>
@@ -94,107 +61,10 @@
       <h4 class="card-header">Comments</h4>
       <div class="card-body">
         <div class="list-group">
-          <div class="list-group-item flex-column align-items-start">
-            <form
-              class="row d-flex w-100 justify-content-between"
-              method="post"
-              action="/<%=post.slug%>/comment?_method=PUT"
-            >
-              <div class="form-group col m-0">
-                <h5 class="float-left">Add Comment</h5>
-                <textarea
-                  class="form-control"
-                  id="text"
-                  name="comment"
-                  aria-describedby="commentHelp"
-                  placeholder="Enter comment here"
-                  rows="3"
-                ></textarea>
-                <small id="commentHelp" class="form-text text-muted float-right"
-                  >Your comment are public.</small
-                >
-                <button
-                  type="submit"
-                  class="btn btn-outline-primary btn-sm mt-2"
-                >
-                  Submit
-                </button>
-              </div>
-            </form>
-          </div>
-          <% const comments = post.comments.reverse() %> <% for( let i = 0; i <
-          comments.length; i++ ) { const comment = comments[i]; %>
-          <div
-            class="list-group-item list-group-item-action flex-column align-items-start"
-          >
-            <div class="w-100 mb-2">
-              <img
-                src="<%= comment.postedBy.avatar.source %>"
-                class="d-inline-block mr-2 rounded-circle"
-                style="width: 40px;"
-                alt="<%= comment.postedBy.avatar.key %>"
-              />
-              <h5 class="mt-2 text-capitalize d-inline-block">
-                <%= comment.postedBy.name %>
-              </h5>
-              <button
-                type="button"
-                class="btn btn-outline-danger btn-sm float-right"
-                data-toggle="modal"
-                data-target="#modalCenter"
-              >
-                Delete
-              </button>
-            </div>
-            <p class="mb-1"><%- comment.text%></p>
-            <small class="text-muted"
-              ><%= moment(comment.createdAt).fromNow()%></small
-            >
-          </div>
-          <div
-            class="modal fade"
-            id="modalCenter"
-            tabindex="-1"
-            role="dialog"
-            aria-labelledby="modalTitle"
-            aria-hidden="true"
-          >
-            <div class="modal-dialog modal-dialog-centered" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="modalTitle">Confirm Delete</h5>
-                  <button
-                    type="button"
-                    class="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
-                  >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-dismiss="modal"
-                  >
-                    Not now
-                  </button>
-                  <form
-                    class="float-right"
-                    action="/<%=post.slug%>/uncomment?_method=PUT"
-                    method="post"
-                  >
-                    <input type="hidden" name="id" value="<%=comment._id%>" />
-                    <button type="submit" class="btn btn-outline-danger btn-sm">
-                      Yes
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
+          <%- include('./partials/addComment') %> <% const comments =
+          post.comments.reverse() %> <% for( let i = 0; i < comments.length; i++
+          ) { const comment = comments[i] %>
+          <div><%- include('./partials/comment', {comment}) %></div>
           <%}%>
         </div>
       </div>

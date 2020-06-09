@@ -1,0 +1,25 @@
+<div class="list-group-item flex-column align-items-start">
+  <form
+    class="row d-flex w-100 justify-content-between"
+    method="post"
+    action="/<%=post.slug%>/comment?_method=PUT"
+  >
+    <div class="form-group col m-0">
+      <h5>Add Comment</h5>
+      <textarea
+        class="form-control"
+        id="text"
+        name="comment"
+        aria-describedby="commentHelp"
+        placeholder="Enter comment here"
+        rows="3"
+      ></textarea>
+      <small id="commentHelp" class="form-text text-muted float-right"
+        >Your comment are public.</small
+      >
+      <button type="submit" class="btn btn-outline-primary btn-sm mt-2">
+        Submit
+      </button>
+    </div>
+  </form>
+</div>
