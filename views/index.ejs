@@ -23,6 +23,12 @@
       /></a>
     </div>
     <div class="card-body">
+      <img
+        src="<%= post.author.avatar.source %>"
+        class="d-inline-block mr-2 rounded-circle"
+        style="width: 40px;"
+        alt="<%= post.author.avatar.key %>"
+      />
       <a href="#" class="card-link">
         <span class="bg-info text-white"><%= post.author.name %></span></a
       >
