@@ -121,7 +121,7 @@ exports.getAuthUser = (req, res) => {
       'error_msg',
       'You are unauthenticated. Please sign in or sign up'
     );
-    return res.redirect('/signin');
+    return res.redirect('/api/signin');
   }
   res.json(req.profile);
 };
@@ -131,7 +131,7 @@ exports.checkAuth = (req, res, next) => {
     return next();
   }
   req.flash('error_msg', 'You have to be registered and logged in');
-  res.redirect('/signin');
+  res.redirect('/api/signin');
 };
 
 exports.getUserByUsername = async (req, res, next, username) => {
