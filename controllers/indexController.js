@@ -16,18 +16,15 @@ exports.getPostBySlug = async (req, res, next, slug) => {
   }
 };
 
-exports.searchPost = async (req, res, next, code) => {
+exports.searchPost = async (req, res, next) => {
   try {
-    req.post = await Post.findOne({ code: code });
-    const posterId = mongoose.Types.ObjectId(req.post.author._id);
-    if (req.user && posterId.equals(req.user._id)) {
-      req.isPoster = true;
+    req.post = await Post.findOne({ code: req.body.code });
+    if (req.post !== null) {
       return next();
     }
-    next();
+    res.json({ message: `Not post for ${req.body.code} found` });
   } catch (error) {
     console.error(error);
-    res.json({ message: `Not post for ${code} found` });
   }
 };
 
