@@ -116,14 +116,7 @@ exports.signout = (req, res) => {
 };
 
 exports.getAuthUser = (req, res) => {
-  if (!req.isAuthUser) {
-    req.flash(
-      'error_msg',
-      'You are unauthenticated. Please sign in or sign up'
-    );
-    return res.redirect('/api/signin');
-  }
-  res.json(req.profile);
+  res.render('profile', { profile: req.profile });
 };
 
 exports.checkAuth = (req, res, next) => {
@@ -140,24 +133,10 @@ exports.getUserByUsername = async (req, res, next, username) => {
       'saved',
       '-photos -video -author -comments -likes -tags -body'
     );
-    const profileId = mongoose.Types.ObjectId(req.profile._id);
-    if (req.user && profileId.equals(req.user._id)) {
-      req.isAuthUser = true;
-      return next();
-    }
     next();
   } catch (error) {
     next(error);
   }
-};
-
-exports.getUserProfile = (req, res, next) => {
-  if (!req.profile) {
-    return res.status(404).json({
-      message: 'No user found',
-    });
-  }
-  res.json(req.profile);
 };
 
 exports.getUserSaved = async (req, res, next) => {
@@ -206,11 +185,6 @@ exports.updateUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   try {
     const { username } = req.params;
-    if (!req.isAuthUser) {
-      return res.status(400).json({
-        message: 'You are not authorized to perform this action',
-      });
-    }
     const deletedUser = await User.findOneAndDelete({ username: username });
     res.json(deletedUser);
   } catch (error) {

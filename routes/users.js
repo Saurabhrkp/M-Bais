@@ -30,7 +30,7 @@ router.param('username', userController.getUserByUsername);
 
 router
   .route('/:username')
-  .get(userController.getAuthUser)
+  .get(userController.checkAuth, userController.getAuthUser)
   .put(
     userController.checkAuth,
     upload.fields([{ name: 'avatar', maxCount: 1 }]),
@@ -38,12 +38,6 @@ router
     catchErrors(userController.updateUser)
   )
   .delete(userController.checkAuth, catchErrors(userController.deleteUser));
-
-router.get(
-  '/profile/:username',
-  userController.checkAuth,
-  userController.getUserProfile
-);
 
 router.get(
   '/:username/savedPost',
