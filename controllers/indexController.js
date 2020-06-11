@@ -1,15 +1,10 @@
 // Load Post model
 const Post = require('../models/Post');
-const mongoose = require('mongoose');
+const { escapeRegex } = require('./controlHelper');
 
 exports.getPostBySlug = async (req, res, next, slug) => {
   try {
     req.post = await Post.findOne({ slug: slug });
-    const posterId = mongoose.Types.ObjectId(req.post.author._id);
-    if (req.user && posterId.equals(req.user._id)) {
-      req.isPoster = true;
-      return next();
-    }
     next();
   } catch (error) {
     next(error);
@@ -18,11 +13,12 @@ exports.getPostBySlug = async (req, res, next, slug) => {
 
 exports.searchPost = async (req, res, next) => {
   try {
-    req.post = await Post.findOne({ code: req.body.code });
+    const code = escapeRegex(req.body.code);
+    req.post = await Post.findOne({ code: code });
     if (req.post !== null) {
-      return next();
+      return res.redirect(`/${req.post.slug}`);
     }
-    res.json({ message: `Not post for ${req.body.code} found` });
+    res.redirect('/');
   } catch (error) {
     console.error(error);
   }
