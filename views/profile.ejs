@@ -1,10 +1,17 @@
 <%- include('./partials/navbar') %>
-<div class="row justify-content-center mr-0 ml-2">
-  <div class="card text-white bg-dark m-3 shadow">
-    <div class="card-body">
-      <h5 class="card-title"><%= post.title %></h5>
-      <h6 class="card-subtitle text-muted"><%= post.description %></h6>
-    </div>
+<div class="container my-3 mx-auto row justify-content-center bg-dark">
+  <div class="d-block p-2">
+    <img
+      class="mx-auto card-body img-fluid rounded-circle"
+      src="https://awsbucketformbias.s3.ap-south-1.amazonaws.com/1590508114231-avatar.png"
+    />
+  </div>
+  <div class="d-block mx-4">
+    <h4 class="mx-auto pt-5 card-title">Omkar Govalkar</h4>
+    <h5 class="mx-auto py-3 card-subtitle text-muted text-lowercase">
+      Omkar2398
+    </h5>
+    <button type="button" class="mb-3 btn btn-primary">Edit Profile</button>
   </div>
 </div>
 <%-include('./partials/footer.ejs') %>
