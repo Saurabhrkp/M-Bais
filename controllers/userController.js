@@ -1,7 +1,6 @@
 // Loading models
 const User = require('../models/User');
 const passport = require('passport');
-const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 

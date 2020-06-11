@@ -1,33 +1,26 @@
 // Load Post model
 const Post = require('../models/Post');
-const mongoose = require('mongoose');
+const { escapeRegex } = require('./controlHelper');
 
 exports.getPostBySlug = async (req, res, next, slug) => {
   try {
     req.post = await Post.findOne({ slug: slug });
-    const posterId = mongoose.Types.ObjectId(req.post.author._id);
-    if (req.user && posterId.equals(req.user._id)) {
-      req.isPoster = true;
-      return next();
-    }
     next();
   } catch (error) {
     next(error);
   }
 };
 
-exports.searchPost = async (req, res, next, code) => {
+exports.searchPost = async (req, res, next) => {
   try {
+    const code = escapeRegex(req.body.code);
     req.post = await Post.findOne({ code: code });
-    const posterId = mongoose.Types.ObjectId(req.post.author._id);
-    if (req.user && posterId.equals(req.user._id)) {
-      req.isPoster = true;
-      return next();
+    if (req.post !== null) {
+      return res.redirect(`/${req.post.slug}`);
     }
-    next();
+    res.redirect('/');
   } catch (error) {
     console.error(error);
-    res.json({ message: `Not post for ${code} found` });
   }
 };
 

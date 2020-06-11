@@ -1,0 +1,32 @@
+{
+  "name": "M-Bais",
+  "short_name": "MBais",
+  "description": "M-Bias is a Digital Content Platform, Specifically tailoered for HSC Students directly alligned with thier text books and easily accessible at their finger tips with just a QR Code scan.",
+  "icons": [
+    {
+      "src": "/icon/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "type": "image/png",
+      "sizes": "16x16",
+      "href": "/icon/favicon-16x16.png"
+    },
+    {
+      "type": "image/png",
+      "sizes": "32x32",
+      "href": "/icon/favicon-32x32.png"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}

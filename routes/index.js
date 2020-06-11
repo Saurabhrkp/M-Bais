@@ -47,8 +47,8 @@ router.put(
   catchErrors(userController.toggleSavedPost)
 );
 
-router.get(
-  '/search/:code',
+router.post(
+  '/search',
   userController.checkAuth,
   catchErrors(indexController.searchPost),
   catchErrors(indexController.sendPost)
