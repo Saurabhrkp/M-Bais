@@ -15,19 +15,19 @@
         <div class="float-right">
           <%- include('./partials/save') %> <%- include('./partials/like') %>
         </div>
-        <div class="w-100 mb-2">
+        <a href="/api/<%=post.author.username%>" class="w-100 mb-2">
           <img
             src="<%= post.author.avatar.source %>"
             class="d-inline-block mr-2 rounded-circle"
             style="width: 40px;"
             alt="<%= post.author.avatar.key %>"
           />
-          <h5 class="bg-info mt-2 text-capitalize d-inline-block">
+          <h5 class="mt-2 text-capitalize d-inline-block">
             <%= post.author.name %>
           </h5>
-        </div>
-        <p class="text-white mb-1">
-          <span class="bg-success"
+        </a>
+        <p class="text-white mt-2">
+          <span class="bg-info"
             ><%= moment(post.publishedDate).fromNow() %></span
           >
         </p>

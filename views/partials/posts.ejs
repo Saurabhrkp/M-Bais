@@ -4,7 +4,10 @@
   %>
   <div class="card text-white bg-dark m-3 shadow-lg">
     <div class="card-body">
-      <h5 class="card-title"><%= post.title %></h5>
+      <h5 class="card-title">
+        <%= post.title %>
+        <span class="bg-danger text-white"> CODE: <%= post.code %></span>
+      </h5>
       <h6 class="card-subtitle text-muted"><%= post.description %></h6>
       <h6 class="card-subtitle text-muted mt-2">
         <% post.tags.forEach(tag => { %>
@@ -28,8 +31,8 @@
         style="width: 40px;"
         alt="<%= post.author.avatar.key %>"
       />
-      <a href="#" class="card-link">
-        <span class="bg-info text-white"><%= post.author.name %></span></a
+      <a href="/api/<%=post.author.username%>" class="card-link">
+        <span class="text-white"><%= post.author.name %></span></a
       >
     </div>
     <div class="card-footer text-muted">
