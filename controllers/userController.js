@@ -1,5 +1,6 @@
 // Loading models
 const User = require('../models/User');
+const Post = require('../models/Post');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
@@ -128,10 +129,10 @@ exports.checkAuth = (req, res, next) => {
 
 exports.getUserByUsername = async (req, res, next, username) => {
   try {
-    req.profile = await User.findOne({ username: username }).populate(
-      'saved',
-      '-photos -video -author -comments -likes -tags -body'
-    );
+    req.profile = await User.findOne({ username: username });
+    req.profile.liked = await Post.find({
+      likes: { $in: [req.profile._id] },
+    }).select('-photos -body -video -comments');
     next();
   } catch (error) {
     next(error);
@@ -175,7 +176,7 @@ exports.updateUser = async (req, res, next) => {
       { $set: req.body },
       { new: true, runValidators: true }
     );
-    res.json(updatedUser);
+    res.redirect(`/api/${req.user.username}`);
   } catch (error) {
     next(error);
   }
