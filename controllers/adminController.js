@@ -1,13 +1,10 @@
 const User = require('../models/User');
 const Post = require('../models/Post');
 const File = require('../models/File');
+const { extractTags, deleteFileFromBucket } = require('./controlHelper');
 
-// DB Config
-const { bucket } = require('../models/database');
-
-const extractTags = (string) => {
-  var tags = string.toLowerCase().split(' ');
-  return new Array(...tags);
+exports.get_adminpanel = (req, res) => {
+  res.render('admin-panel');
 };
 
 exports.savePost = async (req, res, next) => {
@@ -34,15 +31,6 @@ exports.getUsers = async (req, res, next) => {
       '_id name email createdAt updatedAt'
     );
     res.json(users);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.getAllPosts = async (req, res, next) => {
-  try {
-    const posts = await Post.find();
-    res.json(posts);
   } catch (error) {
     next(error);
   }
@@ -75,16 +63,6 @@ exports.deletePost = async (req, res, next) => {
     res.json(deletedPost);
   } catch (error) {
     next(error);
-  }
-};
-
-const deleteFileFromBucket = async (file) => {
-  try {
-    return await bucket
-      .deleteObject({ Bucket: 'awsbucketformbias', Key: file.key })
-      .promise();
-  } catch (error) {
-    return Promise.reject(error);
   }
 };
 

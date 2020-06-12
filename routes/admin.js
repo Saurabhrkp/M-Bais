@@ -13,15 +13,13 @@ const {
  * Admin ROUTES: /admin
  */
 
-router.get('/', catchErrors(indexController.getPosts));
-
 router.param('username', userController.getUserByUsername);
 
 router.param('slug', indexController.getPostBySlug);
 
 router
-  .route('/article/:username')
-  .get(userController.checkAuth, catchErrors(adminController.getAllPosts))
+  .route('/:username')
+  .get(userController.checkAuth, catchErrors(adminController.get_adminpanel))
   .post(
     userController.checkAuth,
     upload.fields([

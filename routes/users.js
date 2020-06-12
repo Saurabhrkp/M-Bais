@@ -5,6 +5,7 @@ const {
   catchErrors,
   upload,
   saveFile,
+  checkAndChangeProfile,
 } = require('../controllers/controlHelper');
 
 /**
@@ -35,6 +36,7 @@ router
     userController.checkAuth,
     upload.fields([{ name: 'avatar', maxCount: 1 }]),
     catchErrors(saveFile),
+    catchErrors(checkAndChangeProfile),
     catchErrors(userController.updateUser)
   )
   .delete(userController.checkAuth, catchErrors(userController.deleteUser));

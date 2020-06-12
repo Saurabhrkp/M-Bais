@@ -162,7 +162,7 @@ exports.toggleSavedPost = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
   try {
     req.body.updatedAt = new Date().toISOString();
-    const updatedUser = await User.findOneAndUpdate(
+    await User.findOneAndUpdate(
       { _id: req.user._id },
       { $set: req.body },
       { new: true, runValidators: true }

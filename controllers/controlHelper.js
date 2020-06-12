@@ -112,4 +112,42 @@ const escapeRegex = (text) => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 };
 
-module.exports = { escapeRegex, catchErrors, upload, saveFile };
+const deleteFileFromBucket = async (file) => {
+  try {
+    return await bucket
+      .deleteObject({ Bucket: 'awsbucketformbias', Key: file.key })
+      .promise();
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+const extractTags = (string) => {
+  var tags = string.toLowerCase().split(' ');
+  return new Array(...tags);
+};
+
+const checkAndChangeProfile = async (req, res, next) => {
+  try {
+    const { avatar } = req.user;
+    if (avatar !== undefined) {
+      await File.findOneAndDelete({
+        key: avatar.key,
+      });
+      await deleteFileFromBucket(avatar);
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  escapeRegex,
+  catchErrors,
+  upload,
+  saveFile,
+  deleteFileFromBucket,
+  extractTags,
+  checkAndChangeProfile,
+};
