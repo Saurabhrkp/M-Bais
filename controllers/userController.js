@@ -142,18 +142,6 @@ exports.getUserByUsername = async (req, res, next, username) => {
   }
 };
 
-exports.getUserSaved = async (req, res, next) => {
-  try {
-    const { _id } = req.profile;
-    const posts = await User.find({ _id: _id })
-      .select('-posts -author -email -password -avatar -phone')
-      .populate({ path: 'saved' });
-    res.json(posts);
-  } catch (error) {
-    next(error);
-  }
-};
-
 exports.toggleSavedPost = async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.user.id });

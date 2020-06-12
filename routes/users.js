@@ -39,10 +39,4 @@ router
   )
   .delete(userController.checkAuth, catchErrors(userController.deleteUser));
 
-router.get(
-  '/:username/savedPost',
-  userController.checkAuth,
-  catchErrors(userController.getUserSaved)
-);
-
 module.exports = router;
