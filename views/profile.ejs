@@ -55,6 +55,7 @@
             >
           </div>
         </fieldset>
+        <% if (profile.id === user.id) { %>
         <input
           type="button"
           class="mb-3 btn btn-outline-warning btn-sm hidden"
@@ -66,9 +67,51 @@
           class="mb-3 btn btn-outline-success btn-sm"
           id="submitProfile"
           value="Save Profile"
-        />
+        /><% } %>
       </form>
     </div>
+  </div>
+</div>
+<div class="container card bg-light shadow my-4">
+  <div class="list-group mb-3">
+    <div class="text-center">
+      <% if (profile.liked.length<=0) { %>
+      <h3 class="mt-3">No Liked Posts</h3>
+      <% } else { %>
+      <h3 class="mt-3">Liked Posts</h3>
+      <% } %>
+    </div>
+    <% for( let i = 0; i < profile.liked.length; i++ ) { const liked =
+    profile.liked[i] %>
+    <a href="/<%= liked.slug%>"
+      ><div class="list-group-item list-group-item-action flex-column">
+        <div class="w-100 mb-2">
+          <img
+            src="<%= liked.thumbnail.source %>"
+            class="d-inline-block mr-2"
+            style="width: 200px;"
+            alt="<%= liked.thumbnail.key %>"
+          />
+          <div class="mt-2 text-capitalize d-inline-block">
+            <h5><%= liked.title %></h5>
+            <p><%= liked.description %></p>
+          </div>
+        </div>
+        <a href="/api/<%= liked.author.username%>" class="w-100">
+          <img
+            src="<%= liked.author.avatar.source %>"
+            class="d-inline-block mr-2 rounded-circle"
+            style="width: 40px;"
+            alt="<%= liked.author.avatar.key %>"
+          />
+          <p class="mb-0 d-inline-block">By <%= liked.author.name %></p>
+        </a>
+        <small class="text-muted"
+          ><%= moment(liked.publishedDate).fromNow()%></small
+        >
+      </div></a
+    >
+    <%}%>
   </div>
 </div>
 <%-include('./partials/footer.ejs') %>
