@@ -1,0 +1,26 @@
+<a href="/<%= post.slug%>"
+  ><div class="list-group-item list-group-item-action flex-column">
+    <div class="w-100 mb-2">
+      <img
+        src="<%= post.thumbnail.source %>"
+        class="d-inline-block mr-2"
+        style="width: 200px;"
+        alt="<%= post.thumbnail.key %>"
+      />
+      <div class="mt-2 text-capitalize d-inline-block">
+        <h5><%= post.title %></h5>
+        <p><%= post.description %></p>
+      </div>
+    </div>
+    <a href="/api/<%= post.author.username%>" class="w-100">
+      <img
+        src="<%= post.author.avatar.source %>"
+        class="d-inline-block mr-2 rounded-circle"
+        style="width: 40px;"
+        alt="<%= post.author.avatar.key %>"
+      />
+      <p class="mb-0 d-inline-block">By <%= post.author.name %></p>
+    </a>
+    <small class="text-muted"><%= moment(post.publishedDate).fromNow()%></small>
+  </div></a
+>

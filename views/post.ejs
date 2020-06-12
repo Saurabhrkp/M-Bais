@@ -61,7 +61,7 @@
       <h4 class="card-header">Comments</h4>
       <div class="card-body">
         <div class="list-group">
-          <%- include('./partials/addComment') %> <% const comments =
+          <%- include('./partials/add-comment') %> <% const comments =
           post.comments.reverse() %> <% for( let i = 0; i < comments.length; i++
           ) { const comment = comments[i] %>
           <div><%- include('./partials/comment', {comment}) %></div>

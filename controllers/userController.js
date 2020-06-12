@@ -129,10 +129,13 @@ exports.checkAuth = (req, res, next) => {
 
 exports.getUserByUsername = async (req, res, next, username) => {
   try {
-    req.profile = await User.findOne({ username: username });
+    req.profile = await User.findOne({ username: username }).populate({
+      path: 'saved',
+      select: '-photos -body -video -comments -tags -likes ',
+    });
     req.profile.liked = await Post.find({
       likes: { $in: [req.profile._id] },
-    }).select('-photos -body -video -comments');
+    }).select('-photos -body -video -comments -tags -likes');
     next();
   } catch (error) {
     next(error);
