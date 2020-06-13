@@ -133,25 +133,13 @@ exports.checkAuth = (req, res, next) => {
 
 exports.getUserByUsername = async (req, res, next, username) => {
   try {
-    const results = await async.parallel({
-      profile: (callback) => {
-        User.findOne({ username: username })
-          .populate({
-            path: 'saved',
-            select: '-photos -body -video -comments -tags -likes ',
-          })
-          .exec(callback);
-      },
-      liked: (callback) => {
-        Post.find({
-          likes: { $in: [req.profile._id] },
-        })
-          .select('-photos -body -video -comments -tags -likes')
-          .exec(callback);
-      },
+    req.profile = await User.findOne({ username: username }).populate({
+      path: 'saved',
+      select: '-photos -body -video -comments -tags -likes ',
     });
-    req.profile = results.profile;
-    req.profile.liked = results.liked;
+    req.profile.liked = await Post.find({
+      likes: { $in: [req.profile._id] },
+    }).select('-photos -body -video -comments -tags -likes');
     next();
   } catch (error) {
     next(error);
