@@ -13,13 +13,13 @@ const {
  * Admin ROUTES: /admin
  */
 
-router.param('username', userController.getUserByUsername);
-
 router.param('slug', indexController.getPostBySlug);
 
+router.get('/panel', userController.checkAuth, adminController.adminpanel);
+
 router
-  .route('/:username')
-  .get(userController.checkAuth, catchErrors(adminController.get_adminpanel))
+  .route('/')
+  .get(userController.checkAuth, catchErrors(adminController.adminpanel))
   .post(
     userController.checkAuth,
     upload.fields([
@@ -53,6 +53,12 @@ router.get(
   '/all/users',
   userController.checkAuth,
   catchErrors(adminController.getUsers)
+);
+
+router.get(
+  '/all/files',
+  userController.checkAuth,
+  catchErrors(adminController.getFiles)
 );
 
 router.delete('/:slug/photos/:file', catchErrors(adminController.deleteFile));

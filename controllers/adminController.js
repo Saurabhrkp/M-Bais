@@ -1,10 +1,30 @@
 const User = require('../models/User');
 const Post = require('../models/Post');
 const File = require('../models/File');
+const Comment = require('../models/Comment');
 const { extractTags, deleteFileFromBucket } = require('./controlHelper');
+const async = require('async');
 
-exports.get_adminpanel = (req, res) => {
-  res.render('admin-panel');
+exports.adminpanel = async (req, res, next) => {
+  try {
+    const results = await async.parallel({
+      users: (callback) => {
+        User.countDocuments(callback);
+      },
+      posts: (callback) => {
+        Post.countDocuments(callback);
+      },
+      files: (callback) => {
+        File.countDocuments(callback);
+      },
+      comments: (callback) => {
+        Comment.countDocuments(callback);
+      },
+    });
+    res.render('admin-panel', { results });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.savePost = async (req, res, next) => {
@@ -31,6 +51,15 @@ exports.getUsers = async (req, res, next) => {
       '_id name email createdAt updatedAt'
     );
     res.json(users);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getFiles = async (req, res, next) => {
+  try {
+    const files = await File.find();
+    res.json(files);
   } catch (error) {
     next(error);
   }
