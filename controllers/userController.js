@@ -1,9 +1,13 @@
 // Loading models
 const User = require('../models/User');
 const Post = require('../models/Post');
+const File = require('../models/File');
+const Comment = require('../models/Comment');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
+const async = require('async');
 const { body, validationResult } = require('express-validator');
+const { deleteFileFromBucket } = require('./controlHelper');
 
 exports.get_signup = (req, res) => {
   res.render('signup');
@@ -129,13 +133,25 @@ exports.checkAuth = (req, res, next) => {
 
 exports.getUserByUsername = async (req, res, next, username) => {
   try {
-    req.profile = await User.findOne({ username: username }).populate({
-      path: 'saved',
-      select: '-photos -body -video -comments -tags -likes ',
+    const results = await async.parallel({
+      profile: (callback) => {
+        User.findOne({ username: username })
+          .populate({
+            path: 'saved',
+            select: '-photos -body -video -comments -tags -likes ',
+          })
+          .exec(callback);
+      },
+      liked: (callback) => {
+        Post.find({
+          likes: { $in: [req.profile._id] },
+        })
+          .select('-photos -body -video -comments -tags -likes')
+          .exec(callback);
+      },
     });
-    req.profile.liked = await Post.find({
-      likes: { $in: [req.profile._id] },
-    }).select('-photos -body -video -comments -tags -likes');
+    req.profile = results.profile;
+    req.profile.liked = results.liked;
     next();
   } catch (error) {
     next(error);
@@ -175,9 +191,35 @@ exports.updateUser = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   try {
-    const { username } = req.params;
-    const deletedUser = await User.findOneAndDelete({ username: username });
-    res.json(deletedUser);
+    await async.parallel([
+      (callback) => {
+        User.findByIdAndDelete(req.user._id).exec(callback);
+      },
+      (callback) => {
+        Post.updateMany(
+          { likes: { $in: [req.user._id] } },
+          { $pull: { likes: req.user._id } }
+        ).exec(callback);
+      },
+    ]);
+    if (req.user.avatar !== undefined) {
+      await File.findByIdAndDelete(req.user.avatar._id);
+      await deleteFileFromBucket(req.user.avatar);
+    }
+    const results = await async.parallel({
+      comments: (callback) => {
+        Comment.find({ postedBy: req.user._id }).exec(callback);
+      },
+    });
+    const deleteRefrence = async (comment) => {
+      await Comment.findByIdAndDelete(comment._id);
+      await Post.findOneAndUpdate(
+        { comments: { $in: [comment._id] } },
+        { $pull: { comments: comment._id } }
+      );
+    };
+    await async.each(results.comments, deleteRefrence);
+    res.redirect('/api/signout');
   } catch (error) {
     next(error);
   }

@@ -1,5 +1,6 @@
 // Load Post model
 const Post = require('../models/Post');
+const Comment = require('../models/Comment');
 const { escapeRegex } = require('./controlHelper');
 
 exports.getPostBySlug = async (req, res, next, slug) => {
@@ -69,19 +70,22 @@ exports.toggleLike = async (req, res, next) => {
 
 exports.toggleComment = async (req, res, next) => {
   try {
-    const { _id } = req.post;
+    let comment;
     let operator;
-    let data;
     if (req.url.includes('uncomment')) {
       operator = '$pull';
-      data = { _id: req.body.id };
+      comment = await Comment.findByIdAndDelete(req.body.id);
     } else {
       operator = '$push';
-      data = { text: req.body.comment, postedBy: req.user._id };
+      comment = await new Comment({
+        text: req.body.comment,
+        postedBy: req.user._id,
+      });
+      await comment.save();
     }
     await Post.findOneAndUpdate(
-      { _id: _id },
-      { [operator]: { comments: data } },
+      { _id: req.post._id },
+      { [operator]: { comments: comment._id } },
       { new: true }
     );
     res.redirect(`/${req.post.slug}`);
