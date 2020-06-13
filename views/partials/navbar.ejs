@@ -18,6 +18,11 @@
       <li class="nav-item-float-right">
         <a href="/api/<%=user.username%>" class="nav-link">Profile</a>
       </li>
+      <% if (user.author) { %>
+      <li class="nav-item-float-right">
+        <a href="/admin/panel" class="nav-link">Admin Panel</a>
+      </li>
+      <% } %>
       <li class="nav-item-float-right">
         <a href="/api/signout" class="nav-link">Logout</a>
       </li>

@@ -6,6 +6,7 @@ $(document).on('click', '[data-toggle="lightbox"]', function (event) {
 $(document).ready(function () {
   $('#profileForm :input').prop('disabled', true);
   $('#editProfile').prop('disabled', false);
+  $('#deletebutton').prop('disabled', false);
   $('#submitProfile').hide();
   $('#avatar').hide();
   $('#editProfile').click(function () {
@@ -13,12 +14,14 @@ $(document).ready(function () {
       this.value = 'Cancel';
       $('#profileForm :input').prop('disabled', false);
       $('#editProfile').prop('disabled', false);
+      $('#deletebutton').prop('disabled', false);
       $('#submitProfile').show();
       $('#avatar').show();
     } else {
       this.value = 'Edit Profile';
       $('#profileForm :input').prop('disabled', true);
       $('#editProfile').prop('disabled', false);
+      $('#deletebutton').prop('disabled', false);
       $('#submitProfile').hide();
       $('#avatar').hide();
     }
