@@ -22,13 +22,7 @@ const PostSchema = new Schema(
     photos: [{ type: Schema.ObjectId, ref: 'File' }],
     tags: [{ type: String }],
     likes: [{ type: Schema.ObjectId, ref: 'User' }],
-    comments: [
-      {
-        text: String,
-        createdAt: { type: Date, default: Date.now },
-        postedBy: { type: Schema.ObjectId, ref: 'User' },
-      },
-    ],
+    comments: [{ type: Schema.ObjectId, ref: 'Comment' }],
   },
   {
     toJSON: { virtuals: true },
@@ -49,19 +43,15 @@ PostSchema.virtual('metaDescription').get(function () {
 
 /* Kind of like a middleware function after creating our schema (since we have access to next) */
 /* Must be a function declaration (not an arrow function), because we want to use 'this' to reference our schema */
-const autoPopulatePostedBy = function (next) {
-  this.populate('author comments.postedBy', '_id name avatar username');
-  this.populate('video', '_id source key');
-  this.populate('photos', '_id source key');
-  this.populate('thumbnail', '_id source key');
+const autoPopulate = function (next) {
+  this.populate('author', '_id name avatar username');
+  this.populate('photos video thumbnail', '_id source key');
+  this.populate('comments', '_id text createdAt postedBy');
   next();
 };
 
 /* We're going to need to populate the 'postedBy' field virtually every time we do a findOne / find query, so we'll just do it as a pre hook here upon creating the schema */
-PostSchema.pre('findOne', autoPopulatePostedBy).pre(
-  'find',
-  autoPopulatePostedBy
-);
+PostSchema.pre('findOne', autoPopulate).pre('find', autoPopulate);
 
 /* Create index on keys for more performant querying/post sorting */
 PostSchema.index({ code: 1, author: 1, publishedDate: 1 });
