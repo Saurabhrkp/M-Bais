@@ -17,11 +17,17 @@ exports.adminpanel = async (req, res, next) => {
       files: (callback) => {
         File.countDocuments(callback);
       },
-      comments: (callback) => {
-        Comment.countDocuments(callback);
-      },
     });
+    results.create = 'Add Post';
     res.render('admin-panel', { results });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.createPost = async (req, res, next) => {
+  try {
+    res.render('post-form');
   } catch (error) {
     next(error);
   }
@@ -39,7 +45,15 @@ exports.savePost = async (req, res, next) => {
       path: 'author video photos thumbnail',
       select: '_id name avatar source key',
     });
-    res.json(post);
+    res.redirect(`/${post.slug}`);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.sendPostForm = async (req, res, next) => {
+  try {
+    res.render('post-form', { post: req.post, user: req.user });
   } catch (error) {
     next(error);
   }

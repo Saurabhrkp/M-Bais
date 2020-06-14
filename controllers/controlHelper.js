@@ -21,7 +21,13 @@ const upload = Multer({
       cb(null, /^image/i.test(file.mimetype));
     },
     metadata: function (req, file, cb) {
-      cb(null, Object.assign({}, req.body));
+      cb(
+        null,
+        Object.assign(
+          {},
+          { title: req.body.title, description: req.body.description }
+        )
+      );
     },
     key: function (req, file, cb) {
       cb(

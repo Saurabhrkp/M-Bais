@@ -18,8 +18,8 @@ router.param('slug', indexController.getPostBySlug);
 router.get('/panel', userController.checkAuth, adminController.adminpanel);
 
 router
-  .route('/')
-  .get(userController.checkAuth, catchErrors(adminController.adminpanel))
+  .route('/create')
+  .get(userController.checkAuth, catchErrors(adminController.createPost))
   .post(
     userController.checkAuth,
     upload.fields([
@@ -47,7 +47,8 @@ router
     ]),
     catchErrors(saveFile),
     catchErrors(adminController.updatePost)
-  );
+  )
+  .get(userController.checkAuth, catchErrors(adminController.sendPostForm));
 
 router.get(
   '/all/users',
