@@ -3,6 +3,7 @@ const File = require('../models/File');
 const Multer = require('multer');
 const multerS3 = require('multer-s3-transform');
 const sharp = require('sharp');
+const async = require('async');
 
 /* Error handler for async / await functions */
 const catchErrors = (fn) => {
@@ -21,13 +22,11 @@ const upload = Multer({
       cb(null, /^image/i.test(file.mimetype));
     },
     metadata: function (req, file, cb) {
-      cb(
-        null,
-        Object.assign(
-          {},
-          { title: req.body.title, description: req.body.description }
-        )
-      );
+      let metabody = { ...req.body };
+      if (metabody.body) {
+        delete metabody.body;
+      }
+      cb(null, Object.assign({}, metabody));
     },
     key: function (req, file, cb) {
       cb(
@@ -136,12 +135,104 @@ const extractTags = (string) => {
 const checkAndChangeProfile = async (req, res, next) => {
   try {
     const { avatar } = req.user;
-    if (avatar !== undefined) {
+    if (avatar !== undefined && req.body.avatar !== undefined) {
       await File.findOneAndDelete({
         key: avatar.key,
       });
       await deleteFileFromBucket(avatar);
     }
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+const checkAndChangePost = async (req, res, next) => {
+  try {
+    const { video, thumbnail, photos } = req.post;
+    if (video !== undefined && req.body.video !== undefined) {
+      await deleteFile(video, 'video');
+    }
+    if (thumbnail !== undefined && req.body.thumbnail !== undefined) {
+      await deleteFile(thumbnail, 'thumbnail');
+    }
+    if (photos !== undefined && req.body.photos !== undefined) {
+      for (const key in photos) {
+        if (photos.hasOwnProperty(key)) {
+          const photo = photos[key];
+          await deleteFile(photo, 'photos');
+        }
+      }
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteAllFiles = async (req, res, next) => {
+  try {
+    const { video = {}, photos = [{}], thumbnail = {} } = req.post;
+    if (video !== {}) {
+      await File.findOneAndDelete({
+        key: video.key,
+      });
+      await deleteFileFromBucket(video);
+    }
+    if (thumbnail !== {}) {
+      await File.findOneAndDelete({
+        key: thumbnail.key,
+      });
+      await deleteFileFromBucket(thumbnail);
+    }
+    if (photos !== [{}]) {
+      for (const key in photos) {
+        if (photos.hasOwnProperty(key)) {
+          const file = photos[key];
+          await File.findOneAndDelete({
+            key: file.key,
+          });
+          await deleteFileFromBucket(file);
+        }
+      }
+    }
+    return next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteFile = async (file, feild) => {
+  try {
+    await File.findOneAndDelete({
+      _id: file,
+    });
+    let operator, field, data;
+    if (field == 'photos') {
+      operator = '$pull';
+      field = 'photos';
+      data = file._id;
+    } else if (feild == 'video') {
+      operator = '$unset';
+      field = 'video';
+      data = 1;
+    } else {
+      operator = '$unset';
+      field = 'thumbnail';
+      data = 1;
+    }
+    await async.parallel([
+      (callback) => {
+        Post.findByIdAndUpdate(
+          { _id: req.post._id },
+          { [operator]: { [field]: [data] } },
+          { new: true, runValidators: true }
+        ).exec(callback);
+      },
+      () => {
+        deleteFileFromBucket(file);
+      },
+    ]);
     next();
   } catch (error) {
     next(error);
@@ -156,4 +247,6 @@ module.exports = {
   deleteFileFromBucket,
   extractTags,
   checkAndChangeProfile,
+  checkAndChangePost,
+  deleteAllFiles,
 };
