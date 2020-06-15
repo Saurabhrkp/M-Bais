@@ -38,7 +38,26 @@ $('#video').change(function (e) {
 
 $('#thumbnail').change(function (e) {
   if (e.target.files.length) {
-    $(this).next('.custom-file-label').html(e.target.files[0].name);
+    if (typeof FileReader != 'undefined') {
+      let thumbnailPreview = $('#thumbnailPreview');
+      thumbnailPreview.html('');
+      $(this).next('.custom-file-label').html(e.target.files[0].name);
+      let reader = new FileReader();
+      let file = e.target.files[0];
+      reader.onload = function (e) {
+        let col = $("<div class='col-sm-5 col-md-4 col-lg-3 mb-3'></div>");
+        let anchor = $("<a data-toggle='lightbox' data-gallery='gallery'></a>");
+        let img = $("<img class='d-block w-100'/>");
+        img.attr('src', e.target.result);
+        anchor.attr('href', e.target.result);
+        anchor.append(img);
+        col.append(anchor);
+        thumbnailPreview.append(col);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert('This browser does not support HTML5 FileReader.');
+    }
   } else {
     $(this).next('.custom-file-label').html('Choose Thumbnail');
   }
@@ -50,15 +69,34 @@ $('#photos').change(function (e) {
     $(this).next('.custom-file-label').html('Choose Photos');
     $(this).val('');
   } else if (e.target.files.length > 0 && e.target.files.length < 6) {
-    let file_name = [];
-    for (const key in e.target.files) {
-      if (e.target.files.hasOwnProperty(key)) {
-        const element = e.target.files[key];
-        file_name.push(element.name);
-      }
+    if (typeof FileReader != 'undefined') {
+      let preview = $('#preview');
+      preview.html('');
+      $(this)
+        .next('.custom-file-label')
+        .html(
+          `${e.target.files[0].name} and ${e.target.files.length - 1} more `
+        );
+      $($(this)[0].files).each(function () {
+        let file = $(this);
+        let reader = new FileReader();
+        reader.onload = function (e) {
+          let col = $("<div class='col-sm-5 col-md-4 col-lg-3 mb-3'></div>");
+          let anchor = $(
+            "<a data-toggle='lightbox' data-gallery='gallery'></a>"
+          );
+          let img = $("<img class='d-block w-100'/>");
+          img.attr('src', e.target.result);
+          anchor.attr('href', e.target.result);
+          anchor.append(img);
+          col.append(anchor);
+          preview.append(col);
+        };
+        reader.readAsDataURL(file[0]);
+      });
+    } else {
+      alert('This browser does not support HTML5 FileReader.');
     }
-    const files = file_name.join(', ');
-    $(this).next('.custom-file-label').html(files);
   } else {
     $(this).next('.custom-file-label').html('Choose Photos');
   }
