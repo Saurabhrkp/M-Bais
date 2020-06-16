@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const S3 = require('aws-sdk/clients/s3');
 
 // DB Config
-const mongoURI = process.env.mongoURI;
+const mongoDBURI = process.env.mongoDBURI;
 
 // AWS S3 Config
 const config = {
@@ -14,13 +14,13 @@ const config = {
 
 // Connect to MongoDB
 mongoose
-  .connect(mongoURI, {
+  .connect(mongoDBURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
     useFindAndModify: false,
   })
-  .then(() => console.info(`MongoDB is Connected on ${mongoURI}`))
+  .then(() => console.info(`MongoDB is Connected on ${mongoDBURI}`))
   .catch((err) => console.error(`Unable to MongoDB due to ${err.message}`));
 
 // Promise of mongoose
