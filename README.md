@@ -1,5 +1,5 @@
 # Mech-Bais
-Dharvesh's Project
+Avinash Darvesh's Project
 
 Working on Project to show-case for business.
 
