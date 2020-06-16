@@ -147,29 +147,6 @@ const checkAndChangeProfile = async (req, res, next) => {
   }
 };
 
-const checkAndChangePost = async (req, res, next) => {
-  try {
-    const { video, thumbnail, photos } = req.post;
-    if (video !== undefined && req.body.video !== undefined) {
-      await deleteFile(video, 'video');
-    }
-    if (thumbnail !== undefined && req.body.thumbnail !== undefined) {
-      await deleteFile(thumbnail, 'thumbnail');
-    }
-    if (photos !== undefined && req.body.photos !== undefined) {
-      for (const key in photos) {
-        if (photos.hasOwnProperty(key)) {
-          const photo = photos[key];
-          await deleteFile(photo, 'photos');
-        }
-      }
-    }
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
 const deleteAllFiles = async (req, res, next) => {
   try {
     const { video = {}, photos = [{}], thumbnail = {} } = req.post;
@@ -202,43 +179,6 @@ const deleteAllFiles = async (req, res, next) => {
   }
 };
 
-const deleteFile = async (file, feild) => {
-  try {
-    await File.findOneAndDelete({
-      _id: file,
-    });
-    let operator, field, data;
-    if (field == 'photos') {
-      operator = '$pull';
-      field = 'photos';
-      data = file._id;
-    } else if (feild == 'video') {
-      operator = '$unset';
-      field = 'video';
-      data = 1;
-    } else {
-      operator = '$unset';
-      field = 'thumbnail';
-      data = 1;
-    }
-    await async.parallel([
-      (callback) => {
-        Post.findByIdAndUpdate(
-          { _id: req.post._id },
-          { [operator]: { [field]: [data] } },
-          { new: true, runValidators: true }
-        ).exec(callback);
-      },
-      () => {
-        deleteFileFromBucket(file);
-      },
-    ]);
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
 module.exports = {
   escapeRegex,
   catchErrors,
@@ -247,6 +187,5 @@ module.exports = {
   deleteFileFromBucket,
   extractTags,
   checkAndChangeProfile,
-  checkAndChangePost,
   deleteAllFiles,
 };
