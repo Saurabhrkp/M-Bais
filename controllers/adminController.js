@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Post = require('../models/Post');
 const File = require('../models/File');
+const Comment = require('../models/Comment');
 const { extractTags } = require('./controlHelper');
 const async = require('async');
 
@@ -64,10 +65,17 @@ exports.sendPostForm = async (req, res, next) => {
 
 exports.getUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select(
-      '_id name email createdAt updatedAt'
-    );
-    res.json(users);
+    const users = await User.find();
+    res.render('lists', { users });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getPosts = async (req, res, next) => {
+  try {
+    const posts = await Post.find();
+    res.render('lists', { posts });
   } catch (error) {
     next(error);
   }
@@ -76,7 +84,7 @@ exports.getUsers = async (req, res, next) => {
 exports.getFiles = async (req, res, next) => {
   try {
     const files = await File.find();
-    res.json(files);
+    res.render('lists', { files });
   } catch (error) {
     next(error);
   }
@@ -104,9 +112,21 @@ exports.updatePost = async (req, res, next) => {
 exports.deletePost = async (req, res, next) => {
   try {
     const { _id } = req.post;
-    await User.findOneAndUpdate(req.user.id, { $pull: { posts: _id } });
-    const deletedPost = await Post.findOneAndDelete({ _id });
-    res.json(deletedPost);
+    const result = await async.parallel({
+      user: (callback) => {
+        User.findOneAndUpdate(req.user.id, { $pull: { posts: _id } }).exec(
+          callback
+        );
+      },
+      post: (callback) => {
+        Post.findOneAndDelete({ _id }).exec(callback);
+      },
+    });
+    const deleteRefrence = async (comment) => {
+      await Comment.findByIdAndDelete(comment);
+    };
+    await async.each(result.post.comments, deleteRefrence);
+    res.redirect('/admin/panel');
   } catch (error) {
     next(error);
   }
