@@ -39,6 +39,10 @@ router
     catchErrors(checkAndChangeProfile),
     catchErrors(userController.updateUser)
   )
-  .delete(userController.checkAuth, catchErrors(userController.deleteUser));
+  .delete(
+    userController.checkAuth,
+    catchErrors(checkAndChangeProfile),
+    catchErrors(userController.deleteUser)
+  );
 
 module.exports = router;

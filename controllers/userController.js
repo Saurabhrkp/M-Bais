@@ -7,7 +7,6 @@ const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const async = require('async');
 const { body, validationResult } = require('express-validator');
-const { deleteFileFromBucket } = require('./controlHelper');
 
 exports.get_signup = (req, res) => {
   res.render('signup');
@@ -181,22 +180,18 @@ exports.deleteUser = async (req, res, next) => {
   try {
     await async.parallel([
       (callback) => {
-        User.findByIdAndDelete(req.user._id).exec(callback);
+        User.findByIdAndDelete(req.profile._id).exec(callback);
       },
       (callback) => {
         Post.updateMany(
-          { likes: { $in: [req.user._id] } },
-          { $pull: { likes: req.user._id } }
+          { likes: { $in: [req.profile._id] } },
+          { $pull: { likes: req.profile._id } }
         ).exec(callback);
       },
     ]);
-    if (req.user.avatar !== undefined) {
-      await File.findByIdAndDelete(req.user.avatar._id);
-      await deleteFileFromBucket(req.user.avatar);
-    }
     const results = await async.parallel({
       comments: (callback) => {
-        Comment.find({ postedBy: req.user._id }).exec(callback);
+        Comment.find({ postedBy: req.profile._id }).exec(callback);
       },
     });
     const deleteRefrence = async (comment) => {
