@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const S3 = require('aws-sdk/clients/s3');
 
 // DB Config
-// const { mongoURI, config } = require('../bin/keys');
-
 const mongoURI = process.env.mongoURI;
 
 // AWS S3 Config
