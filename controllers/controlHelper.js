@@ -65,13 +65,24 @@ const upload = Multer({
   },
 });
 
+const formatBytes = (bytes, decimals = 2) => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+};
+
 const savingFile = async (file) => {
   try {
     let mimeTypeCheck = file.mimetype.startsWith('image/');
     let files = new File({
       contentType: mimeTypeCheck ? 'image/png' : file.mimetype,
       source: file.location ? file.location : file.transforms[0].location,
-      size: file.size ? file.size : file.transforms[0].size,
+      size: file.size
+        ? formatBytes(file.size)
+        : formatBytes(file.transforms[0].size),
       key: file.key ? file.key : file.transforms[0].key,
     });
     let { id } = await files.save();
@@ -153,19 +164,28 @@ const checkAndChangeProfile = async (req, res, next) => {
 const deleteAllFiles = async (req, res, next) => {
   try {
     const { video = {}, photos = [{}], thumbnail = {} } = req.post;
-    if (video !== {} && req.body.video !== undefined) {
+    if (
+      (video !== {} && req.body.video !== undefined) ||
+      (video !== undefined && req.url.includes('DELETE'))
+    ) {
       await File.findOneAndDelete({
         key: video.key,
       });
       await deleteFileFromBucket(video);
     }
-    if (thumbnail !== {} && req.body.thumbnail !== undefined) {
+    if (
+      (thumbnail !== {} && req.body.thumbnail !== undefined) ||
+      (thumbnail !== undefined && req.url.includes('DELETE'))
+    ) {
       await File.findOneAndDelete({
         key: thumbnail.key,
       });
       await deleteFileFromBucket(thumbnail);
     }
-    if (photos !== [{}] && req.body.photos !== undefined) {
+    if (
+      (photos !== [{}] && req.body.photos !== undefined) ||
+      (photos !== undefined && req.url.includes('DELETE'))
+    ) {
       for (const key in photos) {
         if (photos.hasOwnProperty(key)) {
           const file = photos[key];
