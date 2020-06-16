@@ -1,4 +1,7 @@
-<title><%=title%> Post</title>
+<title>
+  <%= typeof post!= 'undefined' ? (typeof post.title != 'undefined' ? `Edit -
+  ${post.title}` : '') : 'Create Post' %>
+</title>
 <script src="https://cdn.ckeditor.com/4.11.4/standard/ckeditor.js"></script>
 <%- include('./partials/navbar') %>
 <div class="container card bg-light shadow my-4">

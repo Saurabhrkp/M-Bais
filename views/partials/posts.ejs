@@ -2,43 +2,46 @@
 <div class="row justify-content-center mr-0 ml-2">
   <% for( let i = 0; i < posts.docs.length; i++ ) { const post = posts.docs[i]
   %>
-  <div class="card text-white bg-dark m-3 shadow-lg">
-    <div class="card-body">
-      <h5 class="card-title">
-        <%= post.title %>
-        <span class="bg-danger text-white"> CODE: <%= post.code %></span>
-      </h5>
-      <h6 class="card-subtitle text-muted"><%= post.description %></h6>
-      <h6 class="card-subtitle text-muted mt-2">
-        <% post.tags.forEach(tag => { %>
-        <span class="badge badge-warning"><%= tag %></span>
-        <% });%>
-      </h6>
-    </div>
-    <div class="card-body py-0">
-      <a href="/<%= post.slug %>"
-        ><img
-          class="img-fluid"
-          style="width: 500px;"
-          src="<%= post.thumbnail.source %>"
-          alt="<%= post.thumbnail.key %>"
-      /></a>
-    </div>
-    <div class="card-body">
-      <img
-        src="<%= post.author.avatar.source %>"
-        class="d-inline-block mr-2 rounded-circle"
-        style="width: 40px;"
-        alt="<%= post.author.avatar.key %>"
-      />
-      <a href="/api/<%=post.author.username%>" class="card-link">
-        <span class="text-white"><%= post.author.name %></span></a
-      >
-    </div>
-    <div class="card-footer text-muted">
-      <%= moment(post.publishedDate).fromNow() %>
+  <div class="col-sm-10 col-md-6 col-lg-5">
+    <div class="card text-white bg-dark m-3 shadow-lg">
+      <div class="card-body">
+        <h5 class="card-title">
+          <%= post.title %>
+          <span class="text-info"> CODE: <%= post.code %></span>
+        </h5>
+        <h6 class="card-subtitle text-muted"><%= post.description %></h6>
+        <h6 class="card-subtitle text-muted mt-2">
+          <% post.tags.forEach(tag => { %>
+          <span class="badge-info"><%= tag %></span>
+          <% });%>
+        </h6>
+      </div>
+      <div class="card-body py-0">
+        <a href="/<%= post.slug %>"
+          ><img
+            class="img-fluid"
+            style="width: 500px;"
+            src="<%= post.thumbnail.source %>"
+            alt="<%= post.thumbnail.key %>"
+        /></a>
+      </div>
+      <div class="card-body">
+        <img
+          src="<%= post.author.avatar.source %>"
+          class="d-inline-block mr-2 rounded-circle"
+          style="width: 40px;"
+          alt="<%= post.author.avatar.key %>"
+        />
+        <a href="/api/<%=post.author.username%>" class="card-link">
+          <span class="text-white"><%= post.author.name %></span></a
+        >
+      </div>
+      <div class="card-footer text-muted">
+        <%= moment(post.publishedDate).fromNow() %>
+      </div>
     </div>
   </div>
+
   <% } %>
 </div>
 

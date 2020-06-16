@@ -20,6 +20,27 @@ body,
   padding: 0;
 }
 
+p {
+  margin: 0px;
+  font-size: large;
+}
+
+strong {
+  font-weight: 800;
+}
+
+small {
+  font-size: medium;
+}
+
+blockquote {
+  font-style: italic;
+  font-size: larger;
+  text-align: center;
+  font-weight: 700;
+  padding: 0.5em;
+}
+
 .hero-content {
   height: 100%;
 }
