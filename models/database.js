@@ -2,7 +2,17 @@ const mongoose = require('mongoose');
 const S3 = require('aws-sdk/clients/s3');
 
 // DB Config
-const { mongoURI, config } = require('../bin/keys');
+// const { mongoURI, config } = require('../bin/keys');
+
+const mongoURI = process.env.mongoURI;
+
+// AWS S3 Config
+const config = {
+  region: process.env.region,
+  apiVersion: process.env.apiVersion,
+  accessKeyId: process.env.accessKeyId,
+  secretAccessKey: process.env.secretAccessKey,
+};
 
 // Connect to MongoDB
 mongoose

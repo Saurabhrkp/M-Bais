@@ -9,6 +9,7 @@ const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const expressLayouts = require('express-ejs-layouts');
+require('dotenv').config();
 
 // Creating express app
 const app = express();
