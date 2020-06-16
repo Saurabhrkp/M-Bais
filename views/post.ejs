@@ -5,7 +5,16 @@
 <div class="row justify-content-center mx-auto mt-3">
   <div class="col-sm-12 col-md-11 col-lg-10">
     <div class="card border-light mb-3">
-      <video src="<%= post.video.source %>" class="img-fluid" controls></video>
+      <video
+        class="img-fluid"
+        controls
+        controlsList="nodownload"
+        oncontextmenu="return false;"
+        autoplay
+        preload="auto"
+      >
+        <source src="<%= post.video.source %>" />
+      </video>
       <div class="card-body">
         <h3 class="card-title">
           <%= post.title %>
