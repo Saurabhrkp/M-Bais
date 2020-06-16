@@ -1,8 +1,7 @@
 const User = require('../models/User');
 const Post = require('../models/Post');
 const File = require('../models/File');
-const Comment = require('../models/Comment');
-const { extractTags, deleteFileFromBucket } = require('./controlHelper');
+const { extractTags } = require('./controlHelper');
 const async = require('async');
 
 exports.adminpanel = async (req, res, next) => {
@@ -27,7 +26,7 @@ exports.adminpanel = async (req, res, next) => {
 
 exports.createPost = async (req, res, next) => {
   try {
-    res.render('post-form');
+    res.render('post-form', { title: 'create' });
   } catch (error) {
     next(error);
   }
@@ -53,7 +52,11 @@ exports.savePost = async (req, res, next) => {
 
 exports.sendPostForm = async (req, res, next) => {
   try {
-    res.render('post-form', { post: req.post, user: req.user });
+    res.render('post-form', {
+      title: 'update',
+      post: req.post,
+      user: req.user,
+    });
   } catch (error) {
     next(error);
   }
@@ -92,7 +95,7 @@ exports.updatePost = async (req, res, next) => {
       path: 'author video photos thumbnail',
       select: '_id name avatar source key',
     });
-    res.json(updatedPost);
+    res.redirect(updatedPost.slug);
   } catch (error) {
     next(error);
   }
@@ -104,59 +107,6 @@ exports.deletePost = async (req, res, next) => {
     await User.findOneAndUpdate(req.user.id, { $pull: { posts: _id } });
     const deletedPost = await Post.findOneAndDelete({ _id });
     res.json(deletedPost);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.deleteAllFiles = async (req, res, next) => {
-  try {
-    const { video = {}, photos = [{}] } = req.post;
-    if (video !== {}) {
-      await File.findOneAndDelete({
-        key: video.key,
-      });
-      await deleteFileFromBucket(video);
-    }
-    if (photos !== [{}]) {
-      for (const key in photos) {
-        if (photos.hasOwnProperty(key)) {
-          const file = photos[key];
-          await File.findOneAndDelete({
-            key: file.key,
-          });
-          await deleteFileFromBucket(file);
-        }
-      }
-    }
-    return next();
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.deleteFile = async (req, res, next, file) => {
-  try {
-    await File.findOneAndDelete({
-      _id: file,
-    });
-    let operator, field, data;
-    if (req.url.includes('photos')) {
-      operator = '$pull';
-      field = 'photos';
-      data = file._id;
-    } else {
-      operator = '$unset';
-      field = 'video';
-      data = 1;
-    }
-    await Post.findByIdAndUpdate(
-      { _id: req.post._id },
-      { [operator]: { [field]: [data] } },
-      { new: true, runValidators: true }
-    );
-    await deleteFileFromBucket(file);
-    res.json({ message: `Files deleted: ${file.key}` });
   } catch (error) {
     next(error);
   }
