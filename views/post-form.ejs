@@ -1,15 +1,15 @@
-<title>Make new Post</title>
+<title><%=title%> Post</title>
 <script src="https://cdn.ckeditor.com/4.11.4/standard/ckeditor.js"></script>
 <%- include('./partials/navbar') %>
 <div class="container card bg-light shadow my-4">
   <form
-    action="/admin/create"
+    action="/admin/<%= title == 'update'? `${post.slug}?_method=PUT`: 'create' %>"
     method="POST"
     enctype="multipart/form-data"
     class="row justify-content-center"
   >
     <div class="col p-4">
-      <h1 class="text-center p-2">Create Post</h1>
+      <h1 class="text-center p-2"><%=title%> Post</h1>
       <div class="form-group">
         <label for="title">Title</label>
         <input
@@ -18,7 +18,7 @@
           class="form-control"
           id="title"
           placeholder="Enter Title here"
-          required
+          value="<%= typeof post!= 'undefined' ? (typeof post.title != 'undefined' ? post.title : '') : '' %>"
         />
       </div>
       <div class="form-group">
@@ -29,7 +29,7 @@
           class="form-control"
           id="description"
           placeholder="Enter description here"
-          required
+          value="<%= typeof post!= 'undefined' ? (typeof post.description != 'undefined' ? post.description : '') : ''%>"
         />
       </div>
       <div class="form-group">
@@ -38,10 +38,11 @@
           name="body"
           id="body"
           class="form-control"
-          required
           cols="30"
           rows="10"
-        ></textarea>
+        >
+<%- typeof post!= 'undefined' ? (typeof post.body != 'undefined' ? post.body : '') : '' %></textarea
+        >
       </div>
       <div class="row">
         <div class="form-group col">
@@ -52,7 +53,7 @@
             class="form-control"
             id="code"
             placeholder="Enter Code here"
-            required
+            value="<%= typeof post!= 'undefined' ? (typeof post.code != 'undefined' ? post.code : '') : ''%>"
           />
         </div>
         <div class="form-group col">
@@ -63,7 +64,7 @@
             class="form-control"
             id="tags"
             placeholder="Enter tags here"
-            required
+            value="<%= typeof post!= 'undefined' ? ( typeof post.tags != 'undefined' ? post.tags.join(' ') : ''): '' %>"
           />
         </div>
       </div>
@@ -78,12 +79,28 @@
               name="photos"
               class="custom-file-input"
               id="photos"
-              required
             />
             <label class="custom-file-label" for="photos">Choose Photos</label>
           </div>
         </div>
-        <div class="row justify-content-center" id="preview"></div>
+        <div class="row justify-content-center" id="preview">
+          <% if (typeof post != 'undefined') { %> <% for( let i = 0; i <
+          post.photos.length; i++ ) {%>
+          <div class="col-sm-5 col-md-4 col-lg-3 mb-3">
+            <a
+              data-toggle="lightbox"
+              data-gallery="gallery"
+              href="<%= post.photos[i].source %>"
+            >
+              <img
+                src="<%= post.photos[i].source %>"
+                class="d-block w-100"
+                alt="<%= post.photos[i].key %>"
+              />
+            </a>
+          </div>
+          <% } %> <% } %>
+        </div>
       </div>
       <div class="form-group">
         <label for="video">Video</label>
@@ -95,7 +112,6 @@
               name="video"
               class="custom-file-input"
               id="video"
-              required
             />
             <label class="custom-file-label" for="video">Choose Video</label>
           </div>
@@ -111,20 +127,41 @@
               accept="image/*"
               name="thumbnail"
               class="custom-file-input"
-              required
             />
             <label class="custom-file-label" for="thumbnail"
               >Choose Thumbnail</label
             >
           </div>
         </div>
-        <div class="row justify-content-center" id="thumbnailPreview"></div>
+        <div class="row justify-content-center" id="thumbnailPreview">
+          <% if (typeof post !='undefined') { %>
+          <div class="col-sm-5 col-md-4 col-lg-3 mb-3">
+            <a
+              data-toggle="lightbox"
+              data-gallery="gallery"
+              href="<%= post.thumbnail.source %>"
+            >
+              <img
+                src="<%= post.thumbnail.source %>"
+                class="d-block w-100"
+                alt="<%= post.thumbnail.key %>"
+              />
+            </a>
+          </div>
+          <% } %>
+        </div>
       </div>
       <div class="form-group">
         <button type="submit" class="btn btn-outline-success mr-2">
           Submit
         </button>
-        <button type="reset" class="btn btn-outline-danger">Cancel</button>
+        <button
+          type="reset"
+          class="btn btn-outline-danger"
+          onclick="history.back()"
+        >
+          Cancel
+        </button>
       </div>
     </div>
   </form>
