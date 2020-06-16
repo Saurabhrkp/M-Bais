@@ -59,6 +59,12 @@ router.get(
 );
 
 router.get(
+  '/all/posts',
+  userController.checkAuth,
+  catchErrors(adminController.getPosts)
+);
+
+router.get(
   '/all/files',
   userController.checkAuth,
   catchErrors(adminController.getFiles)
