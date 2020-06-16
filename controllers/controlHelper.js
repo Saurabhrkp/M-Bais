@@ -41,7 +41,7 @@ const upload = Multer({
           cb(null, `${Date.now()}-${file.fieldname}.png`);
         },
         transform: function (req, file, cb) {
-          var options = { height: 600 };
+          let options = { height: 600 };
           if (file.fieldname == 'avatar') {
             options = { height: 200, width: 200 };
           }
@@ -67,14 +67,14 @@ const upload = Multer({
 
 const savingFile = async (file) => {
   try {
-    var mimeTypeCheck = file.mimetype.startsWith('image/');
-    var files = new File({
+    let mimeTypeCheck = file.mimetype.startsWith('image/');
+    let files = new File({
       contentType: mimeTypeCheck ? 'image/png' : file.mimetype,
       source: file.location ? file.location : file.transforms[0].location,
       size: file.size ? file.size : file.transforms[0].size,
       key: file.key ? file.key : file.transforms[0].key,
     });
-    var { id } = await files.save();
+    let { id } = await files.save();
     return Promise.resolve(id);
   } catch (error) {
     return Promise.reject(error);
@@ -96,7 +96,7 @@ const saveFile = async (req, res, next) => {
     for (const key in photos) {
       if (photos.hasOwnProperty(key)) {
         const file = photos[key];
-        var id = await savingFile(file);
+        let id = await savingFile(file);
         arrayOfPhoto.push(id);
       }
     }
@@ -128,14 +128,17 @@ const deleteFileFromBucket = async (file) => {
 };
 
 const extractTags = (string) => {
-  var tags = string.toLowerCase().split(' ');
+  let tags = string.toLowerCase().split(' ');
   return new Array(...tags);
 };
 
 const checkAndChangeProfile = async (req, res, next) => {
   try {
-    const { avatar } = req.user;
-    if (avatar !== undefined && req.body.avatar !== undefined) {
+    const { avatar } = req.profile;
+    if (
+      (avatar !== undefined && req.body.avatar !== undefined) ||
+      (avatar !== undefined && req.url.includes('DELETE'))
+    ) {
       await File.findOneAndDelete({
         key: avatar.key,
       });
@@ -150,19 +153,19 @@ const checkAndChangeProfile = async (req, res, next) => {
 const deleteAllFiles = async (req, res, next) => {
   try {
     const { video = {}, photos = [{}], thumbnail = {} } = req.post;
-    if (video !== {}) {
+    if (video !== {} && req.body.video !== undefined) {
       await File.findOneAndDelete({
         key: video.key,
       });
       await deleteFileFromBucket(video);
     }
-    if (thumbnail !== {}) {
+    if (thumbnail !== {} && req.body.thumbnail !== undefined) {
       await File.findOneAndDelete({
         key: thumbnail.key,
       });
       await deleteFileFromBucket(thumbnail);
     }
-    if (photos !== [{}]) {
+    if (photos !== [{}] && req.body.photos !== undefined) {
       for (const key in photos) {
         if (photos.hasOwnProperty(key)) {
           const file = photos[key];
