@@ -1,0 +1,49 @@
+<title>List of User</title>
+<div class="table-responsive py-5 mb-5">
+  <table class="table table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Avatar</th>
+        <th scope="col">Name</th>
+        <th scope="col">Username</th>
+        <th scope="col">Email</th>
+        <th scope="col">Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for( let i = 0; i < users.length; i++ ) { const user = users[i] %>
+      <tr>
+        <th scope="row"><%=i%></th>
+        <td>
+          <% if (user.avatar != null) { %>
+          <img
+            src="<%= user.avatar.source %>"
+            class="d-inline-block mr-2 rounded-circle"
+            style="width: 40px;"
+            alt="<%= user.avatar.key %>"
+          />
+          <% } else {%>
+          <img
+            src="/img/profile-image.jpg"
+            class="d-inline-block mr-2 rounded-circle"
+            style="width: 40px;"
+            alt="profile-image"
+          />
+          <% }%>
+        </td>
+        <td><%= user.name %></td>
+        <td><a href="/api/<%= user.username%>">@<%= user.username %></a></td>
+        <td><%= user.email %></td>
+        <td>
+          <form action="/api/<%= user.username%>?_method=DELETE" method="POST">
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+              Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>

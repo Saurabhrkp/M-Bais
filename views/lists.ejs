@@ -1,0 +1,8 @@
+<%- include('./partials/navbar') %>
+<div class="container-fluid justify-content-center align-content-center">
+  <% if( typeof users !== 'undefined') { %> <%- include('./partials/list-users')
+  %> <% } else if( typeof posts!== 'undefined'){ %> <%-
+  include('./partials/list-posts') %> <% } else { %> <%-
+  include('./partials/list-files') %> <% } %>
+</div>
+<%- include('./partials/footer.ejs') %>

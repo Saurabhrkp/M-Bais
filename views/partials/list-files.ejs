@@ -1,0 +1,37 @@
+<div class="table-responsive py-5 mb-5">
+  <table class="table table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Source</th>
+        <th scope="col">Content Type</th>
+        <th scope="col">Size</th>
+        <th scope="col">Key</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for( let i = 0; i < files.length; i++ ) { const file = files[i] %>
+      <tr>
+        <th scope="row"><%=i%></th>
+        <td style="width: 20em;">
+          <% if (file.contentType.includes('image/')) { %><a
+            data-toggle="lightbox"
+            data-gallery="gallery"
+            href="<%= file.source %>"
+          >
+            <img src="<%= file.source %>" class="w-50" alt="<%= file.key %>" />
+          </a>
+          <% } else{ %>
+          <a href="<%= file.source %>" target="_blank" rel="noopener noreferrer"
+            >Video</a
+          >
+          <% } %>
+        </td>
+        <td><%= file.contentType %></td>
+        <td><%= file.size %></td>
+        <td><%= file.key %></td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
