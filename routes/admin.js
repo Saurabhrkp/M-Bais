@@ -7,6 +7,7 @@ const {
   catchErrors,
   upload,
   saveFile,
+  deleteAllFiles,
 } = require('../controllers/controlHelper');
 
 /**
@@ -35,7 +36,7 @@ router
   .route('/:slug')
   .delete(
     userController.checkAuth,
-    catchErrors(adminController.deleteAllFiles),
+    catchErrors(deleteAllFiles),
     catchErrors(adminController.deletePost)
   )
   .put(
@@ -46,6 +47,7 @@ router
       { name: 'thumbnail', maxCount: 1 },
     ]),
     catchErrors(saveFile),
+    catchErrors(deleteAllFiles),
     catchErrors(adminController.updatePost)
   )
   .get(userController.checkAuth, catchErrors(adminController.sendPostForm));
@@ -61,9 +63,5 @@ router.get(
   userController.checkAuth,
   catchErrors(adminController.getFiles)
 );
-
-router.delete('/:slug/photos/:file', catchErrors(adminController.deleteFile));
-
-router.delete('/:slug/video/:file', catchErrors(adminController.deleteFile));
 
 module.exports = router;
