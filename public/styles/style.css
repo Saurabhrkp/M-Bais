@@ -19,6 +19,11 @@ strong {
   font-size: large;
 }
 
+td,
+th {
+  font-size: medium;
+}
+
 small {
   font-size: medium;
 }

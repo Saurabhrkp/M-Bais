@@ -19,10 +19,10 @@
       </video>
       <% } %>
       <div class="card-body">
-        <h3 class="card-title">
+        <p class="card-title" style="font-size: x-large; font-weight: bolder;">
           <%= post.title %>
           <span class="text-info"><%= post.code %></span>
-        </h3>
+        </p>
         <p class="card-subtitle mb-1"><%= post.description %></p>
         <div class="float-right">
           <%- include('./partials/save') %> <%- include('./partials/like') %>

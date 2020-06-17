@@ -23,9 +23,13 @@
             <img src="<%= file.source %>" class="w-50" alt="<%= file.key %>" />
           </a>
           <% } else{ %>
-          <a href="<%= file.source %>" target="_blank" rel="noopener noreferrer"
-            >Video</a
+          <a
+            data-toggle="lightbox"
+            data-gallery="gallery"
+            href="/img/video.gif"
           >
+            <img src="/img/video.gif" class="w-50" alt="<%= file.key %>" />
+          </a>
           <% } %>
         </td>
         <td><%= file.contentType %></td>

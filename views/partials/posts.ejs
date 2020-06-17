@@ -7,10 +7,10 @@
     class="card text-white bg-dark m-3 p-0 shadow-lg col-sm-10 col-md-5 col-lg-4"
   >
     <div class="card-body">
-      <h5 class="card-title">
+      <p class="card-title">
         <%= post.metaTitle %>
         <span class="text-info"> CODE: <%= post.code %></span>
-      </h5>
+      </p>
       <h6 class="card-subtitle text-muted"><%= post.metaDescription %></h6>
       <h6 class="card-subtitle text-muted mt-2">
         <% post.tags.forEach(tag => { %>
