@@ -9,6 +9,8 @@ const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const expressLayouts = require('express-ejs-layouts');
+const compression = require('compression');
+const helmet = require('helmet');
 require('dotenv').config();
 
 // Creating express app
@@ -46,6 +48,12 @@ app.use(bodyParser.json());
 
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
+
+//  Protects app from some well-known web vulnerabilities
+app.use(helmet());
+
+// Compress all routes
+app.use(compression());
 
 // Moment Locals
 app.locals.moment = require('moment');
