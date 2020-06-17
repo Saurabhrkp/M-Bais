@@ -34,13 +34,9 @@
         </td>
         <td><%= user.name %></td>
         <td><a href="/api/<%= user.username%>">@<%= user.username %></a></td>
-        <td><%= user.email %></td>
+        <td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
         <td>
-          <form action="/api/<%= user.username%>?_method=DELETE" method="POST">
-            <button type="submit" class="btn btn-outline-danger btn-sm">
-              Delete
-            </button>
-          </form>
+          <%- include('./user-delete-modal', {username:user.username}) %>
         </td>
       </tr>
       <% } %>

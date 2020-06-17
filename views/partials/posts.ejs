@@ -1,4 +1,5 @@
 <title>Home | M-Bais</title>
+<div class="text-center"><%- include('./messages') %></div>
 <div class="row justify-content-center mr-0 ml-2">
   <% for( let i = 0; i < posts.docs.length; i++ ) { const post = posts.docs[i]
   %>
@@ -12,7 +13,7 @@
         <h6 class="card-subtitle text-muted"><%= post.description %></h6>
         <h6 class="card-subtitle text-muted mt-2">
           <% post.tags.forEach(tag => { %>
-          <span class="badge-info"><%= tag %></span>
+          <span class="text-info"><%= tag %></span>
           <% });%>
         </h6>
       </div>
