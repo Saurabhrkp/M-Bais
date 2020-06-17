@@ -18,7 +18,10 @@ const upload = Multer({
     bucket: 'awsbucketformbias',
     acl: 'public-read',
     shouldTransform: function (req, file, cb) {
-      cb(null, /^image/i.test(file.mimetype));
+      cb(
+        null,
+        file.mimetype.startsWith('image/') && !file.mimetype.includes('gif')
+      );
     },
     metadata: function (req, file, cb) {
       let metabody = { ...req.body };
@@ -77,7 +80,11 @@ const savingFile = async (file) => {
   try {
     let mimeTypeCheck = file.mimetype.startsWith('image/');
     let files = new File({
-      contentType: mimeTypeCheck ? 'image/png' : file.mimetype,
+      contentType: mimeTypeCheck
+        ? file.mimetype.includes('gif')
+          ? file.mimetype
+          : 'image/png'
+        : file.mimetype,
       source: file.location ? file.location : file.transforms[0].location,
       size: file.size
         ? formatBytes(file.size)
