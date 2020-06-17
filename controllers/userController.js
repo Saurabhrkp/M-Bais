@@ -1,7 +1,6 @@
 // Loading models
 const User = require('../models/User');
 const Post = require('../models/Post');
-const File = require('../models/File');
 const Comment = require('../models/Comment');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
@@ -152,8 +151,10 @@ exports.toggleSavedPost = async (req, res, next) => {
     const postId = req.post._id.toString();
     if (savedIds.includes(postId)) {
       await user.saved.pull(postId);
+      req.flash('success_msg', `Removed from saved post: ${req.post.title}`);
     } else {
       await user.saved.push(postId);
+      req.flash('success_msg', `Added to saved post: ${req.post.title}`);
     }
     await user.save();
     res.redirect(`/${req.post.slug}`);
@@ -170,6 +171,7 @@ exports.updateUser = async (req, res, next) => {
       { $set: req.body },
       { new: true, runValidators: true }
     );
+    req.flash('success_msg', 'Your Account is updated');
     res.redirect(`/api/${req.user.username}`);
   } catch (error) {
     next(error);

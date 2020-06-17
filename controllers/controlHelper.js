@@ -3,7 +3,6 @@ const File = require('../models/File');
 const Multer = require('multer');
 const multerS3 = require('multer-s3-transform');
 const sharp = require('sharp');
-const async = require('async');
 
 /* Error handler for async / await functions */
 const catchErrors = (fn) => {
@@ -124,10 +123,6 @@ const saveFile = async (req, res, next) => {
   return next();
 };
 
-const escapeRegex = (text) => {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-};
-
 const deleteFileFromBucket = async (file) => {
   try {
     return await bucket
@@ -203,7 +198,6 @@ const deleteAllFiles = async (req, res, next) => {
 };
 
 module.exports = {
-  escapeRegex,
   catchErrors,
   upload,
   saveFile,

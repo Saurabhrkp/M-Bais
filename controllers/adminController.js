@@ -94,16 +94,13 @@ exports.updatePost = async (req, res, next) => {
   try {
     req.body.publishedDate = new Date().toISOString();
     req.body.tags = extractTags(req.body.tagString);
-    const updatedPost = await Post.findOneAndUpdate(
+    await Post.findOneAndUpdate(
       { _id: req.post._id },
       { $set: req.body },
       { new: true, runValidators: true }
     );
-    await Post.populate(updatedPost, {
-      path: 'author video photos thumbnail',
-      select: '_id name avatar source key',
-    });
-    res.redirect(updatedPost.slug);
+    req.flash('success_msg', `${req.post.title} updated`);
+    res.redirect(`${req.post.slug}`);
   } catch (error) {
     next(error);
   }
@@ -126,6 +123,7 @@ exports.deletePost = async (req, res, next) => {
       await Comment.findByIdAndDelete(comment);
     };
     await async.each(result.post.comments, deleteRefrence);
+    req.flash('success_msg', `Deleted ${req.post.tilte}`);
     res.redirect('/admin/panel');
   } catch (error) {
     next(error);
