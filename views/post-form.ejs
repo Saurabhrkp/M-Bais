@@ -18,25 +18,18 @@
       <h1 class="text-center p-2"><%=title%> Post</h1>
       <div class="form-group">
         <label for="title">Title</label>
-        <input
-          type="text"
-          name="title"
-          class="form-control"
-          id="title"
-          placeholder="Enter Title here"
-          value="<%= typeof post!= 'undefined' ? (typeof post.title != 'undefined' ? post.title : '') : '' %>"
-        />
+        <input type="text" name="title" class="form-control" id="title"
+        placeholder="Enter Title here" value="<%= typeof post!= 'undefined' ?
+        (typeof post.title != 'undefined' ? post.title : '') : '' %>" <%= typeof
+        post!= 'undefined' ? '' : 'required' %> />
       </div>
       <div class="form-group">
         <label for="description">Description</label>
-        <input
-          type="text"
-          name="description"
-          class="form-control"
-          id="description"
-          placeholder="Enter description here"
-          value="<%= typeof post!= 'undefined' ? (typeof post.description != 'undefined' ? post.description : '') : ''%>"
-        />
+        <input type="text" name="description" class="form-control"
+        id="description" placeholder="Enter description here" value="<%= typeof
+        post!= 'undefined' ? (typeof post.description != 'undefined' ?
+        post.description : '') : ''%>" <%= typeof post!= 'undefined' ? '' :
+        'required' %> />
       </div>
       <div class="form-group">
         <label for="body">Body</label>
@@ -52,40 +45,27 @@
       </div>
       <div class="row">
         <div class="form-group col">
-          <label for="code">Code</label
-          ><input
-            type="text"
-            name="code"
-            class="form-control"
-            id="code"
-            placeholder="Enter Code here"
-            value="<%= typeof post!= 'undefined' ? (typeof post.code != 'undefined' ? post.code : '') : ''%>"
-          />
+          <label for="code">Code</label><input type="text" name="code"
+          class="form-control" id="code" placeholder="Enter Code here"
+          value="<%= typeof post!= 'undefined' ? (typeof post.code !=
+          'undefined' ? post.code : '') : ''%>" <%= typeof post!= 'undefined' ?
+          '' : 'required' %> />
         </div>
         <div class="form-group col">
           <label for="tags">Tags</label>
-          <input
-            type="text"
-            name="tagString"
-            class="form-control"
-            id="tags"
-            placeholder="Enter tags here"
-            value="<%= typeof post!= 'undefined' ? ( typeof post.tags != 'undefined' ? post.tags.join(' ') : ''): '' %>"
-          />
+          <input type="text" name="tagString" class="form-control" id="tags"
+          placeholder="Enter tags here" value="<%= typeof post!= 'undefined' ? (
+          typeof post.tags != 'undefined' ? post.tags.join(' ') : ''): '' %>"
+          <%= typeof post!= 'undefined' ? '' : 'required' %> />
         </div>
       </div>
       <div class="form-group">
         <label for="photos">Photos</label>
         <div class="input-group mb-3">
           <div class="custom-file">
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              name="photos"
-              class="custom-file-input"
-              id="photos"
-            />
+            <input type="file" multiple accept="image/*" name="photos"
+            class="custom-file-input" id="photos" <%= typeof post!= 'undefined'
+            ? '' : 'required' %> />
             <label class="custom-file-label" for="photos">Choose Photos</label>
           </div>
         </div>
@@ -112,13 +92,9 @@
         <label for="video">Video</label>
         <div class="input-group mb-3">
           <div class="custom-file">
-            <input
-              type="file"
-              accept="video/*"
-              name="video"
-              class="custom-file-input"
-              id="video"
-            />
+            <input type="file" accept="video/*" name="video"
+            class="custom-file-input" id="video" <%= typeof post!= 'undefined' ?
+            '' : 'required' %> />
             <label class="custom-file-label" for="video">Choose Video</label>
           </div>
         </div>
@@ -127,13 +103,9 @@
         <label for="thumbnail">Thumbnail</label>
         <div class="input-group mb-3">
           <div class="custom-file">
-            <input
-              id="thumbnail"
-              type="file"
-              accept="image/*"
-              name="thumbnail"
-              class="custom-file-input"
-            />
+            <input id="thumbnail" type="file" accept="image/*" name="thumbnail"
+            class="custom-file-input" <%= typeof post!= 'undefined' ? '' :
+            'required' %> />
             <label class="custom-file-label" for="thumbnail"
               >Choose Thumbnail</label
             >

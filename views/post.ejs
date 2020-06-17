@@ -6,6 +6,7 @@
   <div class="col-sm-12 col-md-11 col-lg-10">
     <div class="text-center"><%- include('./partials/messages') %></div>
     <div class="card border-light mb-3">
+      <% if (post.video) { %>
       <video
         class="img-fluid"
         controls
@@ -16,6 +17,7 @@
       >
         <source src="<%= post.video.source %>" />
       </video>
+      <% } %>
       <div class="card-body">
         <h3 class="card-title">
           <%= post.title %>

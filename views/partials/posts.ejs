@@ -4,13 +4,13 @@
   <% for( let i = 0; i < posts.docs.length; i++ ) { const post = posts.docs[i]
   %>
   <div class="col-sm-10 col-md-6 col-lg-5">
-    <div class="card text-white bg-dark m-3 shadow-lg">
+    <div class="card text-white bg-dark m-3 shadow-lg" style="height: 600px;">
       <div class="card-body">
         <h5 class="card-title">
-          <%= post.title %>
+          <%= post.metaTitle %>
           <span class="text-info"> CODE: <%= post.code %></span>
         </h5>
-        <h6 class="card-subtitle text-muted"><%= post.description %></h6>
+        <h6 class="card-subtitle text-muted"><%= post.metaDescription %></h6>
         <h6 class="card-subtitle text-muted mt-2">
           <% post.tags.forEach(tag => { %>
           <span class="text-info"><%= tag %></span>
@@ -21,7 +21,6 @@
         <a href="/<%= post.slug %>"
           ><img
             class="img-fluid"
-            style="width: 500px;"
             src="<%= post.thumbnail.source %>"
             alt="<%= post.thumbnail.key %>"
         /></a>

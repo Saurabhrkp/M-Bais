@@ -37,7 +37,7 @@ PostSchema.virtual('metaTitle').get(function () {
 // Virtual for this metaDescription.
 PostSchema.virtual('metaDescription').get(function () {
   return this.description.length > 50
-    ? this.description.substr(0, 60) + '...'
+    ? this.description.substr(0, 50) + '...'
     : this.description;
 });
 
