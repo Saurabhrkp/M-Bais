@@ -4,6 +4,9 @@
 </title>
 <script src="https://cdn.ckeditor.com/4.11.4/standard/ckeditor.js"></script>
 <%- include('./partials/navbar') %>
+<div class="text-center">
+  <%- include('./partials/messages') %>
+</div>
 <div class="container card bg-light shadow my-4">
   <form
     action="/admin/<%= title == 'update'? `${post.slug}?_method=PUT`: 'create' %>"
