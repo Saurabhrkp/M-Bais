@@ -5,21 +5,6 @@ body,
   padding: 0;
 }
 
-/* particles.js */
-
-#particles-js {
-  position: absolute;
-  width: 100%;
-  max-height: 100%;
-  background-image: linear-gradient(
-    rgb(3, 0, 190),
-    rgb(104, 0, 136),
-    rgb(136, 0, 91)
-  );
-  margin: 0;
-  padding: 0;
-}
-
 p {
   margin: 0px;
   font-size: large;
@@ -46,113 +31,12 @@ blockquote {
   padding: 0.5em;
 }
 
-.hero-content {
-  height: 100%;
-}
-
-.hero-banner {
-  position: relative;
-  overflow: hidden;
-  max-width: 100%;
-  padding: 20px;
-}
-
-.heroText {
-  position: relative;
-  overflow: hidden;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  background-color: #ffffff;
-  border: solid 2px rgb(196, 196, 196);
-  border-radius: 10px;
-  padding: 20px;
-}
-
-@media screen and (max-width: 600px) {
-  .heroText {
-    font-size: 20px;
-  }
-}
-
-.info {
-  background-color: #ffffff;
-  display: inline-block;
-}
-
-.info-content div span {
-  font-size: 35px;
-}
-
-.info-content div p {
-  float: left;
-  font-size: 30px;
-  padding: 20px;
-}
-
-@media screen and (max-width: 600px) {
-  .info-content div p {
-    font-size: 20px;
-  }
-}
-
-div .clear {
-  clear: both;
-}
-
+.hero-content,
 .vision-banner {
+  height: 100%;
   background-image: linear-gradient(
     rgb(3, 0, 190),
     rgb(104, 0, 136),
     rgb(136, 0, 91)
   );
-  display: inline-block;
-}
-
-.vision-content div span {
-  font-size: 35px;
-}
-
-.vision-content div p {
-  color: #ffffff;
-  font-size: 30px;
-  padding: 20px;
-  margin: 0;
-}
-
-@media screen and (max-width: 600px) {
-  .vision-content div p {
-    font-size: 20px;
-  }
-}
-
-.smart-banner {
-  background-color: #ffffff;
-  display: inline-block;
-}
-
-.smart-content span {
-  font-size: 35px;
-}
-
-.smart-content p {
-  font-size: 30px;
-  padding: 25px;
-}
-
-@media screen and (max-width: 600px) {
-  .smart-content p {
-    font-size: 20px;
-  }
-}
-
-.smart-pic {
-  padding: 20px;
-  height: 400px;
-  width: 600px;
-}
-
-@media screen and (max-width: 600px) {
-  .smart-pic {
-    width: 100%;
-    height: 100%;
-  }
 }
