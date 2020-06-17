@@ -31,13 +31,13 @@ const PostSchema = new Schema(
 
 // Virtual for this metaTitle.
 PostSchema.virtual('metaTitle').get(function () {
-  return this.title.length > 30 ? this.title.substr(0, 30) + '...' : this.title;
+  return this.title.length > 50 ? this.title.substr(0, 50) + '...' : this.title;
 });
 
 // Virtual for this metaDescription.
 PostSchema.virtual('metaDescription').get(function () {
-  return this.description.length > 50
-    ? this.description.substr(0, 50) + '...'
+  return this.description.length > 70
+    ? this.description.substr(0, 70) + '...'
     : this.description;
 });
 
