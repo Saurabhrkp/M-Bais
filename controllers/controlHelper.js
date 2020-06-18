@@ -163,6 +163,19 @@ const checkAndChangeProfile = async (req, res, next) => {
   }
 };
 
+const deleteFileReference = async (file) => {
+  await async.parallel([
+    (callback) => {
+      File.findOneAndDelete({
+        key: file.key,
+      }).exec(callback);
+    },
+    async () => {
+      await deleteFileFromBucket(file);
+    },
+  ]);
+};
+
 const deleteAllFiles = async (req, res, next) => {
   try {
     const { video = {}, photos = [{}], thumbnail = {} } = req.post;
