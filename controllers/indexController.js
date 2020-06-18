@@ -5,7 +5,14 @@ const Comment = require('../models/Comment');
 exports.getPostBySlug = async (req, res, next, slug) => {
   try {
     req.post = await Post.findOne({ slug: slug });
-    next();
+    if (req.post !== null) {
+      return next();
+    }
+    req.flash(
+      'error_msg',
+      `No Video with slug: ${slug}, may be because slug is incorrect or modified`
+    );
+    res.redirect('/');
   } catch (error) {
     next(error);
   }
