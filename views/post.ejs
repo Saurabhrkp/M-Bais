@@ -13,6 +13,8 @@
         controlsList="nodownload"
         oncontextmenu="return false;"
         playsinline
+        muted
+        poster="<%= post.thumbnail.source %>"
       >
         <source type="video/mp4" src="<%= post.video.source %>" />
       </video>
