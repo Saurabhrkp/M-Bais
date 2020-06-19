@@ -9,12 +9,12 @@
       <% if (post.video) { %>
       <video
         class="img-fluid"
-        controls
+        controls="true"
         controlsList="nodownload"
         oncontextmenu="return false;"
         playsinline
       >
-        <source src="<%= post.video.source %>" />
+        <source type="video/mp4" src="<%= post.video.source %>" />
       </video>
       <% } %>
       <div class="card-body">
