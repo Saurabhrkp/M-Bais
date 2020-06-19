@@ -6,6 +6,8 @@ importScripts(
 
 const CACHE = 'pwabuilder-adv-cache';
 
+workbox.setConfig({ debug: false });
+
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
@@ -15,8 +17,6 @@ self.addEventListener('message', (event) => {
 const networkFirstPaths = [
   /* Add an array of regex of paths that should go network first */
   // Example: /\/api\/.*/
-  /\/styles\/.*/,
-  /\/js\/.*/,
   /\/icon\/.*/,
   /\/img\/.*/,
   /.*\.css/,
@@ -32,7 +32,7 @@ const networkOnlyPaths = [
 networkFirstPaths.forEach((path) => {
   workbox.routing.registerRoute(
     new RegExp(path),
-    new workbox.strategies.NetworkFirst({
+    new workbox.strategies.CacheFirst({
       cacheName: CACHE,
     })
   );
