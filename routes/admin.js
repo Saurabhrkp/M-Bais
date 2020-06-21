@@ -16,11 +16,15 @@ const {
 
 router.param('slug', indexController.getPostBySlug);
 
-router.get('/panel', userController.checkAuth, adminController.adminpanel);
+router.get(
+  '/panel',
+  userController.checkAuth,
+  catchErrors(adminController.adminpanel)
+);
 
 router
   .route('/create')
-  .get(userController.checkAuth, catchErrors(adminController.createPost))
+  .get(userController.checkAuth, adminController.createPost)
   .post(
     userController.checkAuth,
     upload.fields([
@@ -50,7 +54,7 @@ router
     catchErrors(deleteAllFiles),
     catchErrors(adminController.updatePost)
   )
-  .get(userController.checkAuth, catchErrors(adminController.sendPostForm));
+  .get(userController.checkAuth, adminController.sendPostForm);
 
 router.get(
   '/all/users',

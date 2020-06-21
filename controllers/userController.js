@@ -74,18 +74,14 @@ exports.validateSignup = async (req, res, next) => {
 };
 
 exports.signup = async (req, res, next) => {
-  try {
-    const { name, email, password, username } = req.body;
-    const user = await new User({ name, email, username, password });
-    let salt = await bcrypt.genSalt(10);
-    let hash = await bcrypt.hash(user.password, salt);
-    user.password = hash;
-    await user.save();
-    req.flash('success_msg', 'You are now registered and can log in');
-    res.redirect('/api/signin');
-  } catch (error) {
-    next(error);
-  }
+  const { name, email, password, username } = req.body;
+  const user = await new User({ name, email, username, password });
+  let salt = await bcrypt.genSalt(10);
+  let hash = await bcrypt.hash(user.password, salt);
+  user.password = hash;
+  await user.save();
+  req.flash('success_msg', 'You are now registered and can log in');
+  res.redirect('/api/signin');
 };
 
 exports.get_signin = (req, res) => {
@@ -145,67 +141,55 @@ exports.getUserByUsername = async (req, res, next, username) => {
 };
 
 exports.toggleSavedPost = async (req, res, next) => {
-  try {
-    const user = await User.findOne({ _id: req.user.id });
-    const savedIds = user.saved.map((id) => id.toString());
-    const postId = req.post._id.toString();
-    if (savedIds.includes(postId)) {
-      await user.saved.pull(postId);
-      req.flash('success_msg', `Removed from saved post: ${req.post.title}`);
-    } else {
-      await user.saved.push(postId);
-      req.flash('success_msg', `Added to saved post: ${req.post.title}`);
-    }
-    await user.save();
-    res.redirect(`/${req.post.slug}`);
-  } catch (error) {
-    next(error);
+  const user = await User.findOne({ _id: req.user.id });
+  const savedIds = user.saved.map((id) => id.toString());
+  const postId = req.post._id.toString();
+  if (savedIds.includes(postId)) {
+    await user.saved.pull(postId);
+    req.flash('success_msg', `Removed from saved post: ${req.post.title}`);
+  } else {
+    await user.saved.push(postId);
+    req.flash('success_msg', `Added to saved post: ${req.post.title}`);
   }
+  await user.save();
+  res.redirect(`/${req.post.slug}`);
 };
 
 exports.updateUser = async (req, res, next) => {
-  try {
-    req.body.updatedAt = new Date().toISOString();
-    await User.findOneAndUpdate(
-      { _id: req.user._id },
-      { $set: req.body },
-      { new: true, runValidators: true }
-    );
-    req.flash('success_msg', 'Your Account is updated');
-    res.redirect(`/api/${req.user.username}`);
-  } catch (error) {
-    next(error);
-  }
+  req.body.updatedAt = new Date().toISOString();
+  await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $set: req.body },
+    { new: true, runValidators: true }
+  );
+  req.flash('success_msg', 'Your Account is updated');
+  res.redirect(`/api/${req.user.username}`);
 };
 
 exports.deleteUser = async (req, res, next) => {
-  try {
-    await async.parallel([
-      (callback) => {
-        User.findByIdAndDelete(req.profile._id).exec(callback);
-      },
-      (callback) => {
-        Post.updateMany(
-          { likes: { $in: [req.profile._id] } },
-          { $pull: { likes: req.profile._id } }
-        ).exec(callback);
-      },
-    ]);
-    const results = await async.parallel({
-      comments: (callback) => {
-        Comment.find({ postedBy: req.profile._id }).exec(callback);
-      },
-    });
-    const deleteRefrence = async (comment) => {
-      await Comment.findByIdAndDelete(comment._id);
-      await Post.findOneAndUpdate(
-        { comments: { $in: [comment._id] } },
-        { $pull: { comments: comment._id } }
-      );
-    };
-    await async.each(results.comments, deleteRefrence);
-    res.redirect('/api/signout');
-  } catch (error) {
-    next(error);
-  }
+  await async.parallel([
+    (callback) => {
+      User.findByIdAndDelete(req.profile._id).exec(callback);
+    },
+    (callback) => {
+      Post.updateMany(
+        { likes: { $in: [req.profile._id] } },
+        { $pull: { likes: req.profile._id } }
+      ).exec(callback);
+    },
+  ]);
+  const results = await async.parallel({
+    comments: (callback) => {
+      Comment.find({ postedBy: req.profile._id }).exec(callback);
+    },
+  });
+  const deleteRefrence = async (comment) => {
+    await Comment.findByIdAndDelete(comment._id);
+    await Post.findOneAndUpdate(
+      { comments: { $in: [comment._id] } },
+      { $pull: { comments: comment._id } }
+    );
+  };
+  await async.each(results.comments, deleteRefrence);
+  res.redirect('/api/signout');
 };

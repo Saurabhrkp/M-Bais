@@ -16,7 +16,7 @@ const catchErrors = (fn) => {
 const upload = Multer({
   storage: multerS3({
     s3: bucket,
-    bucket: 'awsbucketformbias',
+    bucket: process.env.bucketName,
     acl: 'public-read',
     shouldTransform: function (req, file, cb) {
       cb(
@@ -144,7 +144,7 @@ const saveFile = async (req, res, next) => {
 const deleteFileFromBucket = async (file) => {
   try {
     return await bucket
-      .deleteObject({ Bucket: 'awsbucketformbias', Key: file.key })
+      .deleteObject({ Bucket: process.env.bucketName, Key: file.key })
       .promise();
   } catch (error) {
     return Promise.reject(error);
@@ -157,18 +157,14 @@ const extractTags = (string) => {
 };
 
 const checkAndChangeProfile = async (req, res, next) => {
-  try {
-    const { avatar } = req.profile;
-    if (
-      (avatar !== undefined && req.body.avatar !== undefined) ||
-      (avatar !== undefined && req.url.includes('DELETE'))
-    ) {
-      await deleteFileReference(avatar);
-    }
-    return next();
-  } catch (error) {
-    next(error);
+  const { avatar } = req.profile;
+  if (
+    (avatar !== undefined && req.body.avatar !== undefined) ||
+    (avatar !== undefined && req.url.includes('DELETE'))
+  ) {
+    await deleteFileReference(avatar);
   }
+  return next();
 };
 
 const deleteFileReference = async (file) => {
@@ -185,32 +181,28 @@ const deleteFileReference = async (file) => {
 };
 
 const deleteAllFiles = async (req, res, next) => {
-  try {
-    const { video, photos, thumbnail } = req.post;
-    await async.parallel([
-      async () => {
-        if (req.body.video !== undefined || req.url.includes('DELETE')) {
-          await deleteFileReference(video);
-        }
-        return;
-      },
-      async () => {
-        if (req.body.thumbnail !== undefined || req.url.includes('DELETE')) {
-          await deleteFileReference(thumbnail);
-        }
-        return;
-      },
-      async () => {
-        if (req.body.photos !== undefined || req.url.includes('DELETE')) {
-          await async.each(photos, deleteFileReference);
-        }
-        return;
-      },
-    ]);
-    return next();
-  } catch (error) {
-    next(error);
-  }
+  const { video, photos, thumbnail } = req.post;
+  await async.parallel([
+    async () => {
+      if (req.body.video !== undefined || req.url.includes('DELETE')) {
+        await deleteFileReference(video);
+      }
+      return;
+    },
+    async () => {
+      if (req.body.thumbnail !== undefined || req.url.includes('DELETE')) {
+        await deleteFileReference(thumbnail);
+      }
+      return;
+    },
+    async () => {
+      if (req.body.photos !== undefined || req.url.includes('DELETE')) {
+        await async.each(photos, deleteFileReference);
+      }
+      return;
+    },
+  ]);
+  return next();
 };
 
 module.exports = {

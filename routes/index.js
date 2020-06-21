@@ -51,11 +51,9 @@ router.post(
   '/search',
   userController.checkAuth,
   catchErrors(indexController.searchPost),
-  catchErrors(indexController.sendPost)
+  indexController.sendPost
 );
 
-router
-  .route('/:slug')
-  .get(userController.checkAuth, catchErrors(indexController.sendPost));
+router.route('/:slug').get(userController.checkAuth, indexController.sendPost);
 
 module.exports = router;
