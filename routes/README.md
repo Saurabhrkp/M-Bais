@@ -6,7 +6,8 @@ Handles and chains all middleware calls for routes.
 
 ---
 **In app.js this folder is called.**
-```
+
+```js
 // Calling routes
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users');
@@ -14,7 +15,8 @@ const adminRouter = require('./routes/admin');
 
 ```
 Assigned to variables then [*pass as options to Express app*](https://expressjs.com/en/4x/api.html#app.use).
-```
+
+```js
 // Routes
 app.use('/', indexRouter);
 app.use('/api', userRouter);
@@ -48,19 +50,19 @@ Handles requests for  ``` /* ```
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` / ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method) is handled here. Four Post on each page and with pagination, using query for next page.
 
-```
+```js
 router.get('/', catchErrors(indexController.getPosts));
 ```
 
 - ```:slug``` is [*param*](https://expressjs.com/en/4x/api.html#router.param) and gets the post with this slug and pass on to next middleware.
 
-```
+```js
 router.param('slug', indexController.getPostBySlug);
 ```
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /:slug/like ``` and ``` /:slug/unlike ``` of [*PUT*](https://expressjs.com/en/4x/api.html#app.put.method) is handled here. This route is to Like and Unlike post.
 
-```
+```js
 router.put(
   '/:slug/like',
   userController.checkAuth,
@@ -76,7 +78,7 @@ router.put(
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /:slug/comment ``` and ``` /:slug/uncomment ``` of [*PUT*](https://expressjs.com/en/4x/api.html#app.put.method) is handled here. This route is to Comment and Uncomment post.
 
-```
+```js
 router.put(
   '/:slug/comment',
   userController.checkAuth,
@@ -92,7 +94,7 @@ router.put(
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /:slug/save ``` and ``` /:slug/remove ``` of [*PUT*](https://expressjs.com/en/4x/api.html#app.put.method) is handled here. This route is to Save and Remove post.
 
-```
+```js
 router.put(
   '/:slug/save',
   userController.checkAuth,
@@ -108,7 +110,7 @@ router.put(
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /search ``` of [*POST*](https://expressjs.com/en/4x/api.html#app.post.method) are handled here. To searchs post based on code.
 
-```
+```js
 router.post(
   '/search',
   userController.checkAuth,
@@ -119,7 +121,7 @@ router.post(
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /:slug ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method) are handled here. ``` /:slug ``` params runs middleware to get post with slug and renders Post page.
 
-```
+```js
 router
   .route('/:slug')
   .get(userController.checkAuth, catchErrors(indexController.sendPost));
@@ -132,7 +134,7 @@ Handles requests for  ``` /api/* ```
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /signup ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method) and [*POST*](https://expressjs.com/en/4x/api.html#app.post.method) are handled here. Gets the sign up page and signs up users by post request to route.
 
-```
+```js
 router
   .route('/signup')
   .get(userController.get_signup)
@@ -141,7 +143,7 @@ router
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /login ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method) and [*POST*](https://expressjs.com/en/4x/api.html#app.post.method) are handled here. Gets the Login page and logs in users by post request to route.
 
-```
+```js
 // Login
 router
   .route('/signin')
@@ -151,20 +153,20 @@ router
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /signout ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method) is handled here. Sign out the user, redirects to homepage.
 
-```
+```js
 // Logout
 router.get('/signout', userController.signout);
 ```
 
 - ```:username``` is [*param*](https://expressjs.com/en/4x/api.html#router.param) and this will get user from database with username.
 
-```
+```js
 router.param('username', userController.getUserByUsername);
 ```
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /:username ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method), [*PUT*](https://expressjs.com/en/4x/api.html#app.put.method), [*DELETE*](https://expressjs.com/en/4x/api.html#app.delete.method) is handled here. This routes gets profile pages with user from username, Update profile, and Delete Profile. Can upload profile photo.
 
-```
+```js
 router
   .route('/:username')
   .get(userController.checkAuth, userController.getAuthUser)
@@ -190,19 +192,19 @@ Handles requests for  ``` /admin/* ```
 
 - ```:slug``` is [*param*](https://expressjs.com/en/4x/api.html#router.param) and gets the post with this slug and pass on to next middleware.
 
-```
+```js
 router.param('slug', indexController.getPostBySlug);
 ```
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /panel ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method) is handled here. This gets the Admin Panel.
 
-```
+```js
 router.get('/panel', userController.checkAuth, adminController.adminpanel);
 ```
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /create ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method) and [*POST*](https://expressjs.com/en/4x/api.html#app.post.method) are handled here. Gets the create post page and creates new post by POST request to route. With one video, at most 6 photos and one thumbnail.
 
-```
+```js
 router
   .route('/create')
   .get(userController.checkAuth, catchErrors(adminController.createPost))
@@ -220,7 +222,7 @@ router
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /:slug ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method), [*PUT*](https://expressjs.com/en/4x/api.html#app.put.method), [*DELETE*](https://expressjs.com/en/4x/api.html#app.delete.method) is handled here. This routes gets post pages with post from slug, Update post, and Delete post. Can update video, photos and thumbnail.
 
-```
+```js
 router
   .route('/:slug')
   .delete(
@@ -244,7 +246,7 @@ router
 
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /all/users ```, ``` /all/posts ``` and ``` /all/files ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method) are handled here. This all route get all list of users, posts, and files.
 
-```
+```js
 router.get(
   '/all/users',
   userController.checkAuth,

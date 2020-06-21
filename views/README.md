@@ -4,7 +4,7 @@
 
 View is what is presented to the user. Views utilize the Model and present data in a form in which the user wants. A user can also be allowed to make changes to the data presented to the user. They consist of static and dynamic pages which are rendered or sent to the user when the user requests them.
 
-[*EJS*](https://ejs.co/) is used for view engine.
+[*EJS*](https://ejs.co/) is used for [*view engine or template engine*](https://expressjs.com/en/guide/using-template-engines.html).
 
 **What is EJS?**
 
@@ -28,7 +28,7 @@ Includes are relative to the template with the include call. (This requires the 
 
 You'll likely want to use the raw output tag (<%-) with your include to avoid double-escaping the HTML output.
 
-```
+```html
 <div class="list-group">
   <%- include('./partials/add-comment') %>
   <% const comments = post.comments.reverse() %>
