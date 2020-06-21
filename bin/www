@@ -5,7 +5,7 @@
  */
 
 let app = require('../app');
-let debug = require('debug')('dharvesh:server');
+let debug = require('debug')('mbias:server');
 let http = require('http');
 
 /**
