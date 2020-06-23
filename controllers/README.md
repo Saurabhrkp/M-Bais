@@ -524,3 +524,263 @@ Destroys the session and will unset the req.session property. Once complete, the
     res.redirect('/admin/panel');
   };
   ```
+
+---
+
+# [***controlHelper.js***](https://github.com/Saurabhrkp/M-Bias/blob/master/controllers/controlHelper.js)
+
+- [*catchErrors(fn)*](https://gist.github.com/HectorBlisS/7e72ed8750ecfb73551107d6d7fe3bbb)
+This is wrapper for async await functions as we need some middleware in order to avoid try catch statements Error handler middleware for async await.
+
+  ```js
+  /* Error handler for async / await functions */
+  const catchErrors = (fn) => {
+    return function (req, res, next) {
+      return fn(req, res, next).catch(next);
+    };
+  };
+  ```
+
+- [***Multer***](https://www.npmjs.com/package/multer)
+
+  Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files. It is written on top of busboy for maximum efficiency.
+
+  NOTE: Multer will not process any form which is not multipart (multipart/form-data).
+
+  Multer adds a body object and a file or files object to the request object. The body object contains the values of the text fields of the form, the file or files object contains the files uploaded via the form.
+
+- [***Multer S3 Transform***](https://www.npmjs.com/package/multer-s3-transform)
+
+  Streaming multer storage engine for AWS S3.
+
+  This project is mostly an integration piece for existing code samples from Multer's storage engine documentation with s3fs as the substitution piece for file system. Existing solutions I found required buffering the multipart uploads into the actual filesystem which is difficult to scale.
+
+- [***Transforming Files Before Upload***](https://www.npmjs.com/package/multer-s3-transform#transforming-files-before-upload)
+
+  The optional shouldTransform option tells multer whether it should transform the file before it is uploaded. By default, it is set to false. If set to true, transforms option must be added, which tells how to transform the file. transforms option should be an Array, containing objects with can have properties id, key and transform.
+
+- Upload is a Multer instance with [*options*](https://www.npmjs.com/package/multer#multeropts). [*Multer storage*](https://www.npmjs.com/package/multer#storage) used here is AWS S3 Bucket with bucket name, [acl](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl), [*shouldTransform*](https://www.npmjs.com/package/multer-s3-transform#transforming-files-before-upload), [metadata](https://www.npmjs.com/package/multer-s3-transform#setting-metadata), key as name of file in bucket, [transforms](https://www.npmjs.com/package/multer-s3-transform#transforming-files-before-upload)
+
+- [*limits*](https://www.npmjs.com/package/multer#limits)
+
+  An object specifying the size limits of the following optional properties. Multer passes this object into busboy directly, and the details of the properties can be found on busboy's page.
+
+- [*fileFilter*](https://www.npmjs.com/package/multer#filefilter)
+
+  Set this to a function to control which files should be uploaded and which should be skipped.
+
+  ```js
+  // Multer is required to process file uploads and make them available via req.files.
+  const upload = Multer({
+    storage: multerS3({
+      s3: bucket,
+      bucket: process.env.bucketName,
+      acl: 'public-read',
+      shouldTransform: function (req, file, cb) {
+        cb(
+          null,
+          file.mimetype.startsWith('image/') && !file.mimetype.includes('gif')
+        );
+      },
+      metadata: function (req, file, cb) {
+        if (req.body.body) {
+          delete req.body.body;
+        }
+        cb(null, Object.assign({}, req.body));
+      },
+      key: function (req, file, cb) {
+        cb(
+          null,
+          `${Date.now()}-${file.fieldname}.${file.mimetype.split('/')[1]}`
+        );
+      },
+      transforms: [
+        {
+          id: 'original',
+          key: function (req, file, cb) {
+            cb(null, `${Date.now()}-${file.fieldname}.png`);
+          },
+          transform: function (req, file, cb) {
+            let options = { height: 600 };
+            if (file.fieldname == 'avatar') {
+              options = { height: 200, width: 200 };
+            }
+            cb(null, sharp().resize(options).png({ compressionLevel: 6 }));
+          },
+        },
+      ],
+    }),
+    limits: {
+      fileSize: 100 * 1024 * 1024, // no larger than 100mb, you can change as needed.
+    },
+    fileFilter: (req, file, next) => {
+      if (
+        file.mimetype.startsWith('image/') ||
+        file.mimetype.startsWith('video/')
+      ) {
+        next(null, true);
+      } else {
+        next(null, false);
+      }
+    },
+  });
+  ```
+
+- [*Converting file size from Bytes to KB, MB etc. Taken from stackoverflow.*](https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript)
+
+  ```js
+  const formatBytes = (bytes, decimals = 2) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  };
+  ```
+
+- Saving files and returing Promise of saved files ObjectId. For files which are not transformed by `Multer-S3-Transform` don't contain `file.transforms[0]`.
+
+  ```js
+  const savingFile = async (file) => {
+    try {
+      let files = new File({
+        contentType: file.mimetype.startsWith('image/')
+          ? file.mimetype.includes('gif')
+            ? file.mimetype
+            : 'image/png'
+          : file.mimetype,
+        source: file.location ? file.location : file.transforms[0].location,
+        size: file.size
+          ? formatBytes(file.size)
+          : formatBytes(file.transforms[0].size),
+        key: file.key ? file.key : file.transforms[0].key,
+      });
+      let { id } = await files.save();
+      return Promise.resolve(id);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+  ```
+
+- Saving files on upload through multer upload engine. First check if there exists `req.files` or else return this function and pass to next middleware. Then `async.parallel` is used to run all contitions parallelly to reduce time to upload. `async.each` to save each photo in photos.
+
+  ```js
+  const saveFile = async (req, res, next) => {
+    if (!req.files) {
+      return next();
+    }
+    await async.parallel([
+      async () => {
+        if (req.files['avatar']) {
+          const file = req.files['avatar'][0];
+          req.body.avatar = await savingFile(file);
+        }
+        return;
+      },
+      async () => {
+        if (req.files['photos']) {
+          const photos = req.files['photos'];
+          const arrayOfPhoto = [];
+          const saveEach = async (photo) => {
+            let id = await savingFile(photo);
+            arrayOfPhoto.push(id);
+          };
+          await async.each(photos, saveEach);
+          req.body.photos = new Array(...arrayOfPhoto);
+        }
+        return;
+      },
+      async () => {
+        if (req.files['video']) {
+          const file = req.files['video'][0];
+          req.body.video = await savingFile(file);
+        }
+        return;
+      },
+      async () => {
+        if (req.files['thumbnail']) {
+          const file = req.files['thumbnail'][0];
+          req.body.thumbnail = await savingFile(file);
+        }
+        return;
+      },
+    ]);
+    return next();
+  };
+  ```
+
+- Deleting File from AWS S3 Bucket by taking file as parameter.
+
+  ```js
+  const deleteFileFromBucket = async (file) => {
+    try {
+      return await bucket
+        .deleteObject({ Bucket: process.env.bucketName, Key: file.key })
+        .promise();
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+  ```
+
+- Deleting file from Bucket, MongoDB parallelly.
+
+  ```js
+  const deleteFileReference = async (file) => {
+    await async.parallel([
+      (callback) => {
+        File.findOneAndDelete({
+          key: file.key,
+        }).exec(callback);
+      },
+      async () => {
+        await deleteFileFromBucket(file);
+      },
+    ]);
+  };
+  ```
+
+- Middleware to delete old Profile Photo of user and also while deleting user profile.
+
+  ```js
+  const checkAndChangeProfile = async (req, res, next) => {
+    const { avatar } = req.profile;
+    if (
+      (avatar !== undefined && req.body.avatar !== undefined) ||
+      (avatar !== undefined && req.url.includes('DELETE'))
+    ) {
+      await deleteFileReference(avatar);
+    }
+    return next();
+  };
+  ```
+- Middleware to delete post files before replacing it with new files.
+
+  ```js
+  const deleteAllFiles = async (req, res, next) => {
+    const { video, photos, thumbnail } = req.post;
+    await async.parallel([
+      async () => {
+        if (req.body.video !== undefined || req.url.includes('DELETE')) {
+          await deleteFileReference(video);
+        }
+        return;
+      },
+      async () => {
+        if (req.body.thumbnail !== undefined || req.url.includes('DELETE')) {
+          await deleteFileReference(thumbnail);
+        }
+        return;
+      },
+      async () => {
+        if (req.body.photos !== undefined || req.url.includes('DELETE')) {
+          await async.each(photos, deleteFileReference);
+        }
+        return;
+      },
+    ]);
+    return next();
+  };
+  ```

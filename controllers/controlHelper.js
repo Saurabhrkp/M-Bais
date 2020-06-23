@@ -25,11 +25,10 @@ const upload = Multer({
       );
     },
     metadata: function (req, file, cb) {
-      let metabody = { ...req.body };
-      if (metabody.body) {
-        delete metabody.body;
+      if (req.body.body) {
+        delete req.body.body;
       }
-      cb(null, Object.assign({}, metabody));
+      cb(null, Object.assign({}, req.body));
     },
     key: function (req, file, cb) {
       cb(
