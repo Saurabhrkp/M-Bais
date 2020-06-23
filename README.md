@@ -4,8 +4,33 @@
 
 Working on Project to show-case for business.
 
-## Documentation is on its way
+## Getting Started
 
+Install Node.js form [Official Site](https://nodejs.org/en/download/).
+
+Install [MongoDB](https://www.mongodb.com/) locally or Set [Atlas online](https://www.mongodb.com/cloud/atlas/signup). And put Database URI in `.env` file as example given in .`sample.env`
+
+Get AWS S3 Storage, create bucket and get [Access keys](https://console.aws.amazon.com/iam/home?region=ap-south-1#/security_credentials) put them in `.env` file as example given in `.sample.env`.
+
+Git clone or Download the Zip and unzip it.
+
+### Prerequisites
+
+Install Dependencies by running
+
+```bash
+npm install
+```
+
+## Running the programs
+
+Navigate to folder of program
+
+```bash
+cd folder/
+
+npm run start
+```
 ---
 
 ## Contributing
