@@ -106,9 +106,9 @@ exports.signin = (req, res, next) => {
 };
 
 exports.signout = (req, res) => {
-  res.clearCookie('connect.sid');
-  req.logout();
-  req.session.destroy((err) => {
+  req.session.destroy(() => {
+    req.logout();
+    res.clearCookie('connect.sid');
     res.redirect('/');
   });
 };
