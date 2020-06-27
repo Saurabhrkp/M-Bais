@@ -6,6 +6,7 @@ const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const async = require('async');
 const { body, validationResult } = require('express-validator');
+const { sendEmail } = require('./controlHelper');
 
 exports.get_signup = (req, res) => {
   res.render('signup');
@@ -76,16 +77,27 @@ exports.validateSignup = async (req, res, next) => {
 exports.signup = async (req, res, next) => {
   const { name, email, password, username } = req.body;
   const user = await new User({ name, email, username, password });
+  await sendEmail(req, user);
   let salt = await bcrypt.genSalt(10);
   let hash = await bcrypt.hash(user.password, salt);
   user.password = hash;
   await user.save();
-  req.flash('success_msg', 'You are now registered and can log in');
+  req.flash('success_msg', 'Registered and check your email for verification');
   res.redirect('/api/signin');
 };
 
 exports.get_signin = (req, res) => {
   res.render('signin');
+};
+
+exports.set_verified = async (req, res) => {
+  try {
+    await User.findOneAndUpdate({ _id: req.query.id }, { verified: true });
+    req.flash('success_msg', 'Email Verification Complete');
+    res.redirect('/api/signin');
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.signin = (req, res, next) => {

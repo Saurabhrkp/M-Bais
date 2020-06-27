@@ -161,6 +161,7 @@ const UserSchema = new Schema(
     email: { type: String, lowercase: true },
     saved: [{ type: Schema.ObjectId, ref: 'Post', required: false }],
     author: { type: Boolean, required: true, default: false },
+    verified: { type: Boolean, required: true, default: false },
     },
   { timestamps: true }
 );

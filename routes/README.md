@@ -141,6 +141,13 @@ router
   .post(userController.validateSignup, catchErrors(userController.signup));
 ```
 
+- Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /verify ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method) are handled here. This rout is to verify email, its has query of ID from email send to user.
+
+```js
+// Verify Email
+router.get('/verify', userController.set_verified);
+```
+
 - Request on [*Route*](https://expressjs.com/en/4x/api.html#router.route)  ``` /login ``` of [*GET*](https://expressjs.com/en/4x/api.html#app.get.method) and [*POST*](https://expressjs.com/en/4x/api.html#app.post.method) are handled here. Gets the Login page and logs in users by post request to route.
 
 ```js

@@ -12,7 +12,7 @@ This module lets you authenticate using a username and password in your Node.js 
 
 Configure Strategy
 
-- The local authentication strategy authenticates users using a email and password. The strategy requires a verify callback, which accepts these credentials and calls done providing a user.
+- The local authentication strategy authenticates users using a email and password. The strategy requires a verify callback, which accepts these credentials and calls done providing a user. Now also checks if email is verified or not.
 
 ```js
 new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
@@ -22,6 +22,9 @@ new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
       }).then((user) => {
         if (!user) {
           return done(null, false, { message: 'That email is not registered' });
+        }
+        if (!user.verified) {
+          return done(null, false, { message: 'This email is not verified' });
         }
         // Match password
         bcrypt.compare(password, user.password, (err, isMatch) => {

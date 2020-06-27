@@ -18,6 +18,9 @@ router
   .get(userController.get_signup)
   .post(userController.validateSignup, catchErrors(userController.signup));
 
+// Verify Email
+router.get('/verify', userController.set_verified);
+
 // Login
 router
   .route('/signin')

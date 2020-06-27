@@ -4,6 +4,7 @@ const Multer = require('multer');
 const multerS3 = require('multer-s3-transform');
 const sharp = require('sharp');
 const async = require('async');
+const nodemailer = require('nodemailer');
 
 /* Error handler for async / await functions */
 const catchErrors = (fn) => {
@@ -204,6 +205,32 @@ const deleteAllFiles = async (req, res, next) => {
   return next();
 };
 
+const transport = nodemailer.createTransport({
+  service: 'hotmail',
+  auth: {
+    user: process.env.emailAddress,
+    pass: process.env.emailPassword,
+  },
+});
+
+const sendEmail = async (req, user) => {
+  let link = `${req.protocol}://${req.get('host')}/api/verify?id=${user.id}`;
+  let message = {
+    from: `${process.env.emailAddress} M-Bias Company`,
+    to: `${user.email}`,
+    subject: 'Please verify your Email to login to M-Bias.',
+    html: `<h1>Verify your email</h1>
+    <a href="${link}" target="_blank" rel="noopener noreferrer">Click Here</a><br/>
+    <h3>Save your User credentials,<h3/>
+    <p>Username: ${user.username}, Password: ${user.password}<p/>`,
+  };
+  try {
+    await transport.sendMail(message);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   catchErrors,
   upload,
@@ -211,4 +238,5 @@ module.exports = {
   extractTags,
   checkAndChangeProfile,
   deleteAllFiles,
+  sendEmail,
 };

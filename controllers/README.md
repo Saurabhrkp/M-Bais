@@ -784,3 +784,35 @@ This is wrapper for async await functions as we need some middleware in order to
     return next();
   };
   ```
+
+- Setting-up Node Mailer to send email
+```js
+const transport = nodemailer.createTransport({
+  service: 'hotmail',
+  auth: {
+    user: process.env.emailAddress,
+    pass: process.env.emailPassword,
+  },
+});
+```
+
+- Middleware to send verification email to email address
+```js
+const sendEmail = async (req, user) => {
+  let link = `${req.protocol}://${req.get('host')}/api/verify?id=${user.id}`;
+  let message = {
+    from: `${process.env.emailAddress} M-Bias Company`,
+    to: `${user.email}`,
+    subject: 'Please verify your Email to login to M-Bias.',
+    html: `<h1>Verify your email</h1>
+    <a href="${link}" target="_blank" rel="noopener noreferrer">Click Here</a><br/>
+    <h3>Save your User credentials,<h3/>
+    <p>Username: ${user.username}, Password: ${user.password}<p/>`,
+  };
+  try {
+    await transport.sendMail(message);
+  } catch (error) {
+    console.log(error);
+  }
+};
+```
