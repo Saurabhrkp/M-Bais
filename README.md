@@ -1,4 +1,8 @@
 # Mech-Bias
+---
+Duration: Feb 2020 - Jun 2020
+Full website with Admin Panel. Transforming Photos while uploading to AWS S3 Bucket. Maintaining User sessions and Verifying user email address by sending verification link. Resetting user password. Post page have functions as like, save and comment. Panel for Admin to create, edit and delete posts and users.
+---
 
 **Avinash Darvesh's Project**
 
